@@ -1,0 +1,115 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+    
+    <!-- Project Information -->
+	<groupId>org.seasar.uruma</groupId>
+	<artifactId>maven-uruma-eclipse-plugin</artifactId>
+	<packaging>maven-plugin</packaging>
+	<version>0.0.1</version>
+	<name>maven-uruma-eclipse-plugin Maven Mojo</name>
+    <url>http://uruma.sandbox.seasar.org/</url>
+    <inceptionYear>2010</inceptionYear>
+	
+    <!-- Developers -->
+	<developers>
+		<developer>
+			<id>y-komori</id>
+			<name>KOMORI Yusuke</name>
+			<email>komo _at_ littleforest.jp</email>
+			<url>http://d.hatena.ne.jp/y-komori/</url>
+			<organization>UL Systems, Inc.</organization>
+			<organizationUrl>http://www.ulsystems.co.jp/</organizationUrl>
+			<timezone>+9</timezone>
+		</developer>
+	</developers>
+        
+	<!-- Licenses -->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <!-- Organization -->
+    <organization>
+        <name>The Seasar Foundation</name>
+        <url>http://www.seasar.org/</url>
+    </organization>
+
+    <!-- Distribution Management Settings -->
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>maven.seasar.org</id>
+            <name>The Seasar Foundation Maven2 Repository</name>
+            <url>dav:https://www.seasar.org/maven/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>true</uniqueVersion>
+            <id>maven.seasar.org</id>
+            <name>The Seasar Foundation Maven2 Snapshot Repository</name>
+            <url>dav:https://www.seasar.org/maven/maven2-snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+    
+    <!-- Build Settings -->
+	<properties>
+		<mavenVersion>2.2.1</mavenVersion>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+    <!-- Dependency Settings -->
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>${mavenVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-project</artifactId>
+			<version>${mavenVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+</project>
