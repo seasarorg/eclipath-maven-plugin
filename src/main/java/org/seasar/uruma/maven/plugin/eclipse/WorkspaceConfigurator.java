@@ -15,24 +15,14 @@
  */
 package org.seasar.uruma.maven.plugin.eclipse;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.maven.project.MavenProject;
 
 /**
  * @author y-komori
  * @author $Author$
  * @version $Revision$ $Date$
- * 
  */
 public class WorkspaceConfigurator {
     public static final String ECLIPSE_PLUGINS_METADATA_DIR = ".metadata/.plugins";
@@ -48,28 +38,37 @@ public class WorkspaceConfigurator {
 
     private String localRepositoryDir;
 
+    private PropertiesFile eclipseJdtCorePrefs;
+
     /**
      * @param workspaceDir
      */
-    public WorkspaceConfigurator(File workspaceDir) {
-        this.workspaceDir = workspaceDir;
+    public WorkspaceConfigurator(MavenProject project) {
+        this.workspaceDir = getWorkspaceDir(project);
     }
 
+    /**
+     * 
+     */
+    public void loadConfiguration() {
+        eclipseJdtCorePrefs = new PropertiesFile(createEclipseJdtCorePrefsFile());
+        eclipseJdtCorePrefs.load();
+    }
+
+    /**
+     * 
+     */
     public void configure() {
-        File eclipseJdtCorePrefsFile = createEclipseJdtCorePrefsFile();
-        Properties eclipseJdtCorePrefs = loadProperties(eclipseJdtCorePrefsFile);
-        boolean changed = false;
-
         String localRepositoryDir = normalizePath(this.localRepositoryDir);
-        String current = eclipseJdtCorePrefs.getProperty(CLASSPATH_VARIABLE_M2_REPO);
-        if (current == null || !current.equals(localRepositoryDir)) {
-            eclipseJdtCorePrefs.setProperty(CLASSPATH_VARIABLE_M2_REPO, localRepositoryDir);
-            changed = true;
-        }
+        eclipseJdtCorePrefs.put(CLASSPATH_VARIABLE_M2_REPO, localRepositoryDir);
+        eclipseJdtCorePrefs.store();
+    }
 
-        if (changed) {
-            writeProperties(eclipseJdtCorePrefsFile, eclipseJdtCorePrefs);
-        }
+    /**
+     * @return
+     */
+    public String getClasspathVariableM2REPO() {
+        return eclipseJdtCorePrefs.get(CLASSPATH_VARIABLE_M2_REPO);
     }
 
     protected File createEclipseJdtCorePrefsFile() {
@@ -79,55 +78,27 @@ public class WorkspaceConfigurator {
         return new File(path);
     }
 
-    protected InputStream createInputStream(File file) {
-        try {
-            return new BufferedInputStream(new FileInputStream(file));
-        } catch (FileNotFoundException ignore) {
-            throw new PluginRuntimeException("File not found. : " + file.getAbsolutePath());
-        }
-    }
-
-    protected OutputStream createOutputStream(File file) {
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            return new BufferedOutputStream(new FileOutputStream(file));
-        } catch (FileNotFoundException ex) {
-            throw new PluginRuntimeException("File not found. : " + file.getAbsolutePath());
-        } catch (IOException ex) {
-            throw new PluginRuntimeException("File could not create. : " + file.getAbsolutePath());
-        }
-    }
-
-    protected void writeProperties(File file, Properties props) {
-        OutputStream os = null;
-        try {
-            os = createOutputStream(file);
-            props.store(os, null);
-        } catch (IOException ex) {
-            throw new PluginRuntimeException("Failed to save file. : " + file.getAbsolutePath(), ex);
-        } finally {
-            IOUtils.closeQuietly(os);
-        }
-    }
-
-    protected Properties loadProperties(File file) {
-        Properties props = new Properties();
-        InputStream is = null;
-        try {
-            is = createInputStream(file);
-            props.load(is);
-            return props;
-        } catch (IOException ex) {
-            throw new PluginRuntimeException("Failed to load file. : " + file.getAbsolutePath(), ex);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
-    }
-
     protected String normalizePath(String path) {
         return path.replace('\\', '/');
+    }
+
+    protected File getWorkspaceDir(MavenProject project) {
+        // TODO マルチプロジェクト対応
+        File workspaceDir = project.getFile().getParentFile().getParentFile();
+        checkWorkspaceLocation(workspaceDir);
+        return workspaceDir;
+    }
+
+    protected void checkWorkspaceLocation(File dir) {
+        String path = normalizePath(dir.getAbsolutePath()) + "/"
+                + ECLIPSE_CORE_RUNTIME_SETTINGS_DIR;
+        File pluginDir = new File(path);
+        if (pluginDir.exists()) {
+            return;
+        } else {
+            throw new PluginRuntimeException("Directory is not eclipse workspace. : "
+                    + dir.getAbsolutePath());
+        }
     }
 
     /**

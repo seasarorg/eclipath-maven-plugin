@@ -111,11 +111,12 @@ public class SyncDependenciesMojo extends AbstractMojo {
 
     protected ArtifactHelper artifactHelper;
 
+    protected WorkspaceConfigurator workspaceConfigurator;
+
     protected Logger logger;
 
     public void execute() throws MojoExecutionException {
-        prepareLogger();
-        prepareArtifactHelper();
+        prepare();
 
         EclipseClasspath eclipseClasspath = new EclipseClasspath();
         eclipseClasspath.setLogger(logger);
@@ -312,17 +313,18 @@ public class SyncDependenciesMojo extends AbstractMojo {
         return true;
     }
 
-    protected void prepareArtifactHelper() {
+    protected void prepare() {
+        logger = new Logger(getLog());
+
         artifactHelper = new ArtifactHelper();
         artifactHelper.setFactory(artifactFactory);
         artifactHelper.setResolver(artifactResolver);
         artifactHelper.setRemoteRepositories(remoteArtifactRepositories);
         artifactHelper.setLocalRepository(localRepository);
         artifactHelper.setLogger(logger);
-    }
 
-    protected void prepareLogger() {
-        logger = new Logger(getLog());
+        workspaceConfigurator = new WorkspaceConfigurator(project);
+        workspaceConfigurator.loadConfiguration();
     }
 
     public void setExcludeGroups(List<String> excludeGroups) {

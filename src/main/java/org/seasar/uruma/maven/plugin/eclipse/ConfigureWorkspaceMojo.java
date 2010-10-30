@@ -15,8 +15,6 @@
  */
 package org.seasar.uruma.maven.plugin.eclipse;
 
-import java.io.File;
-
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -54,7 +52,8 @@ public class ConfigureWorkspaceMojo extends AbstractMojo {
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        WorkspaceConfigurator configurator = new WorkspaceConfigurator(getWorkspaceDir());
+        WorkspaceConfigurator configurator = new WorkspaceConfigurator(project);
+        configurator.loadConfiguration();
         configurator.setLocalRepositoryDir(localRepository.getBasedir());
 
         try {
@@ -62,10 +61,5 @@ public class ConfigureWorkspaceMojo extends AbstractMojo {
         } catch (PluginRuntimeException ex) {
             throw new MojoExecutionException(ex.getMessage(), ex.getCause());
         }
-    }
-
-    protected File getWorkspaceDir() {
-        // TODO マルチプロジェクト対応
-        return project.getFile().getParentFile().getParentFile();
     }
 }
