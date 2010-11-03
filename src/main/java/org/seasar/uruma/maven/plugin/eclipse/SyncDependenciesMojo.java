@@ -225,18 +225,6 @@ public class SyncDependenciesMojo extends AbstractMojo {
         } finally {
             IOUtils.closeQuietly(os);
         }
-
-        // Report results
-        logger.info(Logger.SEPARATOR);
-        logger.info("Sync results");
-        logger.info(Logger.SEPARATOR);
-        for (Dependency dependency : dependencies) {
-            logArtifact(dependency.getArtifact(), 0);
-            logArtifact(dependency.getSrcArtifact(), 2);
-            logArtifact(dependency.getJavadocArtifact(), 2);
-            logger.info("");
-        }
-        logger.info(Logger.SEPARATOR);
     }
 
     protected void logArtifact(Artifact artifact, int indent) {
@@ -365,23 +353,28 @@ public class SyncDependenciesMojo extends AbstractMojo {
     protected boolean checkDependencies(List<Dependency> dependencies) {
         boolean valid = true;
 
-        System.out.println(StringUtils.repeat("-", 72));
-        System.out.println(" Dependency report.");
-        System.out.println(StringUtils.repeat("-", 72));
+        logger.info(Logger.SEPARATOR);
+        logger.info(" Dependency report.  [R]:Resolved [N]:Not resolved");
+        logger.info(Logger.SEPARATOR);
         for (Dependency dependency : dependencies) {
             Artifact artifact = dependency.getArtifact();
-            System.out.printf(" %s   %s\n", artifact.isResolved() ? "R" : "N", artifact);
+            logger.info(String.format(" %s   %s", formatResolveStatus(artifact), artifact));
 
             Artifact srcArtifact = dependency.getSrcArtifact();
-            System.out.printf("   %s %s\n", srcArtifact.isResolved() ? "R" : "N", srcArtifact);
+            logger.info(String.format("   %s %s", formatResolveStatus(srcArtifact), srcArtifact));
 
             Artifact javadocArtifact = dependency.getJavadocArtifact();
-            System.out.printf("   %s %s\n\n", javadocArtifact.isResolved() ? "R" : "N",
-                    javadocArtifact);
+            logger.info(String.format("   %s %s", formatResolveStatus(javadocArtifact),
+                    javadocArtifact));
+            logger.info("");
         }
-        System.out.println(StringUtils.repeat("-", 72));
+        logger.info(Logger.SEPARATOR);
 
         return valid;
+    }
+
+    protected String formatResolveStatus(Artifact artifact) {
+        return artifact.isResolved() ? "[R]" : "[N]";
     }
 
     protected boolean checkParameters() {
