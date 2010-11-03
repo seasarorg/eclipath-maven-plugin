@@ -22,6 +22,8 @@ import java.util.TreeSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 
 /**
@@ -90,13 +92,16 @@ public class ArtifactHelper {
                 .getArtifactId(), baseArtifact.getVersion(), baseArtifact.getType(), classifier);
     }
 
-    public void resolve(Artifact artifact, boolean logError) {
+    public void resolve(Artifact artifact, boolean throwOnError) {
         try {
             resolver.resolve(artifact, remoteRepositories, localRepository);
-            logger.info("Artifact resolved : " + artifact);
-        } catch (Exception ex) {
-            if (logError) {
-                logger.warn(ex.getLocalizedMessage());
+        } catch (ArtifactResolutionException ex) {
+            if (throwOnError) {
+                throw new ArtifactResolutionRuntimeException(ex.getLocalizedMessage(), ex);
+            }
+        } catch (ArtifactNotFoundException ex) {
+            if (throwOnError) {
+                throw new ArtifactResolutionRuntimeException(ex.getLocalizedMessage(), ex);
             }
         }
     }

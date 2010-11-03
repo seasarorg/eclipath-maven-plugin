@@ -25,14 +25,16 @@ import org.apache.maven.project.MavenProject;
  * @version $Revision$ $Date$
  */
 public class WorkspaceConfigurator {
-    public static final String ECLIPSE_PLUGINS_METADATA_DIR = ".metadata/.plugins";
 
-    public static final String ECLIPSE_CORE_RUNTIME_SETTINGS_DIR = ECLIPSE_PLUGINS_METADATA_DIR
+    public static final String ECLIPSE_CORE_RUNTIME_SETTINGS_DIR = ProjectUtil.ECLIPSE_PLUGINS_METADATA_DIR
             + "/org.eclipse.core.runtime/.settings";
 
     public static final String ECLIPSE_JDT_CORE_PREFS_FILE = "org.eclipse.jdt.core.prefs";
 
-    public static final String CLASSPATH_VARIABLE_M2_REPO = "org.eclipse.jdt.core.classpathVariable.M2_REPO";
+    public static final String M2_REPO = "M2_REPO";
+
+    public static final String CLASSPATH_VARIABLE_M2_REPO = "org.eclipse.jdt.core.classpathVariable."
+            + M2_REPO;
 
     private final File workspaceDir;
 
@@ -44,7 +46,7 @@ public class WorkspaceConfigurator {
      * @param workspaceDir
      */
     public WorkspaceConfigurator(MavenProject project) {
-        this.workspaceDir = getWorkspaceDir(project);
+        this.workspaceDir = ProjectUtil.getWorkspaceDir(project);
     }
 
     /**
@@ -59,7 +61,7 @@ public class WorkspaceConfigurator {
      * 
      */
     public void configure() {
-        String localRepositoryDir = normalizePath(this.localRepositoryDir);
+        String localRepositoryDir = PathUtil.normalizePath(this.localRepositoryDir);
         eclipseJdtCorePrefs.put(CLASSPATH_VARIABLE_M2_REPO, localRepositoryDir);
         eclipseJdtCorePrefs.store();
     }
@@ -72,33 +74,10 @@ public class WorkspaceConfigurator {
     }
 
     protected File createEclipseJdtCorePrefsFile() {
-        String workspacePath = normalizePath(workspaceDir.getAbsolutePath()) + "/";
+        String workspacePath = PathUtil.normalizePath(workspaceDir.getAbsolutePath()) + "/";
         String path = workspacePath + ECLIPSE_CORE_RUNTIME_SETTINGS_DIR + "/"
                 + ECLIPSE_JDT_CORE_PREFS_FILE;
         return new File(path);
-    }
-
-    protected String normalizePath(String path) {
-        return path.replace('\\', '/');
-    }
-
-    protected File getWorkspaceDir(MavenProject project) {
-        // TODO マルチプロジェクト対応
-        File workspaceDir = project.getFile().getParentFile().getParentFile();
-        checkWorkspaceLocation(workspaceDir);
-        return workspaceDir;
-    }
-
-    protected void checkWorkspaceLocation(File dir) {
-        String path = normalizePath(dir.getAbsolutePath()) + "/"
-                + ECLIPSE_CORE_RUNTIME_SETTINGS_DIR;
-        File pluginDir = new File(path);
-        if (pluginDir.exists()) {
-            return;
-        } else {
-            throw new PluginRuntimeException("Directory is not eclipse workspace. : "
-                    + dir.getAbsolutePath());
-        }
     }
 
     /**
