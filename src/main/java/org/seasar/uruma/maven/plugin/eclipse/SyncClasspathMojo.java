@@ -139,6 +139,14 @@ public class SyncClasspathMojo extends AbstractMojo {
      */
     protected String javadocDir;
 
+    /**
+     * If {@code true}, always try to resolve all sources and javadoc
+     * dependencies.
+     * 
+     * @parameter expression="${forceResolve}" default-value="false"
+     */
+    protected boolean forceResolve;
+
     protected ClasspathPolicy classpathPolicy;
 
     protected File eclipseProjectDir;
@@ -507,21 +515,25 @@ public class SyncClasspathMojo extends AbstractMojo {
             excludeScopes = new ArrayList<String>();
         }
         logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
+
+        logger.info("[Parameter:forceResolve] " + forceResolve);
         return true;
     }
 
     protected void prepare() {
         logger = new Logger(getLog());
 
+        workspaceConfigurator = new WorkspaceConfigurator(project);
+        workspaceConfigurator.loadConfiguration();
+
         artifactHelper = new ArtifactHelper();
         artifactHelper.setFactory(artifactFactory);
         artifactHelper.setResolver(artifactResolver);
         artifactHelper.setRemoteRepositories(remoteArtifactRepositories);
         artifactHelper.setLocalRepository(localRepository);
+        artifactHelper.setWorkspaceConfigurator(workspaceConfigurator);
         artifactHelper.setLogger(logger);
-
-        workspaceConfigurator = new WorkspaceConfigurator(project);
-        workspaceConfigurator.loadConfiguration();
+        artifactHelper.setForceResolve(forceResolve);
 
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
     }

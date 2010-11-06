@@ -87,7 +87,7 @@ public class EclipseClasspath {
             int length = nodeList.getLength();
             for (int i = 0; i < length; i++) {
                 Element element = (Element) nodeList.item(i);
-                logger.info("ClasspathEntry loaded.  path=" + element.getAttribute(ATTR_PATH));
+                logger.debug("ClasspathEntry loaded.  path=" + element.getAttribute(ATTR_PATH));
             }
             return document;
         } catch (Exception ex) {

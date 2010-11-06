@@ -15,11 +15,16 @@
  */
 package org.seasar.uruma.maven.plugin.eclipse;
 
+import static org.seasar.uruma.maven.plugin.eclipse.Constants.*;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -34,6 +39,9 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
  * 
  */
 public class ArtifactHelper {
+
+    protected static final String NOT_AVAILABLE_SUFFIX = "-not-available";
+
     protected ArtifactFactory factory;
 
     protected ArtifactResolver resolver;
@@ -42,7 +50,11 @@ public class ArtifactHelper {
 
     protected ArtifactRepository localRepository;
 
+    protected WorkspaceConfigurator workspaceConfigurator;
+
     protected Logger logger;
+
+    protected boolean forceResolve;
 
     public Set<Artifact> filterArtifacts(Set<Artifact> artifacts, List<String> excludeGroups,
             List<String> excludeScopes) {
@@ -99,17 +111,72 @@ public class ArtifactHelper {
     }
 
     public void resolve(Artifact artifact, boolean throwOnError) {
+        // Check if jar is not available
+        String notAvailablePath = workspaceConfigurator.getClasspathVariableM2REPO() + "/"
+                + createJarPath(artifact) + NOT_AVAILABLE_SUFFIX;
+        File notAvailableFile = new File(notAvailablePath);
+        if (!forceResolve) {
+            if (!throwOnError && notAvailableFile.exists()) {
+                return;
+            }
+        } else {
+            notAvailableFile.delete();
+        }
+
         try {
             resolver.resolve(artifact, remoteRepositories, localRepository);
         } catch (ArtifactResolutionException ex) {
+            try {
+                FileUtils.touch(notAvailableFile);
+            } catch (IOException ignore) {
+            }
             if (throwOnError) {
                 throw new ArtifactResolutionRuntimeException(ex.getLocalizedMessage(), ex);
             }
         } catch (ArtifactNotFoundException ex) {
+            try {
+                FileUtils.touch(notAvailableFile);
+            } catch (IOException ignore) {
+            }
             if (throwOnError) {
                 throw new ArtifactResolutionRuntimeException(ex.getLocalizedMessage(), ex);
             }
         }
+    }
+
+    public String createJarPath(Artifact artifact) {
+        StringBuilder path = new StringBuilder();
+        String groupId = artifact.getGroupId();
+        if (groupId != null) {
+            path.append(groupId.replace(".", SEP));
+            path.append(SEP);
+        }
+
+        String artifactId = artifact.getArtifactId();
+        path.append(artifactId);
+        path.append(SEP);
+
+        String version = artifact.getVersion();
+        if (version != null) {
+            path.append(version);
+            path.append(SEP);
+        }
+
+        path.append(artifactId);
+        if (version != null) {
+            path.append("-");
+            path.append(version);
+        }
+
+        String classifier = artifact.getClassifier();
+        if (classifier != null) {
+            path.append("-");
+            path.append(classifier);
+        }
+
+        path.append(".");
+        path.append(artifact.getType());
+        return path.toString();
     }
 
     public void setFactory(ArtifactFactory factory) {
@@ -128,8 +195,19 @@ public class ArtifactHelper {
         this.localRepository = localRepository;
     }
 
+    public void setWorkspaceConfigurator(WorkspaceConfigurator workspaceConfigurator) {
+        this.workspaceConfigurator = workspaceConfigurator;
+    }
+
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
 
+    public boolean isForceResolve() {
+        return forceResolve;
+    }
+
+    public void setForceResolve(boolean forceResolve) {
+        this.forceResolve = forceResolve;
+    }
 }
