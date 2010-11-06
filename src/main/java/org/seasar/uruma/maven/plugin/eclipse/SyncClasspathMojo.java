@@ -44,11 +44,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * @goal sync-dependencies
+ * @goal sync-classpath
  * @requiresDependencyResolution test
  * @phase process-sources
  */
-public class SyncDependenciesMojo extends AbstractMojo {
+public class SyncClasspathMojo extends AbstractMojo {
     /**
      * POM
      * 
