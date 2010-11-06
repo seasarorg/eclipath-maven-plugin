@@ -15,6 +15,7 @@
  */
 package org.seasar.uruma.maven.plugin.eclipse;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -44,21 +45,26 @@ public class ArtifactHelper {
     protected Logger logger;
 
     public Set<Artifact> filterArtifacts(Set<Artifact> artifacts, List<String> excludeGroups,
-            String scope) {
-        Set<Artifact> result = new TreeSet<Artifact>();
+            List<String> excludeScopes) {
+        Set<Artifact> excluded = new TreeSet<Artifact>();
+        List<Artifact> removeArtifacts = new LinkedList<Artifact>();
 
         for (Artifact artifact : artifacts) {
-            if (excludeGroups == null) {
-                result.add(artifact);
-            } else if (!excludeGroups.contains(artifact.getGroupId())) {
-                if (scope == null) {
-                    result.add(artifact);
-                } else if (scope.equals(artifact.getScope())) {
-                    result.add(artifact);
-                }
+            boolean matched = false;
+            if (excludeGroups != null && excludeGroups.contains(artifact.getGroupId())) {
+                matched = true;
+            }
+            if (excludeScopes != null && excludeScopes.contains(artifact.getScope())) {
+                matched = true;
+            }
+
+            if (matched) {
+                excluded.add(artifact);
+                removeArtifacts.add(artifact);
             }
         }
-        return result;
+        artifacts.removeAll(removeArtifacts);
+        return excluded;
     }
 
     public Artifact createSourceArtifact(Artifact baseArtifact) {

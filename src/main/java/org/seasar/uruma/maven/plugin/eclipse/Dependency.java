@@ -21,7 +21,7 @@ import org.apache.maven.artifact.Artifact;
  * @author y-komori
  * @author $Author$
  * @version $Revision$ $Date$
- *
+ * 
  */
 public class Dependency {
     private Artifact artifact;
@@ -30,10 +30,13 @@ public class Dependency {
 
     private Artifact javadocArtifact;
 
+    private ClasspathPolicy classpathPolicy;
+
     /**
-     * {@link Dependency} を構築します。<br />
+     * Constructs a new {@link Dependency} object with {@link Artifact} object.
      * 
      * @param artifact
+     *        related {@link Artifact} object
      */
     public Dependency(Artifact artifact) {
         super();
@@ -62,6 +65,14 @@ public class Dependency {
 
     public void setJavadocArtifact(Artifact javadocArtifact) {
         this.javadocArtifact = javadocArtifact;
+    }
+
+    public ClasspathPolicy getClasspathPolicy() {
+        return classpathPolicy;
+    }
+
+    public void setClasspathPolicy(ClasspathPolicy classpathPolicy) {
+        this.classpathPolicy = classpathPolicy;
     }
 
     @Override

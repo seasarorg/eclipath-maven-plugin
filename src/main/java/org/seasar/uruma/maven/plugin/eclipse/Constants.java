@@ -29,6 +29,10 @@ public interface Constants {
 
     public static final String ATTR_KIND = "kind";
 
+    public static final String KIND_LIB = "lib";
+
+    public static final String KIND_VAR = "var";
+
     public static final String ATTR_VALUE = "value";
 
     public static final String ATTR_NAME = "name";

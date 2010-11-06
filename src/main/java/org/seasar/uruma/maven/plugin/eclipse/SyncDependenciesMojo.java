@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -96,11 +97,26 @@ public class SyncDependenciesMojo extends AbstractMojo {
     protected ArtifactResolver artifactResolver;
 
     /**
-     * Comma separated list of GroupId Names to exclude.
+     * Classpath setting policy.<br />
+     * Value must be {@code repository} or {@code project}.
+     * 
+     * @parameter default-value="repository"
+     */
+    protected String policy;
+
+    /**
+     * GroupId list to exclude.
      * 
      * @parameter
      */
     protected List<String> excludeGroupIds;
+
+    /**
+     * Scope list to exclude.
+     * 
+     * @parameter
+     */
+    protected List<String> excludeScopes;
 
     /**
      * Destination directory.
@@ -122,6 +138,8 @@ public class SyncDependenciesMojo extends AbstractMojo {
      * @parameter default-value="javadoc"
      */
     protected String javadocDir;
+
+    protected ClasspathPolicy classpathPolicy;
 
     protected File eclipseProjectDir;
 
@@ -157,12 +175,73 @@ public class SyncDependenciesMojo extends AbstractMojo {
         getExsistingLibraries(toDeleteFiles, sourcesDirFile);
         getExsistingLibraries(toDeleteFiles, javadocDirFile);
 
-        Set<Artifact> artifacts = project.getArtifacts();
-        artifacts = artifactHelper.filterArtifacts(artifacts, excludeGroupIds, "compile");
-        List<Dependency> dependencies = resolveArtifacts(artifacts);
-        checkDependencies(dependencies);
+        Set<Artifact> repositoryArtifacts = new TreeSet<Artifact>();
+        Set<Artifact> projectArtifacts = new TreeSet<Artifact>();
+        if (classpathPolicy == ClasspathPolicy.REPOSITORY) {
+            repositoryArtifacts = project.getArtifacts();
+            projectArtifacts = artifactHelper.filterArtifacts(repositoryArtifacts, excludeGroupIds,
+                    excludeScopes);
+        } else if (classpathPolicy == ClasspathPolicy.PROJECT) {
+            projectArtifacts = project.getArtifacts();
+            repositoryArtifacts = artifactHelper.filterArtifacts(projectArtifacts, excludeGroupIds,
+                    excludeScopes);
+        }
 
-        for (Dependency dependency : dependencies) {
+        // Resolve dependencies
+        List<Dependency> repoDependencies = resolveArtifacts(repositoryArtifacts,
+                ClasspathPolicy.REPOSITORY);
+        List<Dependency> projDependencies = resolveArtifacts(projectArtifacts,
+                ClasspathPolicy.PROJECT);
+        if (!checkDependencies(repoDependencies, projDependencies)) {
+            throw new PluginRuntimeException("Required dependencies were not resolved.");
+        }
+
+        // Attach repository dependencies
+        File m2repo = new File(workspaceConfigurator.getClasspathVariableM2REPO());
+        for (Dependency dependency : repoDependencies) {
+            String libPath;
+            String srcPath = null;
+            String javadocPath = null;
+
+            // Create library jar path
+            Artifact artifact = dependency.getArtifact();
+            File libFile = artifact.getFile();
+            libPath = WorkspaceConfigurator.M2_REPO + "/"
+                    + PathUtil.getRelativePath(m2repo, libFile);
+
+            // Create source jar path
+            Artifact srcArtifact = dependency.getSrcArtifact();
+            if (srcArtifact != null && srcArtifact.isResolved()) {
+                File srcFile = srcArtifact.getFile();
+                srcPath = WorkspaceConfigurator.M2_REPO + "/"
+                        + PathUtil.getRelativePath(m2repo, srcFile);
+            }
+
+            // Create javadoc jar path
+            Artifact javadocArtifact = dependency.getJavadocArtifact();
+            if (javadocArtifact != null && javadocArtifact.isResolved()) {
+                File javadocFile = javadocArtifact.getFile();
+                javadocPath = "jar:file:/" + PathUtil.normalizePath(javadocFile.getAbsolutePath())
+                        + "!/";
+            }
+
+            // Remove existing class path entry
+            List<Element> existenceEntries = eclipseClasspath.findClasspathEntry(artifactHelper
+                    .getFilename(artifact));
+            eclipseClasspath.removeClasspathEntries(existenceEntries);
+
+            // Add new class path entry
+            Element classpathEntry = eclipseClasspath.createClasspathEntry(libPath, srcPath,
+                    KIND_VAR);
+            root.appendChild(classpathEntry);
+            if (javadocPath != null) {
+                eclipseClasspath.addAttribute(classpathEntry, ATTRNAME_JAVADOC_LOCATION,
+                        javadocPath);
+            }
+        }
+
+        // Copy and attach project dependencies
+        for (Dependency dependency : projDependencies) {
             File libfile;
             File sourceFile = null;
             File javadocFile = null;
@@ -199,7 +278,8 @@ public class SyncDependenciesMojo extends AbstractMojo {
                 eclipseClasspath.removeClasspathEntries(existenceEntries);
 
                 // Add new class path entry
-                Element classpathEntry = eclipseClasspath.createClasspathEntry(path, srcPath);
+                Element classpathEntry = eclipseClasspath.createClasspathEntry(path, srcPath,
+                        KIND_LIB);
                 root.appendChild(classpathEntry);
                 if (javadocPath != null) {
                     eclipseClasspath.addAttribute(classpathEntry, ATTRNAME_JAVADOC_LOCATION,
@@ -318,12 +398,14 @@ public class SyncDependenciesMojo extends AbstractMojo {
         }
     }
 
-    protected List<Dependency> resolveArtifacts(Set<Artifact> artifacts) {
+    protected List<Dependency> resolveArtifacts(Set<Artifact> artifacts,
+            ClasspathPolicy classpathPolicy) {
         List<Dependency> dependencies = new ArrayList<Dependency>();
 
         for (Artifact artifact : artifacts) {
             // Build dependency objects
             Dependency dependency = new Dependency(artifact);
+            dependency.setClasspathPolicy(classpathPolicy);
             dependencies.add(dependency);
 
             // Get artifact
@@ -350,12 +432,34 @@ public class SyncDependenciesMojo extends AbstractMojo {
         return dependencies;
     }
 
-    protected boolean checkDependencies(List<Dependency> dependencies) {
+    protected boolean checkDependencies(List<Dependency> repoDependencies,
+            List<Dependency> projDependencies) {
         boolean valid = true;
 
         logger.info(Logger.SEPARATOR);
         logger.info(" Dependency report.  [R]:Resolved [N]:Not resolved");
+
+        if (repoDependencies.size() > 0) {
+            logger.info(Logger.SEPARATOR);
+            logger.info(" REPOSITORY Dependencies");
+            logger.info(Logger.SEPARATOR);
+            valid &= doCheckDependencies(repoDependencies);
+        }
+
+        if (projDependencies.size() > 0) {
+            logger.info(Logger.SEPARATOR);
+            logger.info(" PROJECT Dependencies");
+            logger.info(Logger.SEPARATOR);
+            valid &= doCheckDependencies(projDependencies);
+        }
         logger.info(Logger.SEPARATOR);
+
+        return valid;
+    }
+
+    protected boolean doCheckDependencies(List<Dependency> dependencies) {
+        boolean valid = true;
+
         for (Dependency dependency : dependencies) {
             Artifact artifact = dependency.getArtifact();
             logger.info(String.format(" %s   %s", formatResolveStatus(artifact), artifact));
@@ -368,7 +472,6 @@ public class SyncDependenciesMojo extends AbstractMojo {
                     javadocArtifact));
             logger.info("");
         }
-        logger.info(Logger.SEPARATOR);
 
         return valid;
     }
@@ -378,6 +481,16 @@ public class SyncDependenciesMojo extends AbstractMojo {
     }
 
     protected boolean checkParameters() {
+        if (ClasspathPolicy.REPOSITORY.confName().equals(policy)) {
+            classpathPolicy = ClasspathPolicy.REPOSITORY;
+        } else if (ClasspathPolicy.PROJECT.confName().equals(policy)) {
+            classpathPolicy = ClasspathPolicy.PROJECT;
+        } else {
+            logger.error("Parameter policy must be \"repository\" or \"project\".");
+            return false;
+        }
+        logger.info("[Parameter:policy] " + classpathPolicy.name());
+
         if (StringUtils.isEmpty(destdir)) {
             logger.error("Parameter destdir is not specified.");
             return false;
@@ -390,6 +503,10 @@ public class SyncDependenciesMojo extends AbstractMojo {
         }
         logger.info("[Parameter:excludeGroupIds] " + excludeGroupIds.toString());
 
+        if (excludeScopes == null) {
+            excludeScopes = new ArrayList<String>();
+        }
+        logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
         return true;
     }
 

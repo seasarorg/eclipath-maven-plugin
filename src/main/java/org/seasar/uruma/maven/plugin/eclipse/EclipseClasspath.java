@@ -95,9 +95,9 @@ public class EclipseClasspath {
         }
     }
 
-    public Element createClasspathEntry(String path, String sourcePath) {
+    public Element createClasspathEntry(String path, String sourcePath, String kind) {
         Element entry = document.createElement(ELEMENT_CLASSPATHENTRY);
-        entry.setAttribute(ATTR_KIND, "lib");
+        entry.setAttribute(ATTR_KIND, kind);
         entry.setAttribute(ATTR_PATH, path);
         if (sourcePath != null) {
             entry.setAttribute(ATTR_SOURCEPATH, sourcePath);
