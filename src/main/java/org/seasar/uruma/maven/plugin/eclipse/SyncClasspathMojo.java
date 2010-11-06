@@ -74,7 +74,7 @@ public class SyncClasspathMojo extends AbstractMojo {
      * @required
      * @readonly
      */
-    protected List remoteArtifactRepositories;
+    protected List<ArtifactRepository> remoteArtifactRepositories;
 
     /**
      * Artifact factory, needed to download source jars for inclusion in
@@ -173,26 +173,33 @@ public class SyncClasspathMojo extends AbstractMojo {
         Document document = eclipseClasspath.loadDotClassPath(dotClassPathFile);
         Element root = document.getDocumentElement();
 
-        // Prepare directories
-        File targetDirFile = prepareDir(basedir, destdir);
-        File sourcesDirFile = prepareDir(basedir, destdir + "/" + sourcesDir);
-        File javadocDirFile = prepareDir(basedir, destdir + "/" + javadocDir);
-
-        // Get existing dependencies
-        List<File> toDeleteFiles = getExsistingLibraries(null, targetDirFile);
-        getExsistingLibraries(toDeleteFiles, sourcesDirFile);
-        getExsistingLibraries(toDeleteFiles, javadocDirFile);
-
+        // Get and filter dependencies
         Set<Artifact> repositoryArtifacts = new TreeSet<Artifact>();
         Set<Artifact> projectArtifacts = new TreeSet<Artifact>();
         if (classpathPolicy == ClasspathPolicy.REPOSITORY) {
-            repositoryArtifacts = project.getArtifacts();
+            repositoryArtifacts = getArtifacts();
             projectArtifacts = artifactHelper.filterArtifacts(repositoryArtifacts, excludeGroupIds,
                     excludeScopes);
         } else if (classpathPolicy == ClasspathPolicy.PROJECT) {
-            projectArtifacts = project.getArtifacts();
+            projectArtifacts = getArtifacts();
             repositoryArtifacts = artifactHelper.filterArtifacts(projectArtifacts, excludeGroupIds,
                     excludeScopes);
+        }
+
+        File targetDirFile = null;
+        File sourcesDirFile = null;
+        File javadocDirFile = null;
+        List<File> toDeleteFiles = new LinkedList<File>();
+        if (projectArtifacts.size() > 0) {
+            // Prepare directories
+            targetDirFile = prepareDir(basedir, destdir);
+            sourcesDirFile = prepareDir(basedir, destdir + "/" + sourcesDir);
+            javadocDirFile = prepareDir(basedir, destdir + "/" + javadocDir);
+
+            // Get existing dependencies
+            getExsistingLibraries(toDeleteFiles, targetDirFile);
+            getExsistingLibraries(toDeleteFiles, sourcesDirFile);
+            getExsistingLibraries(toDeleteFiles, javadocDirFile);
         }
 
         // Resolve dependencies
@@ -518,6 +525,11 @@ public class SyncClasspathMojo extends AbstractMojo {
 
         logger.info("[Parameter:forceResolve] " + forceResolve);
         return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Set<Artifact> getArtifacts() {
+        return project.getArtifacts();
     }
 
     protected void prepare() {
