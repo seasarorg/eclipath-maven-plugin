@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
@@ -177,6 +178,15 @@ public class ArtifactHelper {
         path.append(".");
         path.append(artifact.getType());
         return path.toString();
+    }
+
+    public Pattern getVersionIndependentFileNamePattern(Artifact artifact) {
+        StringBuilder regex = new StringBuilder();
+        regex.append(".*");
+        regex.append(artifact.getArtifactId().replace(".", "\\."));
+        regex.append("-.+\\.");
+        regex.append(artifact.getType());
+        return Pattern.compile(regex.toString());
     }
 
     public void setFactory(ArtifactFactory factory) {

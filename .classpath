@@ -1,87 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
-  <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="var" path="M2_REPO/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.jar" sourcepath="M2_REPO/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar"/>
-  <classpathentry kind="var" path="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4.jar" sourcepath="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/commons-io/commons-io/1.4/commons-io-1.4-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.5/commons-lang-2.5.jar" sourcepath="M2_REPO/commons-lang/commons-lang/2.5/commons-lang-2.5-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/commons-lang/commons-lang/2.5/commons-lang-2.5-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar" sourcepath="M2_REPO/junit/junit/3.8.1/junit-3.8.1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-artifact/2.2.1/maven-artifact-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-artifact/2.2.1/maven-artifact-2.2.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-artifact/2.2.1/maven-artifact-2.2.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-model/2.2.1/maven-model-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-model/2.2.1/maven-model-2.2.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-model/2.2.1/maven-model-2.2.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-plugin-api/2.2.1/maven-plugin-api-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-plugin-api/2.2.1/maven-plugin-api-2.2.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-plugin-api/2.2.1/maven-plugin-api-2.2.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1.jar" sourcepath="M2_REPO/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.jar" sourcepath="M2_REPO/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15.jar" sourcepath="M2_REPO/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6.jar" sourcepath="M2_REPO/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="var" path="M2_REPO/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.jar" sourcepath="M2_REPO/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4.jar" sourcepath="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/commons-io/commons-io/1.4/commons-io-1.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.5/commons-lang-2.5.jar" sourcepath="M2_REPO/commons-lang/commons-lang/2.5/commons-lang-2.5-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/commons-lang/commons-lang/2.5/commons-lang-2.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar" sourcepath="M2_REPO/junit/junit/3.8.1/junit-3.8.1-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-artifact/2.2.1/maven-artifact-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-artifact/2.2.1/maven-artifact-2.2.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-artifact/2.2.1/maven-artifact-2.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-model/2.2.1/maven-model-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-model/2.2.1/maven-model-2.2.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-model/2.2.1/maven-model-2.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-plugin-api/2.2.1/maven-plugin-api-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-plugin-api/2.2.1/maven-plugin-api-2.2.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-plugin-api/2.2.1/maven-plugin-api-2.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1.jar" sourcepath="M2_REPO/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1.jar" sourcepath="M2_REPO/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.jar" sourcepath="M2_REPO/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15.jar" sourcepath="M2_REPO/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6.jar" sourcepath="M2_REPO/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/y-komori/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

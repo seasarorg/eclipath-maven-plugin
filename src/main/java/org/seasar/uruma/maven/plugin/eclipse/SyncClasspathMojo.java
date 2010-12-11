@@ -157,6 +157,8 @@ public class SyncClasspathMojo extends AbstractMojo {
 
     protected Logger logger;
 
+    protected PluginInformation pluginInformation = new PluginInformation();
+
     public void execute() throws MojoExecutionException {
         prepare();
 
@@ -242,7 +244,7 @@ public class SyncClasspathMojo extends AbstractMojo {
 
             // Remove existing class path entry
             List<Element> existenceEntries = eclipseClasspath.findClasspathEntry(artifactHelper
-                    .getFilename(artifact));
+                    .getVersionIndependentFileNamePattern(artifact));
             eclipseClasspath.removeClasspathEntries(existenceEntries);
 
             // Add new class path entry
@@ -289,7 +291,7 @@ public class SyncClasspathMojo extends AbstractMojo {
 
                 // Remove existing class path entry
                 List<Element> existenceEntries = eclipseClasspath.findClasspathEntry(artifactHelper
-                        .getFilename(artifact));
+                        .getVersionIndependentFileNamePattern(artifact));
                 eclipseClasspath.removeClasspathEntries(existenceEntries);
 
                 // Add new class path entry
@@ -496,6 +498,7 @@ public class SyncClasspathMojo extends AbstractMojo {
     }
 
     protected boolean checkParameters() {
+        logger.info("[Version] " + pluginInformation.getVersion());
         if (ClasspathPolicy.REPOSITORY.confName().equals(policy)) {
             classpathPolicy = ClasspathPolicy.REPOSITORY;
         } else if (ClasspathPolicy.PROJECT.confName().equals(policy)) {

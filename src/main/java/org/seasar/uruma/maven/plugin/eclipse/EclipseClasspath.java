@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -122,20 +124,20 @@ public class EclipseClasspath {
         attributesElement.appendChild(attributeElement);
     }
 
-    public List<Element> findClasspathEntry(String filename) {
+    public List<Element> findClasspathEntry(Pattern pattern) {
         List<Element> result = new ArrayList<Element>();
         NodeList elements = document.getElementsByTagName(ELEMENT_CLASSPATHENTRY);
         int size = elements.getLength();
         for (int i = 0; i < size; i++) {
             Element element = (Element) (elements.item(i));
             String path = element.getAttribute(ATTR_PATH);
-            if (path.endsWith(filename)) {
+            Matcher matcher = pattern.matcher(path);
+            if (matcher.matches()) {
                 result.add(element);
             }
         }
         return result;
     }
-
     public void removeClasspathEntries(List<Element> entries) {
         Element classpathElement = document.getDocumentElement();
         for (Element entry : entries) {

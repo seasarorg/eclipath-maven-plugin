@@ -1,17 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-    
-    <!-- Project Information -->
+
+	<!-- Project Information -->
 	<groupId>org.seasar.uruma</groupId>
 	<artifactId>maven-uruma-eclipse-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>0.0.4</version>
 	<name>maven-uruma-eclipse-plugin Maven Mojo</name>
-    <url>http://uruma.sandbox.seasar.org/</url>
-    <inceptionYear>2010</inceptionYear>
-	
-    <!-- Developers -->
+	<url>http://uruma.sandbox.seasar.org/</url>
+	<inceptionYear>2010</inceptionYear>
+
+	<!-- Developers -->
 	<developers>
 		<developer>
 			<id>y-komori</id>
@@ -23,43 +23,50 @@
 			<timezone>+9</timezone>
 		</developer>
 	</developers>
-        
-	<!-- Licenses -->
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    
-    <!-- Organization -->
-    <organization>
-        <name>The Seasar Foundation</name>
-        <url>http://www.seasar.org/</url>
-    </organization>
 
-    <!-- Distribution Management Settings -->
-    <distributionManagement>
-        <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>maven.seasar.org</id>
-            <name>The Seasar Foundation Maven2 Repository</name>
-            <url>dav:https://www.seasar.org/maven/maven2</url>
-        </repository>
-        <snapshotRepository>
-            <uniqueVersion>true</uniqueVersion>
-            <id>maven.seasar.org</id>
-            <name>The Seasar Foundation Maven2 Snapshot Repository</name>
-            <url>dav:https://www.seasar.org/maven/maven2-snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
-    
-    <!-- Build Settings -->
+	<!-- Licenses -->
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<!-- Organization -->
+	<organization>
+		<name>The Seasar Foundation</name>
+		<url>http://www.seasar.org/</url>
+	</organization>
+
+	<!-- Distribution Management Settings -->
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>maven.seasar.org</id>
+			<name>The Seasar Foundation Maven2 Repository</name>
+			<url>dav:https://www.seasar.org/maven/maven2</url>
+		</repository>
+		<snapshotRepository>
+			<uniqueVersion>true</uniqueVersion>
+			<id>maven.seasar.org</id>
+			<name>The Seasar Foundation Maven2 Snapshot Repository</name>
+			<url>dav:https://www.seasar.org/maven/maven2-snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<!-- Build Settings -->
 	<properties>
 		<mavenVersion>2.2.1</mavenVersion>
 	</properties>
+
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -81,8 +88,8 @@
 			</plugin>
 		</plugins>
 	</build>
-	
-    <!-- Dependency Settings -->
+
+	<!-- Dependency Settings -->
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
