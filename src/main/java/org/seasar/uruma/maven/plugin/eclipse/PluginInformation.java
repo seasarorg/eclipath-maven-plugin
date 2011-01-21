@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.seasar.uruma.maven.plugin.eclipse.exception.PluginRuntimeException;
+
 /**
  * @author y-komori
  * @author $Author$

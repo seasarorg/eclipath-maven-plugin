@@ -32,6 +32,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.seasar.uruma.maven.plugin.eclipse.exception.ArtifactResolutionRuntimeException;
 
 /**
  * @author y-komori

@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.seasar.uruma.maven.plugin.eclipse.exception.PluginRuntimeException;
 
 /**
  * @author y-komori

@@ -40,6 +40,8 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.seasar.uruma.maven.plugin.eclipse.exception.ArtifactResolutionRuntimeException;
+import org.seasar.uruma.maven.plugin.eclipse.exception.PluginRuntimeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -126,6 +128,13 @@ public class SyncClasspathMojo extends AbstractMojo {
     protected String destdir;
 
     /**
+     * Provided library directory.
+     * 
+     * @parameter default-value="lib"
+     */
+    protected String providedLibDir;
+
+    /**
      * Sources destination directory.
      * 
      * @parameter default-value="sources"
@@ -191,17 +200,20 @@ public class SyncClasspathMojo extends AbstractMojo {
         File targetDirFile = null;
         File sourcesDirFile = null;
         File javadocDirFile = null;
+        // TODO Provided用を作成
         List<File> toDeleteFiles = new LinkedList<File>();
         if (projectArtifacts.size() > 0) {
             // Prepare directories
             targetDirFile = prepareDir(basedir, destdir);
             sourcesDirFile = prepareDir(basedir, destdir + "/" + sourcesDir);
             javadocDirFile = prepareDir(basedir, destdir + "/" + javadocDir);
+            // TODO Provided用を作成
 
             // Get existing dependencies
             getExsistingLibraries(toDeleteFiles, targetDirFile);
             getExsistingLibraries(toDeleteFiles, sourcesDirFile);
             getExsistingLibraries(toDeleteFiles, javadocDirFile);
+            // TODO Provided用を作成
         }
 
         // Resolve dependencies
