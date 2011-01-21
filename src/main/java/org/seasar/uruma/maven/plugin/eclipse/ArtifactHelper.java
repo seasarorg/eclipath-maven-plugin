@@ -58,8 +58,7 @@ public class ArtifactHelper {
 
     protected boolean forceResolve;
 
-    public Set<Artifact> filterArtifacts(Set<Artifact> artifacts, List<String> excludeGroups,
-            List<String> excludeScopes) {
+    public Set<Artifact> filterArtifacts(Set<Artifact> artifacts, List<String> excludeGroups, List<String> excludeScopes) {
         Set<Artifact> excluded = new TreeSet<Artifact>();
         List<Artifact> removeArtifacts = new LinkedList<Artifact>();
 
@@ -108,14 +107,14 @@ public class ArtifactHelper {
         if (baseClassifier != null) {
             classifier = baseClassifier + "-" + classifier;
         }
-        return factory.createArtifactWithClassifier(baseArtifact.getGroupId(), baseArtifact
-                .getArtifactId(), baseArtifact.getVersion(), baseArtifact.getType(), classifier);
+        return factory.createArtifactWithClassifier(baseArtifact.getGroupId(), baseArtifact.getArtifactId(),
+                baseArtifact.getVersion(), baseArtifact.getType(), classifier);
     }
 
     public void resolve(Artifact artifact, boolean throwOnError) {
         // Check if jar is not available
-        String notAvailablePath = workspaceConfigurator.getClasspathVariableM2REPO() + "/"
-                + createJarPath(artifact) + NOT_AVAILABLE_SUFFIX;
+        String notAvailablePath = workspaceConfigurator.getClasspathVariableM2REPO() + "/" + createJarPath(artifact)
+                + NOT_AVAILABLE_SUFFIX;
         File notAvailableFile = new File(notAvailablePath);
         if (!forceResolve) {
             if (!throwOnError && notAvailableFile.exists()) {
@@ -188,6 +187,10 @@ public class ArtifactHelper {
         regex.append("-.+\\.");
         regex.append(artifact.getType());
         return Pattern.compile(regex.toString());
+    }
+
+    public boolean isCompileScope(Artifact artifact) {
+        return "compile".equals(artifact.getScope());
     }
 
     public void setFactory(ArtifactFactory factory) {

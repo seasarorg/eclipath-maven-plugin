@@ -18,6 +18,8 @@ package org.seasar.uruma.maven.plugin.eclipse;
 import java.io.File;
 
 import org.apache.maven.project.MavenProject;
+import org.seasar.uruma.maven.plugin.eclipse.util.PathUtil;
+import org.seasar.uruma.maven.plugin.eclipse.util.ProjectUtil;
 
 /**
  * @author y-komori

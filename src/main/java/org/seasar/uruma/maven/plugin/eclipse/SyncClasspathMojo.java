@@ -42,6 +42,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.seasar.uruma.maven.plugin.eclipse.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.maven.plugin.eclipse.exception.PluginRuntimeException;
+import org.seasar.uruma.maven.plugin.eclipse.util.PathUtil;
+import org.seasar.uruma.maven.plugin.eclipse.util.ProjectUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -121,11 +123,11 @@ public class SyncClasspathMojo extends AbstractMojo {
     protected List<String> excludeScopes;
 
     /**
-     * Destination directory.
+     * Library directory.
      * 
      * @parameter default-value="lib"
      */
-    protected String destdir;
+    protected String libDir;
 
     /**
      * Provided library directory.
@@ -189,38 +191,41 @@ public class SyncClasspathMojo extends AbstractMojo {
         Set<Artifact> projectArtifacts = new TreeSet<Artifact>();
         if (classpathPolicy == ClasspathPolicy.REPOSITORY) {
             repositoryArtifacts = getArtifacts();
-            projectArtifacts = artifactHelper.filterArtifacts(repositoryArtifacts, excludeGroupIds,
-                    excludeScopes);
+            projectArtifacts = artifactHelper.filterArtifacts(repositoryArtifacts, excludeGroupIds, excludeScopes);
         } else if (classpathPolicy == ClasspathPolicy.PROJECT) {
             projectArtifacts = getArtifacts();
-            repositoryArtifacts = artifactHelper.filterArtifacts(projectArtifacts, excludeGroupIds,
-                    excludeScopes);
+            repositoryArtifacts = artifactHelper.filterArtifacts(projectArtifacts, excludeGroupIds, excludeScopes);
         }
 
         File targetDirFile = null;
         File sourcesDirFile = null;
         File javadocDirFile = null;
-        // TODO Provided用を作成
+        File providedLibDirFile = null;
+        File providedSourcesDirFile = null;
+        File providedJavadocDirFile = null;
+
         List<File> toDeleteFiles = new LinkedList<File>();
         if (projectArtifacts.size() > 0) {
             // Prepare directories
-            targetDirFile = prepareDir(basedir, destdir);
-            sourcesDirFile = prepareDir(basedir, destdir + "/" + sourcesDir);
-            javadocDirFile = prepareDir(basedir, destdir + "/" + javadocDir);
-            // TODO Provided用を作成
+            targetDirFile = prepareDirFile(basedir, libDir);
+            sourcesDirFile = prepareDirFile(basedir, libDir + "/" + sourcesDir);
+            javadocDirFile = prepareDirFile(basedir, libDir + "/" + javadocDir);
+            providedLibDirFile = prepareDirFile(basedir, providedLibDir);
+            providedSourcesDirFile = prepareDirFile(basedir, providedLibDir + "/" + sourcesDir);
+            providedJavadocDirFile = prepareDirFile(basedir, providedLibDir + "/" + javadocDir);
 
             // Get existing dependencies
             getExsistingLibraries(toDeleteFiles, targetDirFile);
             getExsistingLibraries(toDeleteFiles, sourcesDirFile);
             getExsistingLibraries(toDeleteFiles, javadocDirFile);
-            // TODO Provided用を作成
+            getExsistingLibraries(toDeleteFiles, providedLibDirFile);
+            getExsistingLibraries(toDeleteFiles, providedSourcesDirFile);
+            getExsistingLibraries(toDeleteFiles, providedJavadocDirFile);
         }
 
         // Resolve dependencies
-        List<Dependency> repoDependencies = resolveArtifacts(repositoryArtifacts,
-                ClasspathPolicy.REPOSITORY);
-        List<Dependency> projDependencies = resolveArtifacts(projectArtifacts,
-                ClasspathPolicy.PROJECT);
+        List<Dependency> repoDependencies = resolveArtifacts(repositoryArtifacts, ClasspathPolicy.REPOSITORY);
+        List<Dependency> projDependencies = resolveArtifacts(projectArtifacts, ClasspathPolicy.PROJECT);
         if (!checkDependencies(repoDependencies, projDependencies)) {
             throw new PluginRuntimeException("Required dependencies were not resolved.");
         }
@@ -235,23 +240,20 @@ public class SyncClasspathMojo extends AbstractMojo {
             // Create library jar path
             Artifact artifact = dependency.getArtifact();
             File libFile = artifact.getFile();
-            libPath = WorkspaceConfigurator.M2_REPO + "/"
-                    + PathUtil.getRelativePath(m2repo, libFile);
+            libPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repo, libFile);
 
             // Create source jar path
             Artifact srcArtifact = dependency.getSrcArtifact();
             if (srcArtifact != null && srcArtifact.isResolved()) {
                 File srcFile = srcArtifact.getFile();
-                srcPath = WorkspaceConfigurator.M2_REPO + "/"
-                        + PathUtil.getRelativePath(m2repo, srcFile);
+                srcPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repo, srcFile);
             }
 
             // Create javadoc jar path
             Artifact javadocArtifact = dependency.getJavadocArtifact();
             if (javadocArtifact != null && javadocArtifact.isResolved()) {
                 File javadocFile = javadocArtifact.getFile();
-                javadocPath = "jar:file:/" + PathUtil.normalizePath(javadocFile.getAbsolutePath())
-                        + "!/";
+                javadocPath = "jar:file:/" + PathUtil.normalizePath(javadocFile.getAbsolutePath()) + "!/";
             }
 
             // Remove existing class path entry
@@ -260,12 +262,10 @@ public class SyncClasspathMojo extends AbstractMojo {
             eclipseClasspath.removeClasspathEntries(existenceEntries);
 
             // Add new class path entry
-            Element classpathEntry = eclipseClasspath.createClasspathEntry(libPath, srcPath,
-                    KIND_VAR);
+            Element classpathEntry = eclipseClasspath.createClasspathEntry(libPath, srcPath, KIND_VAR);
             root.appendChild(classpathEntry);
             if (javadocPath != null) {
-                eclipseClasspath.addAttribute(classpathEntry, ATTRNAME_JAVADOC_LOCATION,
-                        javadocPath);
+                eclipseClasspath.addAttribute(classpathEntry, ATTRNAME_JAVADOC_LOCATION, javadocPath);
             }
         }
 
@@ -278,28 +278,52 @@ public class SyncClasspathMojo extends AbstractMojo {
             try {
                 // Copy dependency to specified directory
                 Artifact artifact = dependency.getArtifact();
-                libfile = copyDependency(artifact, targetDirFile);
+                if (artifactHelper.isCompileScope(artifact)) {
+                    libfile = copyDependency(artifact, targetDirFile);
+                } else {
+                    libfile = copyDependency(artifact, providedLibDirFile);
+                }
                 removeFile(toDeleteFiles, libfile);
 
                 // Copy source to specified directory
                 Artifact sourceArtifact = dependency.getSrcArtifact();
                 if (sourceArtifact.isResolved()) {
-                    sourceFile = copyDependency(sourceArtifact, sourcesDirFile);
+                    if (artifactHelper.isCompileScope(sourceArtifact)) {
+                        sourceFile = copyDependency(sourceArtifact, sourcesDirFile);
+                    } else {
+                        sourceFile = copyDependency(sourceArtifact, providedSourcesDirFile);
+                    }
                     removeFile(toDeleteFiles, sourceFile);
                 }
 
                 // Copy javadoc to specified directory
                 Artifact javadocArtifact = dependency.getJavadocArtifact();
                 if (javadocArtifact.isResolved()) {
-                    javadocFile = copyDependency(javadocArtifact, javadocDirFile);
+                    if (artifactHelper.isCompileScope(javadocArtifact)) {
+                        javadocFile = copyDependency(javadocArtifact, javadocDirFile);
+                    } else {
+                        javadocFile = copyDependency(javadocArtifact, providedJavadocDirFile);
+                    }
                     removeFile(toDeleteFiles, javadocFile);
                 }
 
                 // Acquire copied dependency's relative path
-                String path = libfile.getAbsolutePath().substring(
-                        basedir.getAbsolutePath().length() + 1).replace(SEP, "/");
-                String srcPath = createSourcePath(sourcesDirFile, sourceFile, sourceArtifact);
-                String javadocPath = createJavadocPath(javadocDirFile, javadocFile, javadocArtifact);
+                String path = libfile.getAbsolutePath().substring(basedir.getAbsolutePath().length() + 1).replace(SEP,
+                        "/");
+
+                String srcPath;
+                if (artifactHelper.isCompileScope(sourceArtifact)) {
+                    srcPath = createSourcePath(sourcesDirFile, sourceFile, sourceArtifact);
+                } else {
+                    srcPath = createSourcePath(providedSourcesDirFile, sourceFile, sourceArtifact);
+                }
+
+                String javadocPath;
+                if (artifactHelper.isCompileScope(javadocArtifact)) {
+                    javadocPath = createJavadocPath(javadocDirFile, javadocFile, javadocArtifact);
+                } else {
+                    javadocPath = createJavadocPath(providedJavadocDirFile, javadocFile, javadocArtifact);
+                }
 
                 // Remove existing class path entry
                 List<Element> existenceEntries = eclipseClasspath.findClasspathEntry(artifactHelper
@@ -307,12 +331,10 @@ public class SyncClasspathMojo extends AbstractMojo {
                 eclipseClasspath.removeClasspathEntries(existenceEntries);
 
                 // Add new class path entry
-                Element classpathEntry = eclipseClasspath.createClasspathEntry(path, srcPath,
-                        KIND_LIB);
+                Element classpathEntry = eclipseClasspath.createClasspathEntry(path, srcPath, KIND_LIB);
                 root.appendChild(classpathEntry);
                 if (javadocPath != null) {
-                    eclipseClasspath.addAttribute(classpathEntry, ATTRNAME_JAVADOC_LOCATION,
-                            javadocPath);
+                    eclipseClasspath.addAttribute(classpathEntry, ATTRNAME_JAVADOC_LOCATION, javadocPath);
                 }
             } catch (IOException ex) {
                 logger.error(ex.getLocalizedMessage(), ex);
@@ -342,15 +364,18 @@ public class SyncClasspathMojo extends AbstractMojo {
         }
     }
 
-    protected File prepareDir(File projectBaseDir, String dirname) {
+    protected File prepareDirFile(File projectBaseDir, String dirname) {
         String path = projectBaseDir.getAbsolutePath() + SEP + dirname;
         File dirfile = new File(path);
+        return dirfile;
+    }
+
+    protected File prepareDir(File dirfile) {
         if (!dirfile.exists()) {
             if (dirfile.mkdir()) {
                 logger.info("Directory created. path:" + dirfile.getAbsolutePath());
             } else {
-                throw new PluginRuntimeException("Unable to create directory. : "
-                        + dirfile.getAbsolutePath());
+                throw new PluginRuntimeException("Unable to create directory. : " + dirfile.getAbsolutePath());
             }
         }
         return dirfile;
@@ -363,8 +388,10 @@ public class SyncClasspathMojo extends AbstractMojo {
         if (list == null) {
             list = new LinkedList<File>();
         }
-        for (File file : files) {
-            list.add(file);
+        if (files != null) {
+            for (File file : files) {
+                list.add(file);
+            }
         }
         return list;
     }
@@ -397,6 +424,9 @@ public class SyncClasspathMojo extends AbstractMojo {
         File srcFile = artifact.getFile();
         File destFile = new File(toDir.getAbsolutePath() + SEP + srcFile.getName());
         if (!destFile.exists() || srcFile.lastModified() > destFile.lastModified()) {
+            if (!toDir.exists()) {
+                prepareDir(toDir);
+            }
             FileUtils.copyFile(srcFile, destFile, true);
             logger.info("Dependency copied to " + destFile.getAbsolutePath());
         }
@@ -413,8 +443,7 @@ public class SyncClasspathMojo extends AbstractMojo {
         }
     }
 
-    protected String createJavadocPath(File javadocDirFile, File javadocFile,
-            Artifact javadocArtifact) {
+    protected String createJavadocPath(File javadocDirFile, File javadocFile, Artifact javadocArtifact) {
         if (javadocArtifact.isResolved()) {
             String path = PathUtil.getRelativePath(eclipseProjectDir, javadocDirFile);
             String location = "jar:platform:/resource/" + eclipseProjectDir.getName();
@@ -427,8 +456,7 @@ public class SyncClasspathMojo extends AbstractMojo {
         }
     }
 
-    protected List<Dependency> resolveArtifacts(Set<Artifact> artifacts,
-            ClasspathPolicy classpathPolicy) {
+    protected List<Dependency> resolveArtifacts(Set<Artifact> artifacts, ClasspathPolicy classpathPolicy) {
         List<Dependency> dependencies = new ArrayList<Dependency>();
 
         for (Artifact artifact : artifacts) {
@@ -461,8 +489,7 @@ public class SyncClasspathMojo extends AbstractMojo {
         return dependencies;
     }
 
-    protected boolean checkDependencies(List<Dependency> repoDependencies,
-            List<Dependency> projDependencies) {
+    protected boolean checkDependencies(List<Dependency> repoDependencies, List<Dependency> projDependencies) {
         boolean valid = true;
 
         logger.info(Logger.SEPARATOR);
@@ -491,14 +518,13 @@ public class SyncClasspathMojo extends AbstractMojo {
 
         for (Dependency dependency : dependencies) {
             Artifact artifact = dependency.getArtifact();
-            logger.info(String.format(" %s   %s", formatResolveStatus(artifact), artifact));
+            logger.info(String.format(" %s%s  %s", formatResolveStatus(artifact), formatScope(artifact), artifact));
 
             Artifact srcArtifact = dependency.getSrcArtifact();
-            logger.info(String.format("   %s %s", formatResolveStatus(srcArtifact), srcArtifact));
+            logger.info(String.format("  %s    %s", formatResolveStatus(srcArtifact), srcArtifact));
 
             Artifact javadocArtifact = dependency.getJavadocArtifact();
-            logger.info(String.format("   %s %s", formatResolveStatus(javadocArtifact),
-                    javadocArtifact));
+            logger.info(String.format("  %s    %s", formatResolveStatus(javadocArtifact), javadocArtifact));
             logger.info("");
         }
 
@@ -507,6 +533,25 @@ public class SyncClasspathMojo extends AbstractMojo {
 
     protected String formatResolveStatus(Artifact artifact) {
         return artifact.isResolved() ? "[R]" : "[N]";
+    }
+
+    protected String formatScope(Artifact artifact) {
+        String scope = artifact.getScope();
+        if (Artifact.SCOPE_COMPILE.equals(scope)) {
+            return "[C]";
+        } else if (Artifact.SCOPE_PROVIDED.equals(scope)) {
+            return "[P]";
+        } else if (Artifact.SCOPE_RUNTIME.equals(scope)) {
+            return "[R]";
+        } else if (Artifact.SCOPE_TEST.equals(scope)) {
+            return "[T]";
+        } else if (Artifact.SCOPE_SYSTEM.equals(scope)) {
+            return "[S]";
+        } else if (Artifact.SCOPE_IMPORT.equals(scope)) {
+            return "[I]";
+        } else {
+            return "[?]";
+        }
     }
 
     protected boolean checkParameters() {
@@ -521,11 +566,18 @@ public class SyncClasspathMojo extends AbstractMojo {
         }
         logger.info("[Parameter:policy] " + classpathPolicy.name());
 
-        if (StringUtils.isEmpty(destdir)) {
+        if (StringUtils.isEmpty(libDir)) {
             logger.error("Parameter destdir is not specified.");
             return false;
         } else {
-            logger.info("[Parameter:destdir] " + destdir);
+            logger.info("[Parameter:libDir] " + libDir);
+        }
+
+        if (StringUtils.isEmpty(providedLibDir)) {
+            logger.error("Parameter providedLibDir is not specified.");
+            return false;
+        } else {
+            logger.info("[Parameter:providedLibDir] " + providedLibDir);
         }
 
         if (excludeGroupIds == null) {
@@ -569,7 +621,7 @@ public class SyncClasspathMojo extends AbstractMojo {
         this.excludeGroupIds = excludeGroups;
     }
 
-    public void setDestdir(String destdir) {
-        this.destdir = destdir;
+    public void setLibDir(String libDir) {
+        this.libDir = libDir;
     }
 }

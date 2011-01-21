@@ -145,7 +145,7 @@ public class EclipseClasspath {
             Node nextSibling = entry.getNextSibling();
             Node removed = classpathElement.removeChild(entry);
             if (removed != null) {
-                if (isWhitespaceText(nextSibling)) {
+                if (nextSibling != null && isWhitespaceText(nextSibling)) {
                     classpathElement.removeChild(nextSibling);
                 }
             }
