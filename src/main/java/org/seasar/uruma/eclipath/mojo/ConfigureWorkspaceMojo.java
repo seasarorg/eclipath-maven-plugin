@@ -9,17 +9,15 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.uruma.eclipath;
+package org.seasar.uruma.eclipath.mojo;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
+import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 
 /**
@@ -29,30 +27,13 @@ import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
  * @author $Author$
  * @version $Revision$ $Date$
  */
-public class ConfigureWorkspaceMojo extends AbstractMojo {
-    /**
-     * POM
-     * 
-     * @parameter expression="${project}"
-     * @readonly
-     * @required
-     */
-    protected MavenProject project;
-
-    /**
-     * Local maven repository.
-     * 
-     * @parameter expression="${localRepository}"
-     * @required
-     * @readonly
-     */
-    protected ArtifactRepository localRepository;
+public class ConfigureWorkspaceMojo extends AbstractEclipathMojo {
 
     /*
-     * @see org.apache.maven.plugin.Mojo#execute()
+     * @see org.seasar.uruma.eclipath.mojo.AbstractEclipathMojo#doExecute()
      */
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    protected void doExecute() throws MojoExecutionException, MojoFailureException {
         WorkspaceConfigurator configurator = new WorkspaceConfigurator(project);
         configurator.loadConfiguration();
         configurator.setLocalRepositoryDir(localRepository.getBasedir());

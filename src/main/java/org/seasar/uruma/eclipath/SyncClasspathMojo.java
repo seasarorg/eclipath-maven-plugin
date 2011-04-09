@@ -34,16 +34,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
+import org.seasar.uruma.eclipath.mojo.AbstractEclipathMojo;
 import org.seasar.uruma.eclipath.util.PathUtil;
-import org.seasar.uruma.eclipath.util.ProjectUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -52,125 +47,10 @@ import org.w3c.dom.Element;
  * @requiresDependencyResolution test
  * @phase process-sources
  */
-public class SyncClasspathMojo extends AbstractMojo {
-    /**
-     * POM
-     * 
-     * @parameter expression="${project}"
-     * @readonly
-     * @required
-     */
-    protected MavenProject project;
+public class SyncClasspathMojo extends AbstractEclipathMojo {
 
-    /**
-     * Local maven repository.
-     * 
-     * @parameter expression="${localRepository}"
-     * @required
-     * @readonly
-     */
-    protected ArtifactRepository localRepository;
-
-    /**
-     * Remote repositories which will be searched for source attachments.
-     * 
-     * @parameter expression="${project.remoteArtifactRepositories}"
-     * @required
-     * @readonly
-     */
-    protected List<ArtifactRepository> remoteArtifactRepositories;
-
-    /**
-     * Artifact factory, needed to download source jars for inclusion in
-     * classpath.
-     * 
-     * @component role="org.apache.maven.artifact.factory.ArtifactFactory"
-     * @required
-     * @readonly
-     */
-    protected ArtifactFactory artifactFactory;
-
-    /**
-     * Artifact resolver, needed to download source jars for inclusion in
-     * classpath.
-     * 
-     * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
-     * @required
-     * @readonly
-     */
-    protected ArtifactResolver artifactResolver;
-
-    /**
-     * Classpath setting policy.<br />
-     * Value must be {@code repository} or {@code project}.
-     * 
-     * @parameter default-value="repository"
-     */
-    protected String policy;
-
-    /**
-     * GroupId list to exclude.
-     * 
-     * @parameter
-     */
-    protected List<String> excludeGroupIds;
-
-    /**
-     * Scope list to exclude.
-     * 
-     * @parameter
-     */
-    protected List<String> excludeScopes;
-
-    /**
-     * Library directory.
-     * 
-     * @parameter default-value="lib"
-     */
-    protected String libDir;
-
-    /**
-     * Provided library directory.
-     * 
-     * @parameter default-value="lib"
-     */
-    protected String providedLibDir;
-
-    /**
-     * Sources destination directory.
-     * 
-     * @parameter default-value="sources"
-     */
-    protected String sourcesDir;
-
-    /**
-     * Javadoc destination directory.
-     * 
-     * @parameter default-value="javadoc"
-     */
-    protected String javadocDir;
-
-    /**
-     * If {@code true}, always try to resolve all sources and javadoc
-     * dependencies.
-     * 
-     * @parameter expression="${forceResolve}" default-value="false"
-     */
-    protected boolean forceResolve;
-
-    protected ClasspathPolicy classpathPolicy;
-
-    protected File eclipseProjectDir;
-
-    protected ArtifactHelper artifactHelper;
-
-    protected WorkspaceConfigurator workspaceConfigurator;
-
-    protected Logger logger;
-
-    protected PluginInformation pluginInformation = new PluginInformation();
-
-    public void execute() throws MojoExecutionException {
+    @Override
+    public void doExecute() throws MojoExecutionException {
         prepare();
 
         EclipseClasspath eclipseClasspath = new EclipseClasspath();
@@ -554,74 +434,8 @@ public class SyncClasspathMojo extends AbstractMojo {
         }
     }
 
-    protected boolean checkParameters() {
-        logger.info("[Version] " + pluginInformation.getVersion());
-        if (ClasspathPolicy.REPOSITORY.confName().equals(policy)) {
-            classpathPolicy = ClasspathPolicy.REPOSITORY;
-        } else if (ClasspathPolicy.PROJECT.confName().equals(policy)) {
-            classpathPolicy = ClasspathPolicy.PROJECT;
-        } else {
-            logger.error("Parameter policy must be \"repository\" or \"project\".");
-            return false;
-        }
-        logger.info("[Parameter:policy] " + classpathPolicy.name());
-
-        if (StringUtils.isEmpty(libDir)) {
-            logger.error("Parameter destdir is not specified.");
-            return false;
-        } else {
-            logger.info("[Parameter:libDir] " + libDir);
-        }
-
-        if (StringUtils.isEmpty(providedLibDir)) {
-            logger.error("Parameter providedLibDir is not specified.");
-            return false;
-        } else {
-            logger.info("[Parameter:providedLibDir] " + providedLibDir);
-        }
-
-        if (excludeGroupIds == null) {
-            excludeGroupIds = new ArrayList<String>();
-        }
-        logger.info("[Parameter:excludeGroupIds] " + excludeGroupIds.toString());
-
-        if (excludeScopes == null) {
-            excludeScopes = new ArrayList<String>();
-        }
-        logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
-
-        logger.info("[Parameter:forceResolve] " + forceResolve);
-        return true;
-    }
-
     @SuppressWarnings("unchecked")
     protected Set<Artifact> getArtifacts() {
         return project.getArtifacts();
-    }
-
-    protected void prepare() {
-        logger = new Logger(getLog());
-
-        workspaceConfigurator = new WorkspaceConfigurator(project);
-        workspaceConfigurator.loadConfiguration();
-
-        artifactHelper = new ArtifactHelper();
-        artifactHelper.setFactory(artifactFactory);
-        artifactHelper.setResolver(artifactResolver);
-        artifactHelper.setRemoteRepositories(remoteArtifactRepositories);
-        artifactHelper.setLocalRepository(localRepository);
-        artifactHelper.setWorkspaceConfigurator(workspaceConfigurator);
-        artifactHelper.setLogger(logger);
-        artifactHelper.setForceResolve(forceResolve);
-
-        eclipseProjectDir = ProjectUtil.getProjectDir(project);
-    }
-
-    public void setExcludeGroups(List<String> excludeGroups) {
-        this.excludeGroupIds = excludeGroups;
-    }
-
-    public void setLibDir(String libDir) {
-        this.libDir = libDir;
     }
 }
