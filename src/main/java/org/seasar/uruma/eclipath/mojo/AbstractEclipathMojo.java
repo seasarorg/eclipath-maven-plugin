@@ -165,6 +165,7 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     @Override
     public final void execute() throws MojoExecutionException, MojoFailureException {
         prepare();
+        checkParameters();
 
         doExecute();
     }

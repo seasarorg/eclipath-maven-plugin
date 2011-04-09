@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
@@ -26,8 +26,8 @@ import org.apache.maven.plugin.logging.Log;
  */
 public class Logger {
     private final Log log;
-    
-    private static final String PREFIX = "[uruma-eclipse] ";
+
+    private static final String PREFIX = "[eclipath] ";
 
     public static final String SEPARATOR = StringUtils.repeat("-", 56);
 
@@ -37,7 +37,7 @@ public class Logger {
         }
         this.log = log;
     }
-    
+
     public void debug(String message) {
         log.debug(PREFIX + message);
     }
