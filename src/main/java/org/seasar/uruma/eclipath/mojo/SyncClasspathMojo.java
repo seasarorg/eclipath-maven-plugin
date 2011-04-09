@@ -1,4 +1,4 @@
-package org.seasar.uruma.eclipath;
+package org.seasar.uruma.eclipath.mojo;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
@@ -35,9 +35,13 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.seasar.uruma.eclipath.ClasspathPolicy;
+import org.seasar.uruma.eclipath.Dependency;
+import org.seasar.uruma.eclipath.EclipseClasspath;
+import org.seasar.uruma.eclipath.Logger;
+import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
-import org.seasar.uruma.eclipath.mojo.AbstractEclipathMojo;
 import org.seasar.uruma.eclipath.util.PathUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
