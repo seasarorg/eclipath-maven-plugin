@@ -13,14 +13,14 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.uruma.maven.plugin.eclipse;
+package org.seasar.uruma.eclipath;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.seasar.uruma.maven.plugin.eclipse.exception.PluginRuntimeException;
+import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 
 /**
  * @goal configure-workspace

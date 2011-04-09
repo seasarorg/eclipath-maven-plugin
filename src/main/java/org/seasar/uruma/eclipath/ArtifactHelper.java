@@ -13,9 +13,9 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.uruma.maven.plugin.eclipse;
+package org.seasar.uruma.eclipath;
 
-import static org.seasar.uruma.maven.plugin.eclipse.Constants.*;
+import static org.seasar.uruma.eclipath.Constants.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.seasar.uruma.maven.plugin.eclipse.exception.ArtifactResolutionRuntimeException;
+import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 
 /**
  * @author y-komori

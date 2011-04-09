@@ -13,9 +13,9 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.uruma.maven.plugin.eclipse;
+package org.seasar.uruma.eclipath;
 
-import static org.seasar.uruma.maven.plugin.eclipse.Constants.*;
+import static org.seasar.uruma.eclipath.Constants.*;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -36,7 +36,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
-import org.seasar.uruma.maven.plugin.eclipse.exception.PluginRuntimeException;
+import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

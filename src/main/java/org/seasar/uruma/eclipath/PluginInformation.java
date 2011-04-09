@@ -13,13 +13,13 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.uruma.maven.plugin.eclipse;
+package org.seasar.uruma.eclipath;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.seasar.uruma.maven.plugin.eclipse.exception.PluginRuntimeException;
+import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 
 /**
  * @author y-komori

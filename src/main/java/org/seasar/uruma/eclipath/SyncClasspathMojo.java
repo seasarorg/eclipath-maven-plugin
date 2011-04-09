@@ -1,4 +1,4 @@
-package org.seasar.uruma.maven.plugin.eclipse;
+package org.seasar.uruma.eclipath;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
@@ -16,7 +16,7 @@ package org.seasar.uruma.maven.plugin.eclipse;
  * limitations under the License.
  */
 
-import static org.seasar.uruma.maven.plugin.eclipse.Constants.*;
+import static org.seasar.uruma.eclipath.Constants.*;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -40,10 +40,10 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.seasar.uruma.maven.plugin.eclipse.exception.ArtifactResolutionRuntimeException;
-import org.seasar.uruma.maven.plugin.eclipse.exception.PluginRuntimeException;
-import org.seasar.uruma.maven.plugin.eclipse.util.PathUtil;
-import org.seasar.uruma.maven.plugin.eclipse.util.ProjectUtil;
+import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
+import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
+import org.seasar.uruma.eclipath.util.PathUtil;
+import org.seasar.uruma.eclipath.util.ProjectUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
