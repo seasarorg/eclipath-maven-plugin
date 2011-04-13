@@ -110,7 +110,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
             String javadocPath = null;
 
             // Create library jar path
-            Artifact artifact = dependency.getArtifact();
+            Artifact artifact = dependency.getLibraryArtifact();
             File libFile = artifact.getFile();
             libPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repo, libFile);
 
@@ -149,7 +149,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
 
             try {
                 // Copy dependency to specified directory
-                Artifact artifact = dependency.getArtifact();
+                Artifact artifact = dependency.getLibraryArtifact();
                 if (artifactHelper.isCompileScope(artifact)) {
                     libfile = copyDependency(artifact, targetDirFile);
                 } else {
@@ -379,7 +379,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         boolean valid = true;
 
         for (AbstractDependency dependency : dependencies) {
-            Artifact artifact = dependency.getArtifact();
+            Artifact artifact = dependency.getLibraryArtifact();
             logger.info(String.format(" %s%s  %s", formatResolveStatus(artifact), formatScope(artifact), artifact));
 
             Artifact srcArtifact = dependency.getSrcArtifact();

@@ -15,6 +15,13 @@
  */
 package org.seasar.uruma.eclipath.dependency;
 
+import java.io.File;
+
+import org.apache.maven.artifact.Artifact;
+import org.seasar.uruma.eclipath.WorkspaceConfigurator;
+import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
+import org.seasar.uruma.eclipath.util.PathUtil;
+
 /**
  * @author y-komori
  * @author $Author$
@@ -22,32 +29,55 @@ package org.seasar.uruma.eclipath.dependency;
  *
  */
 public class M2Dependency extends AbstractDependency {
+    private String m2repo;
+
+    private File m2repoFile;
+
+    public M2Dependency(Artifact artifact) {
+        super(artifact);
+    }
+
+    public void setM2repo(String m2repo) {
+        this.m2repo = m2repo;
+        this.m2repoFile = new File(m2repo);
+        if (!m2repoFile.exists() || !m2repoFile.isDirectory()) {
+            throw new PluginRuntimeException("Directory not found. : " + m2repoFile.getAbsolutePath());
+        }
+    }
 
     /*
-     * @see org.seasar.uruma.eclipath.dependency.LocalDependency#getLibraryPath()
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#getLibraryPath()
      */
     @Override
     public String getLibraryPath() {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
+        File libFile = libraryArtifact.getFile();
+        String libPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repoFile, libFile);
+        return libPath;
     }
 
     /*
-     * @see org.seasar.uruma.eclipath.dependency.LocalDependency#getSourcePath()
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#getSourcePath()
      */
     @Override
     public String getSourcePath() {
-        // TODO 自動生成されたメソッド・スタブ
+        if (sourceArtifact != null && sourceArtifact.isResolved()) {
+            File srcFile = sourceArtifact.getFile();
+            String srcPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repoFile, srcFile);
+            return srcPath;
+        }
         return null;
     }
 
     /*
-     * @see org.seasar.uruma.eclipath.dependency.LocalDependency#getJavadocPath()
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#getJavadocPath()
      */
     @Override
     public String getJavadocPath() {
-        // TODO 自動生成されたメソッド・スタブ
+        if (javadocArtifact != null && javadocArtifact.isResolved()) {
+            File javadocFile = javadocArtifact.getFile();
+            String javadocPath = "jar:file:/" + PathUtil.normalizePath(javadocFile.getAbsolutePath()) + "!/";
+            return javadocPath;
+        }
         return null;
     }
-
 }

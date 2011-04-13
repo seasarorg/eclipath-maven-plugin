@@ -22,59 +22,60 @@ import org.seasar.uruma.eclipath.ClasspathPolicy;
  * @author y-komori
  * @author $Author$
  * @version $Revision$ $Date$
- * 
+ *
  */
 public abstract class AbstractDependency implements Dependency {
-    private Artifact artifact;
+    protected Artifact libraryArtifact;
 
-    private Artifact srcArtifact;
+    protected Artifact sourceArtifact;
 
-    private Artifact javadocArtifact;
+    protected Artifact javadocArtifact;
 
     private ClasspathPolicy classpathPolicy;
 
     /**
      * Constructs a new {@link AbstractDependency} object with {@link Artifact}
      * object.
-     * 
+     *
      * @param artifact
      *        related {@link Artifact} object
      */
     public AbstractDependency(Artifact artifact) {
         super();
-        this.artifact = artifact;
+        this.libraryArtifact = artifact;
     }
 
     /*
-     * @see org.seasar.uruma.eclipath.dependency.Dependency#getArtifact()
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#getLibraryArtifact()
      */
     @Override
-    public Artifact getArtifact() {
-        return artifact;
+    public Artifact getLibraryArtifact() {
+        return libraryArtifact;
     }
 
     /*
-     * @see org.seasar.uruma.eclipath.dependency.Dependency#setArtifact(org.apache.maven.artifact.Artifact)
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#setLibraryArtifact(org.apache.maven.artifact.Artifact)
      */
     @Override
-    public void setArtifact(Artifact artifact) {
-        this.artifact = artifact;
+    public void setLibraryArtifact(Artifact artifact) {
+        this.libraryArtifact = artifact;
+    }
+
+
+    /*
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#getSourceArtifact()
+     */
+    @Override
+    public Artifact getSourceArtifact() {
+        return sourceArtifact;
     }
 
     /*
-     * @see org.seasar.uruma.eclipath.dependency.Dependency#getSrcArtifact()
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#setSourceArtifact(org.apache.maven.artifact.Artifact)
      */
     @Override
-    public Artifact getSrcArtifact() {
-        return srcArtifact;
-    }
-
-    /*
-     * @see org.seasar.uruma.eclipath.dependency.Dependency#setSrcArtifact(org.apache.maven.artifact.Artifact)
-     */
-    @Override
-    public void setSrcArtifact(Artifact srcArtifact) {
-        this.srcArtifact = srcArtifact;
+    public void setSourceArtifact(Artifact srcArtifact) {
+        this.sourceArtifact = srcArtifact;
     }
 
     /*
@@ -104,12 +105,12 @@ public abstract class AbstractDependency implements Dependency {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder(256);
-        if (artifact != null) {
-            buf.append(artifact.toString());
+        if (libraryArtifact != null) {
+            buf.append(libraryArtifact.toString());
         }
-        if (srcArtifact != null && srcArtifact.isResolved()) {
+        if (sourceArtifact != null && sourceArtifact.isResolved()) {
             buf.append("\n  ");
-            buf.append(srcArtifact.toString());
+            buf.append(sourceArtifact.toString());
         }
         if (javadocArtifact != null && javadocArtifact.isResolved()) {
             buf.append("\n  ");

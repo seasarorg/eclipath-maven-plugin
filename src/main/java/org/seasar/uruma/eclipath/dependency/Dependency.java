@@ -25,17 +25,22 @@ import org.apache.maven.artifact.Artifact;
  */
 public interface Dependency {
 
-    public Artifact getArtifact();
+    public Artifact getLibraryArtifact();
 
-    public void setArtifact(Artifact artifact);
+    public void setLibraryArtifact(Artifact artifact);
 
-    public Artifact getSrcArtifact();
+    public Artifact getSourceArtifact();
 
-    public void setSrcArtifact(Artifact srcArtifact);
+    public void setSourceArtifact(Artifact srcArtifact);
 
     public Artifact getJavadocArtifact();
 
     public void setJavadocArtifact(Artifact javadocArtifact);
 
+    public String getLibraryPath();
+
+    public String getSourcePath();
+
+    public String getJavadocPath();
 
 }
