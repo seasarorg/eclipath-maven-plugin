@@ -18,8 +18,10 @@ package org.seasar.uruma.eclipath.mojo;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
@@ -165,7 +167,9 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     @Override
     public final void execute() throws MojoExecutionException, MojoFailureException {
         prepare();
-        checkParameters();
+        if (!checkParameters()) {
+            return;
+        }
 
         doExecute();
     }
@@ -228,6 +232,11 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
         logger.info("[Parameter:forceResolve] " + forceResolve);
         return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Set<Artifact> getArtifacts() {
+        return project.getArtifacts();
     }
 
     public void setLibDir(String libDir) {

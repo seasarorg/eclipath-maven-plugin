@@ -18,10 +18,8 @@ package org.seasar.uruma.eclipath.mojo;
 
 import static org.seasar.uruma.eclipath.Constants.*;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,20 +28,18 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.seasar.uruma.eclipath.ClasspathPolicy;
-import org.seasar.uruma.eclipath.Dependency;
 import org.seasar.uruma.eclipath.EclipseClasspath;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
+import org.seasar.uruma.eclipath.dependency.Dependency;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.util.PathUtil;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
@@ -55,20 +51,12 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
 
     @Override
     public void doExecute() throws MojoExecutionException {
-        prepare();
-
-        EclipseClasspath eclipseClasspath = new EclipseClasspath();
-        eclipseClasspath.setLogger(logger);
-
-        if (!checkParameters()) {
-            return;
-        }
-
         File basedir = project.getBasedir();
 
-        File dotClassPathFile = eclipseClasspath.createDotClassPathFile(project.getBasedir());
-        Document document = eclipseClasspath.loadDotClassPath(dotClassPathFile);
-        Element root = document.getDocumentElement();
+        // Load ".classpath" file
+        EclipseClasspath eclipseClasspath = new EclipseClasspath(basedir);
+        eclipseClasspath.setLogger(logger);
+        eclipseClasspath.load();
 
         // Get and filter dependencies
         Set<Artifact> repositoryArtifacts = new TreeSet<Artifact>();
@@ -228,18 +216,8 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         // Delete unnecessary dependencies
         deleteFiles(toDeleteFiles);
 
-        // Output XML
-        BufferedOutputStream os = null;
-        try {
-            os = new BufferedOutputStream(new FileOutputStream(dotClassPathFile));
-            eclipseClasspath.writeDocument(os);
-            os.flush();
-            logger.info(".classpath wrote : " + dotClassPathFile.getAbsolutePath());
-        } catch (IOException ex) {
-            logger.error(ex.getLocalizedMessage(), ex);
-        } finally {
-            IOUtils.closeQuietly(os);
-        }
+        // Output .classpath File
+        eclipseClasspath.write();
     }
 
     protected void logArtifact(Artifact artifact, int indent) {
@@ -436,10 +414,5 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         } else {
             return "[?]";
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Set<Artifact> getArtifacts() {
-        return project.getArtifacts();
     }
 }

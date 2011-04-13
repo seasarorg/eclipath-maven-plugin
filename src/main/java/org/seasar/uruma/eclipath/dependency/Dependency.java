@@ -13,9 +13,10 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.uruma.eclipath;
+package org.seasar.uruma.eclipath.dependency;
 
 import org.apache.maven.artifact.Artifact;
+import org.seasar.uruma.eclipath.ClasspathPolicy;
 
 /**
  * @author y-komori

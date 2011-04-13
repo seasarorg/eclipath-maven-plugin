@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
@@ -17,7 +17,10 @@ package org.seasar.uruma.eclipath;
 
 import static org.seasar.uruma.eclipath.Constants.*;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.w3c.dom.Document;
@@ -51,16 +55,57 @@ import org.w3c.dom.Text;
  * @version $Revision$ $Date$
  */
 public class EclipseClasspath {
+    private static final String DOT_CLASSPATH_FILENAME = ".classpath";
+
+    public static final String ELEMENT_CLASSPATH = "classpath";
+
+    public static final String ELEMENT_CLASSPATHENTRY = "classpathentry";
+
+    public static final String ELEMENT_ATTRIBUTES = "attributes";
+
+    public static final String ELEMENT_ATTRIBUTE = "attribute";
+
+    public static final String ATTR_KIND = "kind";
+
+    public static final String ATTR_SOURCEPATH = "sourcepath";
+
+    public static final String ATTR_VALUE = "value";
+
+    public static final String ATTR_NAME = "name";
+
+    public static final String ATTR_PATH = "path";
+
+    public static final String ATTRNAME_JAVADOC_LOCATION = "javadoc_location";
+
+    public static final String KIND_LIB = ClasspathKind.LIB.toString();
+
+    public static final String KIND_VAR = ClasspathKind.VAR.toString();
+
     protected Logger logger;
+
+    protected File classpathFile;
 
     protected Document document;
 
-    public File createDotClassPathFile(File projectBaseDir) {
+    /**
+     * Constructs new instance.
+     * 
+     * @param projectBaseDir
+     */
+    public EclipseClasspath(File projectBaseDir) {
         String filename = projectBaseDir.getAbsolutePath() + SEP + DOT_CLASSPATH_FILENAME;
-        return new File(filename);
+        classpathFile = new File(filename);
     }
 
-    public Document createEmptyDotClassPath() {
+    public Document load() {
+        if (classpathFile.exists()) {
+            return loadDotClassPath(classpathFile);
+        } else {
+            return createEmptyDotClassPath();
+        }
+    }
+
+    private Document createEmptyDotClassPath() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
@@ -73,12 +118,7 @@ public class EclipseClasspath {
         }
     }
 
-    public Document loadDotClassPath(File file) {
-        if (!file.exists()) {
-            document = createEmptyDotClassPath();
-            return document;
-        }
-
+    private Document loadDotClassPath(File file) {
         logger.info("Loading " + file.getAbsolutePath() + " ...");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -98,26 +138,45 @@ public class EclipseClasspath {
         }
     }
 
-    public Element createClasspathEntry(String path, String sourcePath, String kind) {
+    public void addClasspathEntry(ClasspathKind kind, String path, String sourcePath, String javadocPath) {
+        if (kind != ClasspathKind.LIB || kind != ClasspathKind.VAR) {
+            throw new IllegalArgumentException("kind must be 'lib' or 'var'");
+        }
+
         Element entry = document.createElement(ELEMENT_CLASSPATHENTRY);
-        entry.setAttribute(ATTR_KIND, kind);
+        entry.setAttribute(ATTR_KIND, kind.toString());
         entry.setAttribute(ATTR_PATH, path);
         if (sourcePath != null) {
             entry.setAttribute(ATTR_SOURCEPATH, sourcePath);
         }
-        return entry;
+        if (javadocPath != null) {
+            addAttributeElement(entry, ATTRNAME_JAVADOC_LOCATION, javadocPath);
+        }
+        return;
     }
 
-    public void addAttribute(Element element, String name, String value) {
+    /**
+     * Add 'attribute' element to specified parent element. if parent element
+     * has no 'attributes' element, this method automatically creates that
+     * element.
+     * 
+     * @param parent
+     *        parent element
+     * @param name
+     *        attribute element's 'name' attribute
+     * @param value
+     *        attribute element's 'value' attribute
+     */
+    private void addAttributeElement(Element parent, String name, String value) {
         Element attributeElement = document.createElement(ELEMENT_ATTRIBUTE);
         attributeElement.setAttribute(ATTR_NAME, name);
         attributeElement.setAttribute(ATTR_VALUE, value);
 
-        NodeList attributesList = element.getElementsByTagName(ELEMENT_ATTRIBUTES);
+        NodeList attributesList = parent.getElementsByTagName(ELEMENT_ATTRIBUTES);
         Element attributesElement;
         if (attributesList.getLength() == 0) {
             attributesElement = document.createElement(ELEMENT_ATTRIBUTES);
-            element.appendChild(attributesElement);
+            parent.appendChild(attributesElement);
         } else {
             attributesElement = (Element) attributesList.item(0);
         }
@@ -139,6 +198,7 @@ public class EclipseClasspath {
         }
         return result;
     }
+
     public void removeClasspathEntries(List<Element> entries) {
         Element classpathElement = document.getDocumentElement();
         for (Element entry : entries) {
@@ -161,7 +221,22 @@ public class EclipseClasspath {
         }
     }
 
-    public void writeDocument(OutputStream out) {
+    public void write() {
+        BufferedOutputStream os = null;
+        try {
+            os = new BufferedOutputStream(new FileOutputStream(classpathFile));
+            writeDocument(os);
+            os.flush();
+            logger.info(".classpath wrote : " + classpathFile.getAbsolutePath());
+        } catch (IOException ex) {
+            logger.error(ex.getLocalizedMessage(), ex);
+        } finally {
+            IOUtils.closeQuietly(os);
+        }
+
+    }
+
+    private void writeDocument(OutputStream out) {
         TransformerFactory factory = TransformerFactory.newInstance();
         try {
             Transformer transformer = factory.newTransformer();
