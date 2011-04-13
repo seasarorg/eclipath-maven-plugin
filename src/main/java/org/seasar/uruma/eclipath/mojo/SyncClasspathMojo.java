@@ -36,7 +36,7 @@ import org.seasar.uruma.eclipath.ClasspathPolicy;
 import org.seasar.uruma.eclipath.EclipseClasspath;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
-import org.seasar.uruma.eclipath.dependency.Dependency;
+import org.seasar.uruma.eclipath.dependency.AbstractDependency;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.util.PathUtil;
@@ -96,15 +96,15 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         }
 
         // Resolve dependencies
-        List<Dependency> repoDependencies = resolveArtifacts(repositoryArtifacts, ClasspathPolicy.REPOSITORY);
-        List<Dependency> projDependencies = resolveArtifacts(projectArtifacts, ClasspathPolicy.PROJECT);
+        List<AbstractDependency> repoDependencies = resolveArtifacts(repositoryArtifacts, ClasspathPolicy.REPOSITORY);
+        List<AbstractDependency> projDependencies = resolveArtifacts(projectArtifacts, ClasspathPolicy.PROJECT);
         if (!checkDependencies(repoDependencies, projDependencies)) {
             throw new PluginRuntimeException("Required dependencies were not resolved.");
         }
 
         // Attach repository dependencies
         File m2repo = new File(workspaceConfigurator.getClasspathVariableM2REPO());
-        for (Dependency dependency : repoDependencies) {
+        for (AbstractDependency dependency : repoDependencies) {
             String libPath;
             String srcPath = null;
             String javadocPath = null;
@@ -142,7 +142,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         }
 
         // Copy and attach project dependencies
-        for (Dependency dependency : projDependencies) {
+        for (AbstractDependency dependency : projDependencies) {
             File libfile;
             File sourceFile = null;
             File javadocFile = null;
@@ -318,12 +318,12 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         }
     }
 
-    protected List<Dependency> resolveArtifacts(Set<Artifact> artifacts, ClasspathPolicy classpathPolicy) {
-        List<Dependency> dependencies = new ArrayList<Dependency>();
+    protected List<AbstractDependency> resolveArtifacts(Set<Artifact> artifacts, ClasspathPolicy classpathPolicy) {
+        List<AbstractDependency> dependencies = new ArrayList<AbstractDependency>();
 
         for (Artifact artifact : artifacts) {
             // Build dependency objects
-            Dependency dependency = new Dependency(artifact);
+            AbstractDependency dependency = new AbstractDependency(artifact);
             dependency.setClasspathPolicy(classpathPolicy);
             dependencies.add(dependency);
 
@@ -351,7 +351,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         return dependencies;
     }
 
-    protected boolean checkDependencies(List<Dependency> repoDependencies, List<Dependency> projDependencies) {
+    protected boolean checkDependencies(List<AbstractDependency> repoDependencies, List<AbstractDependency> projDependencies) {
         boolean valid = true;
 
         logger.info(Logger.SEPARATOR);
@@ -375,10 +375,10 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         return valid;
     }
 
-    protected boolean doCheckDependencies(List<Dependency> dependencies) {
+    protected boolean doCheckDependencies(List<AbstractDependency> dependencies) {
         boolean valid = true;
 
-        for (Dependency dependency : dependencies) {
+        for (AbstractDependency dependency : dependencies) {
             Artifact artifact = dependency.getArtifact();
             logger.info(String.format(" %s%s  %s", formatResolveStatus(artifact), formatScope(artifact), artifact));
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2010 the Seasar Foundation and the Others.
+ * Copyright 2004-2011 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,88 +9,33 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
 package org.seasar.uruma.eclipath.dependency;
 
 import org.apache.maven.artifact.Artifact;
-import org.seasar.uruma.eclipath.ClasspathPolicy;
 
 /**
  * @author y-komori
  * @author $Author$
  * @version $Revision$ $Date$
- * 
+ *
  */
-public class Dependency {
-    private Artifact artifact;
+public interface Dependency {
 
-    private Artifact srcArtifact;
+    public Artifact getArtifact();
 
-    private Artifact javadocArtifact;
+    public void setArtifact(Artifact artifact);
 
-    private ClasspathPolicy classpathPolicy;
+    public Artifact getSrcArtifact();
 
-    /**
-     * Constructs a new {@link Dependency} object with {@link Artifact} object.
-     * 
-     * @param artifact
-     *        related {@link Artifact} object
-     */
-    public Dependency(Artifact artifact) {
-        super();
-        this.artifact = artifact;
-    }
+    public void setSrcArtifact(Artifact srcArtifact);
 
-    public Artifact getArtifact() {
-        return artifact;
-    }
+    public Artifact getJavadocArtifact();
 
-    public void setArtifact(Artifact artifact) {
-        this.artifact = artifact;
-    }
+    public void setJavadocArtifact(Artifact javadocArtifact);
 
-    public Artifact getSrcArtifact() {
-        return srcArtifact;
-    }
 
-    public void setSrcArtifact(Artifact srcArtifact) {
-        this.srcArtifact = srcArtifact;
-    }
-
-    public Artifact getJavadocArtifact() {
-        return javadocArtifact;
-    }
-
-    public void setJavadocArtifact(Artifact javadocArtifact) {
-        this.javadocArtifact = javadocArtifact;
-    }
-
-    public ClasspathPolicy getClasspathPolicy() {
-        return classpathPolicy;
-    }
-
-    public void setClasspathPolicy(ClasspathPolicy classpathPolicy) {
-        this.classpathPolicy = classpathPolicy;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder(256);
-        if (artifact != null) {
-            buf.append(artifact.toString());
-        }
-        if (srcArtifact != null && srcArtifact.isResolved()) {
-            buf.append("\n  ");
-            buf.append(srcArtifact.toString());
-        }
-        if (javadocArtifact != null && javadocArtifact.isResolved()) {
-            buf.append("\n  ");
-            buf.append(javadocArtifact.toString());
-        }
-        buf.append("\n");
-        return buf.toString();
-    }
 }

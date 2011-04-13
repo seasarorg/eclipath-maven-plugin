@@ -21,7 +21,7 @@ package org.seasar.uruma.eclipath.dependency;
  * @version $Revision$ $Date$
  *
  */
-public class M2Dependency extends AbstractLocalDependency {
+public class M2Dependency extends AbstractDependency {
 
     /*
      * @see org.seasar.uruma.eclipath.dependency.LocalDependency#getLibraryPath()
