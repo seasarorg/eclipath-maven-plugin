@@ -15,7 +15,10 @@
  */
 package org.seasar.uruma.eclipath.dependency.factory;
 
+import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
+import org.seasar.uruma.eclipath.dependency.Dependency;
 
 /**
  * @author y-komori
@@ -23,25 +26,12 @@ import org.apache.maven.artifact.Artifact;
  * @version $Revision$ $Date$
  *
  */
-public interface Dependency {
+public interface DependencyFactory {
 
-    public Artifact getLibraryArtifact();
+    public void addExcludeGroupIds(List<String> groupIds);
 
-    public void setLibraryArtifact(Artifact artifact);
+    public void addExcludeScopes(List<String> scopes);
 
-    public Artifact getSourceArtifact();
+    public Dependency create(Artifact artifact);
 
-    public void setSourceArtifact(Artifact srcArtifact);
-
-    public Artifact getJavadocArtifact();
-
-    public void setJavadocArtifact(Artifact javadocArtifact);
-
-    public String getLibraryPath();
-
-    public String getSourcePath();
-
-    public String getJavadocPath();
-
-    public void copyArtifact();
 }

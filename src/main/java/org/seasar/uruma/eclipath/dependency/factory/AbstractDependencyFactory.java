@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.uruma.eclipath.dependency;
+package org.seasar.uruma.eclipath.dependency.factory;
 
 import java.io.File;
 import java.util.ArrayList;
