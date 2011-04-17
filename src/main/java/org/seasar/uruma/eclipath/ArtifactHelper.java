@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
@@ -53,8 +53,6 @@ public class ArtifactHelper {
     protected ArtifactRepository localRepository;
 
     protected WorkspaceConfigurator workspaceConfigurator;
-
-    protected Logger logger;
 
     protected boolean forceResolve;
 
@@ -211,10 +209,6 @@ public class ArtifactHelper {
 
     public void setWorkspaceConfigurator(WorkspaceConfigurator workspaceConfigurator) {
         this.workspaceConfigurator = workspaceConfigurator;
-    }
-
-    public void setLogger(Logger logger) {
-        this.logger = logger;
     }
 
     public boolean isForceResolve() {

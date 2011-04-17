@@ -37,6 +37,7 @@ import org.seasar.uruma.eclipath.EclipseClasspath;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.dependency.AbstractDependency;
+import org.seasar.uruma.eclipath.dependency.Dependency;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.util.PathUtil;
@@ -55,7 +56,6 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
 
         // Load ".classpath" file
         EclipseClasspath eclipseClasspath = new EclipseClasspath(basedir);
-        eclipseClasspath.setLogger(logger);
         eclipseClasspath.load();
 
         // Get and filter dependencies
@@ -96,15 +96,15 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         }
 
         // Resolve dependencies
-        List<AbstractDependency> repoDependencies = resolveArtifacts(repositoryArtifacts, ClasspathPolicy.REPOSITORY);
-        List<AbstractDependency> projDependencies = resolveArtifacts(projectArtifacts, ClasspathPolicy.PROJECT);
+        List<Dependency> repoDependencies = resolveArtifacts(repositoryArtifacts, ClasspathPolicy.REPOSITORY);
+        List<Dependency> projDependencies = resolveArtifacts(projectArtifacts, ClasspathPolicy.PROJECT);
         if (!checkDependencies(repoDependencies, projDependencies)) {
             throw new PluginRuntimeException("Required dependencies were not resolved.");
         }
 
         // Attach repository dependencies
         File m2repo = new File(workspaceConfigurator.getClasspathVariableM2REPO());
-        for (AbstractDependency dependency : repoDependencies) {
+        for (Dependency dependency : repoDependencies) {
             String libPath;
             String srcPath = null;
             String javadocPath = null;
@@ -222,7 +222,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
 
     protected void logArtifact(Artifact artifact, int indent) {
         if (artifact != null && artifact.isResolved()) {
-            logger.info(StringUtils.repeat(" ", indent) + artifact.toString());
+            Logger.info(StringUtils.repeat(" ", indent) + artifact.toString());
         }
     }
 
@@ -235,7 +235,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
     protected File prepareDir(File dirfile) {
         if (!dirfile.exists()) {
             if (dirfile.mkdir()) {
-                logger.info("Directory created. path:" + dirfile.getAbsolutePath());
+                Logger.info("Directory created. path:" + dirfile.getAbsolutePath());
             } else {
                 throw new PluginRuntimeException("Unable to create directory. : " + dirfile.getAbsolutePath());
             }
@@ -275,9 +275,9 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
     protected void deleteFiles(List<File> files) {
         for (File file : files) {
             if (file.delete()) {
-                logger.info("File deleted : " + file.getAbsolutePath());
+                Logger.info("File deleted : " + file.getAbsolutePath());
             } else {
-                logger.warn("Failed to delete file : " + file.getAbsolutePath());
+                Logger.warn("Failed to delete file : " + file.getAbsolutePath());
             }
         }
     }
@@ -290,7 +290,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
                 prepareDir(toDir);
             }
             FileUtils.copyFile(srcFile, destFile, true);
-            logger.info("Dependency copied to " + destFile.getAbsolutePath());
+            Logger.info("Dependency copied to " + destFile.getAbsolutePath());
         }
         return destFile;
     }
@@ -318,12 +318,12 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         }
     }
 
-    protected List<AbstractDependency> resolveArtifacts(Set<Artifact> artifacts, ClasspathPolicy classpathPolicy) {
+    protected List<Dependency> resolveArtifacts(Set<Artifact> artifacts, ClasspathPolicy classpathPolicy) {
         List<AbstractDependency> dependencies = new ArrayList<AbstractDependency>();
 
         for (Artifact artifact : artifacts) {
             // Build dependency objects
-            AbstractDependency dependency = new AbstractDependency(artifact);
+            Dependency dependency = new AbstractDependency(artifact);
             dependency.setClasspathPolicy(classpathPolicy);
             dependencies.add(dependency);
 

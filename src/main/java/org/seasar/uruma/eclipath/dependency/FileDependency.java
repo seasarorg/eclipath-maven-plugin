@@ -18,8 +18,6 @@ package org.seasar.uruma.eclipath.dependency;
 import java.io.File;
 
 import org.apache.maven.artifact.Artifact;
-import org.seasar.uruma.eclipath.WorkspaceConfigurator;
-import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.util.PathUtil;
 
 /**
@@ -28,19 +26,19 @@ import org.seasar.uruma.eclipath.util.PathUtil;
  * @version $Revision$ $Date$
  *
  */
-public class M2Dependency extends AbstractDependency {
+public class FileDependency extends AbstractDependency {
+    private final File libDir;
 
-    private File m2repoFile;
+    private final File sourceDir;
 
-    public M2Dependency(Artifact artifact) {
+    private final File javadocDir;
+
+    public FileDependency(Artifact artifact, File libDir) {
         super(artifact);
-    }
-
-    public void setM2repo(String m2repo) {
-        this.m2repoFile = new File(m2repo);
-        if (!m2repoFile.exists() || !m2repoFile.isDirectory()) {
-            throw new PluginRuntimeException("Directory not found. : " + m2repoFile.getAbsolutePath());
-        }
+        String path = PathUtil.normalizePath(libDir.getAbsolutePath());
+        this.libDir = new File(path);
+        this.sourceDir = new File(path + "/source");
+        this.javadocDir = new File(path + "/javadoc");
     }
 
     /*
@@ -48,9 +46,8 @@ public class M2Dependency extends AbstractDependency {
      */
     @Override
     public String getLibraryPath() {
-        File libFile = libraryArtifact.getFile();
-        String libPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repoFile, libFile);
-        return libPath;
+        // TODO 自動生成されたメソッド・スタブ
+        return null;
     }
 
     /*
@@ -58,11 +55,7 @@ public class M2Dependency extends AbstractDependency {
      */
     @Override
     public String getSourcePath() {
-        if (sourceArtifact != null && sourceArtifact.isResolved()) {
-            File srcFile = sourceArtifact.getFile();
-            String srcPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repoFile, srcFile);
-            return srcPath;
-        }
+        // TODO 自動生成されたメソッド・スタブ
         return null;
     }
 
@@ -71,11 +64,7 @@ public class M2Dependency extends AbstractDependency {
      */
     @Override
     public String getJavadocPath() {
-        if (javadocArtifact != null && javadocArtifact.isResolved()) {
-            File javadocFile = javadocArtifact.getFile();
-            String javadocPath = "jar:file:/" + PathUtil.normalizePath(javadocFile.getAbsolutePath()) + "!/";
-            return javadocPath;
-        }
+        // TODO 自動生成されたメソッド・スタブ
         return null;
     }
 
@@ -84,6 +73,8 @@ public class M2Dependency extends AbstractDependency {
      */
     @Override
     public void copyArtifact() {
-        // Do nothing.
+        // TODO 自動生成されたメソッド・スタブ
+
     }
+
 }

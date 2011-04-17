@@ -153,8 +153,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
     protected File eclipseProjectDir;
 
-    protected Logger logger;
-
     protected ArtifactHelper artifactHelper;
 
     protected WorkspaceConfigurator workspaceConfigurator;
@@ -177,7 +175,7 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     protected abstract void doExecute() throws MojoExecutionException, MojoFailureException;
 
     protected void prepare() {
-        logger = new Logger(getLog());
+        Logger.initialize(getLog());
 
         workspaceConfigurator = new WorkspaceConfigurator(project);
         workspaceConfigurator.loadConfiguration();
@@ -188,49 +186,48 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         artifactHelper.setRemoteRepositories(remoteArtifactRepositories);
         artifactHelper.setLocalRepository(localRepository);
         artifactHelper.setWorkspaceConfigurator(workspaceConfigurator);
-        artifactHelper.setLogger(logger);
         artifactHelper.setForceResolve(forceResolve);
 
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
     }
 
     protected boolean checkParameters() {
-        logger.info("[Version] " + pluginInformation.getVersion());
+        Logger.info("[Version] " + pluginInformation.getVersion());
         if (ClasspathPolicy.REPOSITORY.confName().equals(policy)) {
             classpathPolicy = ClasspathPolicy.REPOSITORY;
         } else if (ClasspathPolicy.PROJECT.confName().equals(policy)) {
             classpathPolicy = ClasspathPolicy.PROJECT;
         } else {
-            logger.error("Parameter policy must be \"repository\" or \"project\".");
+            Logger.error("Parameter policy must be \"repository\" or \"project\".");
             return false;
         }
-        logger.info("[Parameter:policy] " + classpathPolicy.name());
+        Logger.info("[Parameter:policy] " + classpathPolicy.name());
 
         if (StringUtils.isEmpty(libDir)) {
-            logger.error("Parameter destdir is not specified.");
+            Logger.error("Parameter destdir is not specified.");
             return false;
         } else {
-            logger.info("[Parameter:libDir] " + libDir);
+            Logger.info("[Parameter:libDir] " + libDir);
         }
 
         if (StringUtils.isEmpty(providedLibDir)) {
-            logger.error("Parameter providedLibDir is not specified.");
+            Logger.error("Parameter providedLibDir is not specified.");
             return false;
         } else {
-            logger.info("[Parameter:providedLibDir] " + providedLibDir);
+            Logger.info("[Parameter:providedLibDir] " + providedLibDir);
         }
 
         if (excludeGroupIds == null) {
             excludeGroupIds = new ArrayList<String>();
         }
-        logger.info("[Parameter:excludeGroupIds] " + excludeGroupIds.toString());
+        Logger.info("[Parameter:excludeGroupIds] " + excludeGroupIds.toString());
 
         if (excludeScopes == null) {
             excludeScopes = new ArrayList<String>();
         }
-        logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
+        Logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
 
-        logger.info("[Parameter:forceResolve] " + forceResolve);
+        Logger.info("[Parameter:forceResolve] " + forceResolve);
         return true;
     }
 

@@ -81,8 +81,6 @@ public class EclipseClasspath {
 
     public static final String KIND_VAR = ClasspathKind.VAR.toString();
 
-    protected Logger logger;
-
     protected File classpathFile;
 
     protected Document document;
@@ -119,7 +117,7 @@ public class EclipseClasspath {
     }
 
     private Document loadDotClassPath(File file) {
-        logger.info("Loading " + file.getAbsolutePath() + " ...");
+        Logger.info("Loading " + file.getAbsolutePath() + " ...");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
@@ -130,7 +128,7 @@ public class EclipseClasspath {
             int length = nodeList.getLength();
             for (int i = 0; i < length; i++) {
                 Element element = (Element) nodeList.item(i);
-                logger.debug("ClasspathEntry loaded.  path=" + element.getAttribute(ATTR_PATH));
+                Logger.debug("ClasspathEntry loaded.  path=" + element.getAttribute(ATTR_PATH));
             }
             return document;
         } catch (Exception ex) {
@@ -227,9 +225,9 @@ public class EclipseClasspath {
             os = new BufferedOutputStream(new FileOutputStream(classpathFile));
             writeDocument(os);
             os.flush();
-            logger.info(".classpath wrote : " + classpathFile.getAbsolutePath());
+            Logger.info(".classpath wrote : " + classpathFile.getAbsolutePath());
         } catch (IOException ex) {
-            logger.error(ex.getLocalizedMessage(), ex);
+            Logger.error(ex.getLocalizedMessage(), ex);
         } finally {
             IOUtils.closeQuietly(os);
         }
@@ -248,9 +246,5 @@ public class EclipseClasspath {
         } catch (Exception ex) {
             throw new PluginRuntimeException(ex);
         }
-    }
-
-    public void setLogger(Logger logger) {
-        this.logger = logger;
     }
 }

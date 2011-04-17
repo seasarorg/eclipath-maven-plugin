@@ -18,6 +18,7 @@ package org.seasar.uruma.eclipath;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.logging.Log;
+import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 
 /**
  * @author y-komori
@@ -25,36 +26,50 @@ import org.apache.maven.plugin.logging.Log;
  * @version $Revision$ $Date$
  */
 public class Logger {
-    private final Log log;
+    private static Log myLog;
 
     private static final String PREFIX = "[eclipath] ";
 
     public static final String SEPARATOR = StringUtils.repeat("-", 56);
 
-    public Logger(Log log) {
+    private Logger() {
+    }
+
+    public static void initialize(Log log) {
         if (log == null) {
             throw new NullArgumentException("log");
         }
-        this.log = log;
+        myLog = log;
     }
 
-    public void debug(String message) {
-        log.debug(PREFIX + message);
+    public static void debug(String message) {
+        checkInitialized();
+        myLog.debug(PREFIX + message);
     }
 
-    public void info(String message) {
-        log.info(PREFIX + message);
+    public static void info(String message) {
+        checkInitialized();
+        myLog.info(PREFIX + message);
     }
 
-    public void warn(String message) {
-        log.warn(PREFIX + message);
+    public static void warn(String message) {
+        checkInitialized();
+        myLog.warn(PREFIX + message);
     }
 
-    public void error(String message) {
-        log.error(PREFIX + message);
+    public static void error(String message) {
+        checkInitialized();
+        myLog.error(PREFIX + message);
     }
 
-    public void error(String message, Throwable throwable) {
-        log.error(PREFIX + message, throwable);
+    public static void error(String message, Throwable throwable) {
+        checkInitialized();
+        myLog.error(PREFIX + message, throwable);
+    }
+
+    private static void checkInitialized() {
+        if (myLog == null) {
+            throw new PluginRuntimeException("Logger is not initialized.");
+        }
     }
 }
