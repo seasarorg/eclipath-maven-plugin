@@ -34,6 +34,11 @@ import org.seasar.uruma.eclipath.ClasspathPolicy;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.PluginInformation;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
+import org.seasar.uruma.eclipath.dependency.factory.AbstractDependencyFactory;
+import org.seasar.uruma.eclipath.dependency.factory.AbstractDependencyFactory.LibraryLayout;
+import org.seasar.uruma.eclipath.dependency.factory.DependencyFactory;
+import org.seasar.uruma.eclipath.dependency.factory.ProjectBasedDependencyFactory;
+import org.seasar.uruma.eclipath.dependency.factory.RepositoryBasedDependencyFactory;
 import org.seasar.uruma.eclipath.util.ProjectUtil;
 
 /**
@@ -155,6 +160,8 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
     protected ArtifactHelper artifactHelper;
 
+    protected DependencyFactory dependencyFactory;
+
     protected WorkspaceConfigurator workspaceConfigurator;
 
     protected PluginInformation pluginInformation = new PluginInformation();
@@ -164,10 +171,13 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
      */
     @Override
     public final void execute() throws MojoExecutionException, MojoFailureException {
-        prepare();
+        Logger.initialize(getLog());
+
         if (!checkParameters()) {
             return;
         }
+
+        prepare();
 
         doExecute();
     }
@@ -175,8 +185,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     protected abstract void doExecute() throws MojoExecutionException, MojoFailureException;
 
     protected void prepare() {
-        Logger.initialize(getLog());
-
         workspaceConfigurator = new WorkspaceConfigurator(project);
         workspaceConfigurator.loadConfiguration();
 
@@ -189,6 +197,14 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         artifactHelper.setForceResolve(forceResolve);
 
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
+
+        // TODO
+        LibraryLayout layout = new AbstractDependencyFactory.FlatLayout();
+        if (classpathPolicy == ClasspathPolicy.PROJECT) {
+            dependencyFactory = new ProjectBasedDependencyFactory(eclipseProjectDir, layout);
+        } else if (classpathPolicy == ClasspathPolicy.REPOSITORY) {
+            dependencyFactory = new RepositoryBasedDependencyFactory(eclipseProjectDir, layout);
+        }
     }
 
     protected boolean checkParameters() {

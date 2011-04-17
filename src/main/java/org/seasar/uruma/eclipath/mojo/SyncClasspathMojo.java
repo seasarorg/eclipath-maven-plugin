@@ -32,11 +32,11 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.seasar.uruma.eclipath.ClasspathKind;
 import org.seasar.uruma.eclipath.ClasspathPolicy;
 import org.seasar.uruma.eclipath.EclipseClasspath;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
-import org.seasar.uruma.eclipath.dependency.AbstractDependency;
 import org.seasar.uruma.eclipath.dependency.Dependency;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
@@ -115,7 +115,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
             libPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repo, libFile);
 
             // Create source jar path
-            Artifact srcArtifact = dependency.getSrcArtifact();
+            Artifact srcArtifact = dependency.getSourceArtifact();
             if (srcArtifact != null && srcArtifact.isResolved()) {
                 File srcFile = srcArtifact.getFile();
                 srcPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repo, srcFile);
@@ -134,15 +134,11 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
             eclipseClasspath.removeClasspathEntries(existenceEntries);
 
             // Add new class path entry
-            Element classpathEntry = eclipseClasspath.createClasspathEntry(libPath, srcPath, KIND_VAR);
-            root.appendChild(classpathEntry);
-            if (javadocPath != null) {
-                eclipseClasspath.addAttribute(classpathEntry, ATTRNAME_JAVADOC_LOCATION, javadocPath);
-            }
+            eclipseClasspath.addClasspathEntry(ClasspathKind.VAR, libPath, srcPath, javadocPath);
         }
 
         // Copy and attach project dependencies
-        for (AbstractDependency dependency : projDependencies) {
+        for (Dependency dependency : projDependencies) {
             File libfile;
             File sourceFile = null;
             File javadocFile = null;
@@ -158,7 +154,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
                 removeFile(toDeleteFiles, libfile);
 
                 // Copy source to specified directory
-                Artifact sourceArtifact = dependency.getSrcArtifact();
+                Artifact sourceArtifact = dependency.getSourceArtifact();
                 if (sourceArtifact.isResolved()) {
                     if (artifactHelper.isCompileScope(sourceArtifact)) {
                         sourceFile = copyDependency(sourceArtifact, sourcesDirFile);
@@ -180,8 +176,8 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
                 }
 
                 // Acquire copied dependency's relative path
-                String path = libfile.getAbsolutePath().substring(basedir.getAbsolutePath().length() + 1).replace(SEP,
-                        "/");
+                String path = libfile.getAbsolutePath().substring(basedir.getAbsolutePath().length() + 1)
+                        .replace(SEP, "/");
 
                 String srcPath;
                 if (artifactHelper.isCompileScope(sourceArtifact)) {
@@ -203,13 +199,9 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
                 eclipseClasspath.removeClasspathEntries(existenceEntries);
 
                 // Add new class path entry
-                Element classpathEntry = eclipseClasspath.createClasspathEntry(path, srcPath, KIND_LIB);
-                root.appendChild(classpathEntry);
-                if (javadocPath != null) {
-                    eclipseClasspath.addAttribute(classpathEntry, ATTRNAME_JAVADOC_LOCATION, javadocPath);
-                }
+                eclipseClasspath.addClasspathEntry(ClasspathKind.LIB, path, srcPath, javadocPath);
             } catch (IOException ex) {
-                logger.error(ex.getLocalizedMessage(), ex);
+                Logger.error(ex.getLocalizedMessage(), ex);
             }
         }
 
@@ -319,12 +311,11 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
     }
 
     protected List<Dependency> resolveArtifacts(Set<Artifact> artifacts, ClasspathPolicy classpathPolicy) {
-        List<AbstractDependency> dependencies = new ArrayList<AbstractDependency>();
+        List<Dependency> dependencies = new ArrayList<Dependency>();
 
         for (Artifact artifact : artifacts) {
             // Build dependency objects
-            Dependency dependency = new AbstractDependency(artifact);
-            dependency.setClasspathPolicy(classpathPolicy);
+            Dependency dependency = dependencyFactory.create(artifact);
             dependencies.add(dependency);
 
             // Get artifact
@@ -332,7 +323,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
                 try {
                     artifactHelper.resolve(artifact, true);
                 } catch (ArtifactResolutionRuntimeException ex) {
-                    logger.error(ex.getLocalizedMessage(), ex.getCause());
+                    Logger.error(ex.getLocalizedMessage(), ex.getCause());
                     continue;
                 }
             }
@@ -340,7 +331,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
             // Create source artifact
             Artifact srcArtifact = artifactHelper.createSourceArtifact(artifact);
             artifactHelper.resolve(srcArtifact, false);
-            dependency.setSrcArtifact(srcArtifact);
+            dependency.setSourceArtifact(srcArtifact);
 
             // Create Javadoc artifact
             Artifact javadocArtifact = artifactHelper.createJavadocArtifact(artifact);
@@ -351,43 +342,43 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         return dependencies;
     }
 
-    protected boolean checkDependencies(List<AbstractDependency> repoDependencies, List<AbstractDependency> projDependencies) {
+    protected boolean checkDependencies(List<Dependency> repoDependencies, List<Dependency> projDependencies) {
         boolean valid = true;
 
-        logger.info(Logger.SEPARATOR);
-        logger.info(" Dependency report.  [R]:Resolved [N]:Not resolved");
+        Logger.info(Logger.SEPARATOR);
+        Logger.info(" Dependency report.  [R]:Resolved [N]:Not resolved");
 
         if (repoDependencies.size() > 0) {
-            logger.info(Logger.SEPARATOR);
-            logger.info(" REPOSITORY Dependencies");
-            logger.info(Logger.SEPARATOR);
+            Logger.info(Logger.SEPARATOR);
+            Logger.info(" REPOSITORY Dependencies");
+            Logger.info(Logger.SEPARATOR);
             valid &= doCheckDependencies(repoDependencies);
         }
 
         if (projDependencies.size() > 0) {
-            logger.info(Logger.SEPARATOR);
-            logger.info(" PROJECT Dependencies");
-            logger.info(Logger.SEPARATOR);
+            Logger.info(Logger.SEPARATOR);
+            Logger.info(" PROJECT Dependencies");
+            Logger.info(Logger.SEPARATOR);
             valid &= doCheckDependencies(projDependencies);
         }
-        logger.info(Logger.SEPARATOR);
+        Logger.info(Logger.SEPARATOR);
 
         return valid;
     }
 
-    protected boolean doCheckDependencies(List<AbstractDependency> dependencies) {
+    protected boolean doCheckDependencies(List<Dependency> dependencies) {
         boolean valid = true;
 
-        for (AbstractDependency dependency : dependencies) {
+        for (Dependency dependency : dependencies) {
             Artifact artifact = dependency.getLibraryArtifact();
-            logger.info(String.format(" %s%s  %s", formatResolveStatus(artifact), formatScope(artifact), artifact));
+            Logger.info(String.format(" %s%s  %s", formatResolveStatus(artifact), formatScope(artifact), artifact));
 
-            Artifact srcArtifact = dependency.getSrcArtifact();
-            logger.info(String.format("  %s    %s", formatResolveStatus(srcArtifact), srcArtifact));
+            Artifact srcArtifact = dependency.getSourceArtifact();
+            Logger.info(String.format("  %s    %s", formatResolveStatus(srcArtifact), srcArtifact));
 
             Artifact javadocArtifact = dependency.getJavadocArtifact();
-            logger.info(String.format("  %s    %s", formatResolveStatus(javadocArtifact), javadocArtifact));
-            logger.info("");
+            Logger.info(String.format("  %s    %s", formatResolveStatus(javadocArtifact), javadocArtifact));
+            Logger.info("");
         }
 
         return valid;
