@@ -15,7 +15,6 @@
  */
 package org.seasar.uruma.eclipath.model;
 
-import org.seasar.uruma.eclipath.ClasspathPolicy;
 
 /**
  * @author y-komori
