@@ -29,8 +29,8 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
+import org.seasar.uruma.eclipath.model.EclipathArtifact;
 
 /**
  * @author y-komori

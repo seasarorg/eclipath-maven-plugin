@@ -32,15 +32,15 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.seasar.uruma.eclipath.ClasspathKind;
 import org.seasar.uruma.eclipath.ClasspathPolicy;
 import org.seasar.uruma.eclipath.EclipseClasspath;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
-import org.seasar.uruma.eclipath.dependency.Dependency;
-import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
+import org.seasar.uruma.eclipath.model.ClasspathKind;
+import org.seasar.uruma.eclipath.model.Dependency;
+import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.seasar.uruma.eclipath.util.PathUtil;
 import org.w3c.dom.Element;
 

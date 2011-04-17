@@ -23,9 +23,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.seasar.uruma.eclipath.EclipseClasspath;
 import org.seasar.uruma.eclipath.Logger;
-import org.seasar.uruma.eclipath.dependency.Dependency;
-import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
+import org.seasar.uruma.eclipath.model.Dependency;
+import org.seasar.uruma.eclipath.model.EclipathArtifact;
 
 /**
  * @goal check

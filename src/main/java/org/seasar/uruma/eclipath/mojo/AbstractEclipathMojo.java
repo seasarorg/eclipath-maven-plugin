@@ -35,11 +35,11 @@ import org.seasar.uruma.eclipath.ClasspathPolicy;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.PluginInformation;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
-import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
-import org.seasar.uruma.eclipath.dependency.factory.DependencyFactory;
-import org.seasar.uruma.eclipath.dependency.factory.LibraryLayout;
-import org.seasar.uruma.eclipath.dependency.factory.ProjectBasedDependencyFactory;
-import org.seasar.uruma.eclipath.dependency.factory.RepositoryBasedDependencyFactory;
+import org.seasar.uruma.eclipath.model.EclipathArtifact;
+import org.seasar.uruma.eclipath.model.factory.DependencyFactory;
+import org.seasar.uruma.eclipath.model.factory.LibraryLayout;
+import org.seasar.uruma.eclipath.model.factory.ProjectBasedDependencyFactory;
+import org.seasar.uruma.eclipath.model.factory.RepositoryBasedDependencyFactory;
 import org.seasar.uruma.eclipath.util.ProjectUtil;
 
 /**

@@ -41,6 +41,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
+import org.seasar.uruma.eclipath.model.ClasspathKind;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
