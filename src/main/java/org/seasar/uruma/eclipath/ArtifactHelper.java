@@ -15,8 +15,6 @@
  */
 package org.seasar.uruma.eclipath;
 
-import static org.seasar.uruma.eclipath.Constants.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -86,21 +84,6 @@ public class ArtifactHelper {
         return createArtifactWithClassifier(baseArtifact, "javadoc");
     }
 
-    // TODO delete
-    public String getFilename(Artifact artifact) {
-        StringBuilder buf = new StringBuilder(64);
-        buf.append(artifact.getArtifactId());
-        buf.append("-");
-        buf.append(artifact.getVersion());
-        if (artifact.hasClassifier()) {
-            buf.append("-");
-            buf.append(artifact.getClassifier());
-        }
-        buf.append(".");
-        buf.append(artifact.getType());
-        return buf.toString();
-    }
-
     private EclipathArtifact createArtifactWithClassifier(EclipathArtifact baseArtifact, String classifier) {
         String baseClassifier = baseArtifact.classifier();
         if (baseClassifier != null) {
@@ -144,42 +127,6 @@ public class ArtifactHelper {
                 throw new ArtifactResolutionRuntimeException(ex.getLocalizedMessage(), ex);
             }
         }
-    }
-
-    // TODO Delete
-    public String createJarPath(Artifact artifact) {
-        StringBuilder path = new StringBuilder();
-        String groupId = artifact.getGroupId();
-        if (groupId != null) {
-            path.append(groupId.replace(".", SEP));
-            path.append(SEP);
-        }
-
-        String artifactId = artifact.getArtifactId();
-        path.append(artifactId);
-        path.append(SEP);
-
-        String version = artifact.getVersion();
-        if (version != null) {
-            path.append(version);
-            path.append(SEP);
-        }
-
-        path.append(artifactId);
-        if (version != null) {
-            path.append("-");
-            path.append(version);
-        }
-
-        String classifier = artifact.getClassifier();
-        if (classifier != null) {
-            path.append("-");
-            path.append(classifier);
-        }
-
-        path.append(".");
-        path.append(artifact.getType());
-        return path.toString();
     }
 
     public boolean isCompileScope(Artifact artifact) {

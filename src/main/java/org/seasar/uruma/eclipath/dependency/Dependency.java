@@ -16,6 +16,7 @@
 package org.seasar.uruma.eclipath.dependency;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author y-komori
@@ -43,9 +44,9 @@ public interface Dependency {
 
     public String getJavadocPath();
 
-    public File copyLibraryArtifact();
+    public File copyLibraryArtifact() throws IOException;
 
-    public File copySourceArtifact();
+    public File copySourceArtifact() throws IOException;
 
-    public File copyJavadocArtifact();
+    public File copyJavadocArtifact() throws IOException;
 }

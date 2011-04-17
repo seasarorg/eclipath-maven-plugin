@@ -46,7 +46,7 @@ public class RepositoryBasedDependencyFactory extends AbstractDependencyFactory 
         } else {
             Scope scope = artifact.scope();
             String libDir = layout.getLibDir(scope);
-            dependency = new FileDependency(artifact, new File(libDir));
+            dependency = new FileDependency(artifact, projectDir, libDir);
         }
         return dependency;
     }

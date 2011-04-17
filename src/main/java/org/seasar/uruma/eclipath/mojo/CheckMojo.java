@@ -15,11 +15,17 @@
  */
 package org.seasar.uruma.eclipath.mojo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.seasar.uruma.eclipath.EclipseClasspath;
+import org.seasar.uruma.eclipath.Logger;
+import org.seasar.uruma.eclipath.dependency.Dependency;
 import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
+import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 
 /**
  * @goal check
@@ -36,13 +42,50 @@ public class CheckMojo extends AbstractEclipathMojo {
      */
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException {
-        System.out.println("Execute OK");
-        System.out.println(eclipseProjectDir.getAbsolutePath());
+        // Load ".classpath" file
+        EclipseClasspath eclipseClasspath = new EclipseClasspath(eclipseProjectDir);
+        eclipseClasspath.load();
 
-        Set<EclipathArtifact> artifacts = getEclipathArtifacts();
-        for (EclipathArtifact artifact : artifacts) {
-            System.out.println(artifact);
-            System.out.println("  " + artifact.getFileName());
+        // Get dependencies
+        Set<EclipathArtifact> dependingArtifacts = getEclipathArtifacts();
+        List<Dependency> dependencies = resolveArtifacts(dependingArtifacts);
+        for (Dependency dependency : dependencies) {
+            System.out.println(dependency);
+            System.out.println("   " + dependency.getLibraryPath());
+            System.out.println("   " + dependency.getSourcePath());
+            System.out.println("   " + dependency.getJavadocPath());
         }
+    }
+
+    protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts) {
+        List<Dependency> dependencies = new ArrayList<Dependency>(artifacts.size());
+
+        for (EclipathArtifact artifact : artifacts) {
+            // Build dependency objects
+            Dependency dependency = dependencyFactory.create(artifact);
+            dependencies.add(dependency);
+
+            // Get artifact
+            if (!artifact.isResolved()) {
+                try {
+                    artifactHelper.resolve(artifact, true);
+                } catch (ArtifactResolutionRuntimeException ex) {
+                    Logger.error(ex.getLocalizedMessage(), ex.getCause());
+                    continue;
+                }
+            }
+
+            // Create source artifact
+            EclipathArtifact srcArtifact = artifactHelper.createSourceArtifact(artifact);
+            artifactHelper.resolve(srcArtifact, false);
+            dependency.setSourceArtifact(srcArtifact);
+
+            // Create Javadoc artifact
+            EclipathArtifact javadocArtifact = artifactHelper.createJavadocArtifact(artifact);
+            artifactHelper.resolve(javadocArtifact, false);
+            dependency.setJavadocArtifact(javadocArtifact);
+        }
+
+        return dependencies;
     }
 }

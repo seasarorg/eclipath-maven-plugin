@@ -44,7 +44,7 @@ public class ProjectBasedDependencyFactory extends AbstractDependencyFactory {
         if (!isExcluded(artifact)) {
             Scope scope = artifact.scope();
             String libDir = layout.getLibDir(scope);
-            dependency = new FileDependency(artifact, new File(libDir));
+            dependency = new FileDependency(artifact, projectDir, libDir);
         } else {
             dependency = new M2Dependency(artifact);
         }

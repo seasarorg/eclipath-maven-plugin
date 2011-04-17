@@ -15,8 +15,13 @@
  */
 package org.seasar.uruma.eclipath.dependency;
 
-import java.io.File;
+import static org.seasar.uruma.eclipath.Constants.*;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.util.PathUtil;
 
 /**
@@ -26,18 +31,22 @@ import org.seasar.uruma.eclipath.util.PathUtil;
  *
  */
 public class FileDependency extends AbstractDependency {
+    public static final String SOURCES_PREFIX = "sources";
+
+    public static final String JAVADOC_PREFIX = "javadoc";
+
     private final File libDir;
 
     private final File sourceDir;
 
     private final File javadocDir;
 
-    public FileDependency(EclipathArtifact artifact, File libDir) {
+    public FileDependency(EclipathArtifact artifact, File projectDir, String libDir) {
         super(artifact);
-        String path = PathUtil.normalizePath(libDir.getAbsolutePath());
+        String path = PathUtil.normalizePath(projectDir.getAbsolutePath()) + "/" + libDir;
         this.libDir = new File(path);
-        this.sourceDir = new File(path + "/source");
-        this.javadocDir = new File(path + "/javadoc");
+        this.sourceDir = new File(path + "/" + SOURCES_PREFIX);
+        this.javadocDir = new File(path + "/" + JAVADOC_PREFIX);
     }
 
     /*
@@ -45,8 +54,7 @@ public class FileDependency extends AbstractDependency {
      */
     @Override
     public String getLibraryPath() {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
+        return libDir + "/" + libraryArtifact.getFileName();
     }
 
     /*
@@ -54,8 +62,7 @@ public class FileDependency extends AbstractDependency {
      */
     @Override
     public String getSourcePath() {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
+        return libDir + "/" + SOURCES_PREFIX + "/" + sourceArtifact.getFileName();
     }
 
     /*
@@ -63,35 +70,40 @@ public class FileDependency extends AbstractDependency {
      */
     @Override
     public String getJavadocPath() {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
+        return libDir + "/" + JAVADOC_PREFIX + "/" + javadocArtifact.getFileName();
     }
-
 
     /*
      * @see org.seasar.uruma.eclipath.dependency.Dependency#copyLibraryArtifact()
      */
     @Override
-    public File copyLibraryArtifact() {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
+    public File copyLibraryArtifact() throws IOException {
+        return copyDependency(libraryArtifact, libDir);
     }
 
     /*
      * @see org.seasar.uruma.eclipath.dependency.Dependency#copySourceArtifact()
      */
     @Override
-    public File copySourceArtifact() {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
+    public File copySourceArtifact() throws IOException {
+        return copyDependency(sourceArtifact, sourceDir);
     }
 
     /*
      * @see org.seasar.uruma.eclipath.dependency.Dependency#copyJavadocArtifact()
      */
     @Override
-    public File copyJavadocArtifact() {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
+    public File copyJavadocArtifact() throws IOException {
+        return copyDependency(javadocArtifact, javadocDir);
+    }
+
+    private File copyDependency(EclipathArtifact artifact, File toDir) throws IOException {
+        File srcFile = artifact.getFile();
+        File destFile = new File(toDir.getAbsolutePath() + SEP + srcFile.getName());
+        if (!destFile.exists() || srcFile.lastModified() > destFile.lastModified()) {
+            FileUtils.copyFile(srcFile, destFile, true);
+            Logger.info("Dependency copied to " + destFile.getAbsolutePath());
+        }
+        return destFile;
     }
 }

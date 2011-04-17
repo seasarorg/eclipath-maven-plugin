@@ -95,8 +95,12 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         }
 
         // Resolve dependencies
-        List<Dependency> repoDependencies = resolveArtifacts(repositoryArtifacts, ClasspathPolicy.REPOSITORY);
-        List<Dependency> projDependencies = resolveArtifacts(projectArtifacts, ClasspathPolicy.PROJECT);
+        // List<Dependency> repoDependencies =
+        // resolveArtifacts(repositoryArtifacts, ClasspathPolicy.REPOSITORY);
+        List<Dependency> repoDependencies = resolveArtifacts(repositoryArtifacts);
+        // List<Dependency> projDependencies =
+        // resolveArtifacts(projectArtifacts, ClasspathPolicy.PROJECT);
+        List<Dependency> projDependencies = resolveArtifacts(projectArtifacts);
         if (!checkDependencies(repoDependencies, projDependencies)) {
             throw new PluginRuntimeException("Required dependencies were not resolved.");
         }
@@ -294,7 +298,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         }
     }
 
-    protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts, ClasspathPolicy classpathPolicy) {
+    protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts) {
         List<Dependency> dependencies = new ArrayList<Dependency>();
 
         for (EclipathArtifact artifact : artifacts) {
