@@ -17,6 +17,7 @@ package org.seasar.uruma.eclipath.mojo;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,9 +35,9 @@ import org.seasar.uruma.eclipath.ClasspathPolicy;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.PluginInformation;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
-import org.seasar.uruma.eclipath.dependency.factory.AbstractDependencyFactory;
-import org.seasar.uruma.eclipath.dependency.factory.AbstractDependencyFactory.LibraryLayout;
+import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
 import org.seasar.uruma.eclipath.dependency.factory.DependencyFactory;
+import org.seasar.uruma.eclipath.dependency.factory.LibraryLayout;
 import org.seasar.uruma.eclipath.dependency.factory.ProjectBasedDependencyFactory;
 import org.seasar.uruma.eclipath.dependency.factory.RepositoryBasedDependencyFactory;
 import org.seasar.uruma.eclipath.util.ProjectUtil;
@@ -199,7 +200,7 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
 
         // TODO
-        LibraryLayout layout = new AbstractDependencyFactory.FlatLayout();
+        LibraryLayout layout = new LibraryLayout.FlatLayout();
         if (classpathPolicy == ClasspathPolicy.PROJECT) {
             dependencyFactory = new ProjectBasedDependencyFactory(eclipseProjectDir, layout);
         } else if (classpathPolicy == ClasspathPolicy.REPOSITORY) {
@@ -250,6 +251,15 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     @SuppressWarnings("unchecked")
     protected Set<Artifact> getArtifacts() {
         return project.getArtifacts();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Set<EclipathArtifact> getEclipathArtifacts() {
+        Set<EclipathArtifact> result = new LinkedHashSet<EclipathArtifact>();
+        for (Artifact artifact : (Set<Artifact>) project.getArtifacts()) {
+            result.add(new EclipathArtifact(artifact));
+        }
+        return result;
     }
 
     public void setLibDir(String libDir) {

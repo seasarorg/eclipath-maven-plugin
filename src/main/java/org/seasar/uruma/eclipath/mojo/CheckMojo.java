@@ -15,24 +15,34 @@
  */
 package org.seasar.uruma.eclipath.mojo;
 
+import java.util.Set;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
 
 /**
  * @goal check
+ * @requiresDependencyResolution test
+ * @phase process-sources
  * 
  * @author y-komori
  * @author $Author$
  * @version $Revision$ $Date$
  */
 public class CheckMojo extends AbstractEclipathMojo {
-
-
     /*
      * @see org.seasar.uruma.eclipath.mojo.AbstractEclipathMojo#doExecute()
      */
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException {
         System.out.println("Execute OK");
+        System.out.println(eclipseProjectDir.getAbsolutePath());
+
+        Set<EclipathArtifact> artifacts = getEclipathArtifacts();
+        for (EclipathArtifact artifact : artifacts) {
+            System.out.println(artifact);
+            System.out.println("  " + artifact.getFileName());
+        }
     }
 }

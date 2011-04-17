@@ -52,10 +52,8 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
 
     @Override
     public void doExecute() throws MojoExecutionException {
-        File basedir = project.getBasedir();
-
         // Load ".classpath" file
-        EclipseClasspath eclipseClasspath = new EclipseClasspath(basedir);
+        EclipseClasspath eclipseClasspath = new EclipseClasspath(eclipseProjectDir);
         eclipseClasspath.load();
 
         // Get and filter dependencies
@@ -79,12 +77,12 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         List<File> toDeleteFiles = new LinkedList<File>();
         if (projectArtifacts.size() > 0) {
             // Prepare directories
-            targetDirFile = prepareDirFile(basedir, libDir);
-            sourcesDirFile = prepareDirFile(basedir, libDir + "/" + sourcesDir);
-            javadocDirFile = prepareDirFile(basedir, libDir + "/" + javadocDir);
-            providedLibDirFile = prepareDirFile(basedir, providedLibDir);
-            providedSourcesDirFile = prepareDirFile(basedir, providedLibDir + "/" + sourcesDir);
-            providedJavadocDirFile = prepareDirFile(basedir, providedLibDir + "/" + javadocDir);
+            targetDirFile = prepareDirFile(eclipseProjectDir, libDir);
+            sourcesDirFile = prepareDirFile(eclipseProjectDir, libDir + "/" + sourcesDir);
+            javadocDirFile = prepareDirFile(eclipseProjectDir, libDir + "/" + javadocDir);
+            providedLibDirFile = prepareDirFile(eclipseProjectDir, providedLibDir);
+            providedSourcesDirFile = prepareDirFile(eclipseProjectDir, providedLibDir + "/" + sourcesDir);
+            providedJavadocDirFile = prepareDirFile(eclipseProjectDir, providedLibDir + "/" + javadocDir);
 
             // Get existing dependencies
             getExsistingLibraries(toDeleteFiles, targetDirFile);
@@ -176,7 +174,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
                 }
 
                 // Acquire copied dependency's relative path
-                String path = libfile.getAbsolutePath().substring(basedir.getAbsolutePath().length() + 1)
+                String path = libfile.getAbsolutePath().substring(eclipseProjectDir.getAbsolutePath().length() + 1)
                         .replace(SEP, "/");
 
                 String srcPath;

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.seasar.uruma.eclipath.Scope;
 
 /**
  * @author y-komori
@@ -74,42 +73,5 @@ public abstract class AbstractDependencyFactory implements DependencyFactory {
             }
         }
         return false;
-    }
-
-    // -------------------------------------------------------------------------------------------
-    public static interface LibraryLayout {
-        public String getLibDir(Scope scope);
-    }
-
-    public static class FlatLayout implements LibraryLayout {
-        @Override
-        public String getLibDir(Scope scope) {
-            return "lib";
-        }
-    }
-
-    public static class StandAloneLayout implements LibraryLayout {
-        @Override
-        public String getLibDir(Scope scope) {
-            String dir = "lib";
-            if (scope == Scope.PROVIDED) {
-                dir = "lib-provided";
-            } else if (scope == Scope.TEST) {
-                dir = "lib-test";
-            }
-            return dir;
-        }
-    }
-
-    public static class WebLayout implements LibraryLayout {
-        @Override
-        public String getLibDir(Scope scope) {
-            String dir = "WEB-INF/lib";
-            if (scope == Scope.PROVIDED || scope == Scope.TEST) {
-                dir = "lib";
-            }
-            return dir;
-        }
-
     }
 }
