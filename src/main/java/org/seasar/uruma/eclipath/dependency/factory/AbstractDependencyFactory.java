@@ -19,7 +19,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
+import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
+import org.seasar.uruma.eclipath.util.AssertionUtil;
 
 /**
  * @author y-komori
@@ -37,12 +38,8 @@ public abstract class AbstractDependencyFactory implements DependencyFactory {
     protected List<String> excludeScopes = new ArrayList<String>();
 
     public AbstractDependencyFactory(File projectDir, LibraryLayout layout) {
-        if (projectDir == null) {
-            throw new IllegalArgumentException("projectDir can't be null.");
-        }
-        if (layout == null) {
-            throw new IllegalArgumentException("layout can't be null.");
-        }
+        AssertionUtil.assertNotNull("projectDir", projectDir);
+        AssertionUtil.assertNotNull("layout", layout);
         this.projectDir = projectDir;
         this.layout = layout;
     }
@@ -61,14 +58,14 @@ public abstract class AbstractDependencyFactory implements DependencyFactory {
         }
     }
 
-    protected boolean isExcluded(Artifact artifact) {
+    protected boolean isExcluded(EclipathArtifact artifact) {
         for (String scope : excludeScopes) {
-            if (scope.equals(artifact.getScope())) {
+            if (scope.equals(artifact.scope().toString())) {
                 return true;
             }
         }
         for (String groupId : excludeGroupIds) {
-            if (groupId.equals(artifact.getGroupId())) {
+            if (groupId.equals(artifact.groupId())) {
                 return true;
             }
         }

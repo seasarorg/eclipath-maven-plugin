@@ -15,7 +15,7 @@
  */
 package org.seasar.uruma.eclipath.dependency;
 
-import org.apache.maven.artifact.Artifact;
+import java.io.File;
 
 /**
  * @author y-komori
@@ -25,17 +25,17 @@ import org.apache.maven.artifact.Artifact;
  */
 public interface Dependency {
 
-    public Artifact getLibraryArtifact();
+    public EclipathArtifact getLibraryArtifact();
 
-    public void setLibraryArtifact(Artifact artifact);
+    public void setLibraryArtifact(EclipathArtifact artifact);
 
-    public Artifact getSourceArtifact();
+    public EclipathArtifact getSourceArtifact();
 
-    public void setSourceArtifact(Artifact srcArtifact);
+    public void setSourceArtifact(EclipathArtifact srcArtifact);
 
-    public Artifact getJavadocArtifact();
+    public EclipathArtifact getJavadocArtifact();
 
-    public void setJavadocArtifact(Artifact javadocArtifact);
+    public void setJavadocArtifact(EclipathArtifact javadocArtifact);
 
     public String getLibraryPath();
 
@@ -43,5 +43,9 @@ public interface Dependency {
 
     public String getJavadocPath();
 
-    public void copyArtifact();
+    public File copyLibraryArtifact();
+
+    public File copySourceArtifact();
+
+    public File copyJavadocArtifact();
 }

@@ -17,9 +17,9 @@ package org.seasar.uruma.eclipath.dependency.factory;
 
 import java.io.File;
 
-import org.apache.maven.artifact.Artifact;
 import org.seasar.uruma.eclipath.Scope;
 import org.seasar.uruma.eclipath.dependency.Dependency;
+import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
 import org.seasar.uruma.eclipath.dependency.FileDependency;
 import org.seasar.uruma.eclipath.dependency.M2Dependency;
 
@@ -36,15 +36,15 @@ public class RepositoryBasedDependencyFactory extends AbstractDependencyFactory 
     }
 
     /*
-     * @see org.seasar.uruma.eclipath.dependency.AbstractDependencyFactory#create(org.apache.maven.artifact.Artifact)
+     * @see org.seasar.uruma.eclipath.dependency.factory.DependencyFactory#create(org.seasar.uruma.eclipath.dependency.EclipathArtifact)
      */
     @Override
-    public Dependency create(Artifact artifact) {
+    public Dependency create(EclipathArtifact artifact) {
         Dependency dependency;
         if (!isExcluded(artifact)) {
             dependency = new M2Dependency(artifact);
         } else {
-            Scope scope = Scope.getScope(artifact.getScope());
+            Scope scope = artifact.scope();
             String libDir = layout.getLibDir(scope);
             dependency = new FileDependency(artifact, new File(libDir));
         }

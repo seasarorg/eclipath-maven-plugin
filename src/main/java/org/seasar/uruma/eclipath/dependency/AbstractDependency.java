@@ -15,7 +15,6 @@
  */
 package org.seasar.uruma.eclipath.dependency;
 
-import org.apache.maven.artifact.Artifact;
 import org.seasar.uruma.eclipath.ClasspathPolicy;
 
 /**
@@ -25,22 +24,22 @@ import org.seasar.uruma.eclipath.ClasspathPolicy;
  *
  */
 public abstract class AbstractDependency implements Dependency {
-    protected Artifact libraryArtifact;
+    protected EclipathArtifact libraryArtifact;
 
-    protected Artifact sourceArtifact;
+    protected EclipathArtifact sourceArtifact;
 
-    protected Artifact javadocArtifact;
+    protected EclipathArtifact javadocArtifact;
 
     private ClasspathPolicy classpathPolicy;
 
     /**
-     * Constructs a new {@link AbstractDependency} object with {@link Artifact}
-     * object.
-     *
+     * Constructs a new {@link AbstractDependency} object with
+     * {@link EclipathArtifact} object.
+     * 
      * @param artifact
-     *        related {@link Artifact} object
+     *        related {@link EclipathArtifact} object
      */
-    public AbstractDependency(Artifact artifact) {
+    public AbstractDependency(EclipathArtifact artifact) {
         super();
         this.libraryArtifact = artifact;
     }
@@ -49,7 +48,7 @@ public abstract class AbstractDependency implements Dependency {
      * @see org.seasar.uruma.eclipath.dependency.Dependency#getLibraryArtifact()
      */
     @Override
-    public Artifact getLibraryArtifact() {
+    public EclipathArtifact getLibraryArtifact() {
         return libraryArtifact;
     }
 
@@ -57,7 +56,7 @@ public abstract class AbstractDependency implements Dependency {
      * @see org.seasar.uruma.eclipath.dependency.Dependency#setLibraryArtifact(org.apache.maven.artifact.Artifact)
      */
     @Override
-    public void setLibraryArtifact(Artifact artifact) {
+    public void setLibraryArtifact(EclipathArtifact artifact) {
         this.libraryArtifact = artifact;
     }
 
@@ -66,7 +65,7 @@ public abstract class AbstractDependency implements Dependency {
      * @see org.seasar.uruma.eclipath.dependency.Dependency#getSourceArtifact()
      */
     @Override
-    public Artifact getSourceArtifact() {
+    public EclipathArtifact getSourceArtifact() {
         return sourceArtifact;
     }
 
@@ -74,7 +73,7 @@ public abstract class AbstractDependency implements Dependency {
      * @see org.seasar.uruma.eclipath.dependency.Dependency#setSourceArtifact(org.apache.maven.artifact.Artifact)
      */
     @Override
-    public void setSourceArtifact(Artifact srcArtifact) {
+    public void setSourceArtifact(EclipathArtifact srcArtifact) {
         this.sourceArtifact = srcArtifact;
     }
 
@@ -82,7 +81,7 @@ public abstract class AbstractDependency implements Dependency {
      * @see org.seasar.uruma.eclipath.dependency.Dependency#getJavadocArtifact()
      */
     @Override
-    public Artifact getJavadocArtifact() {
+    public EclipathArtifact getJavadocArtifact() {
         return javadocArtifact;
     }
 
@@ -90,7 +89,7 @@ public abstract class AbstractDependency implements Dependency {
      * @see org.seasar.uruma.eclipath.dependency.Dependency#setJavadocArtifact(org.apache.maven.artifact.Artifact)
      */
     @Override
-    public void setJavadocArtifact(Artifact javadocArtifact) {
+    public void setJavadocArtifact(EclipathArtifact javadocArtifact) {
         this.javadocArtifact = javadocArtifact;
     }
 

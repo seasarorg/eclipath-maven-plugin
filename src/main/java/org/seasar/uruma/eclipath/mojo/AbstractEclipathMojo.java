@@ -159,6 +159,8 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
     protected File eclipseProjectDir;
 
+    protected LibraryLayout libraryLayout;
+
     protected ArtifactHelper artifactHelper;
 
     protected DependencyFactory dependencyFactory;
@@ -200,11 +202,11 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
 
         // TODO
-        LibraryLayout layout = new LibraryLayout.FlatLayout();
+        libraryLayout = new LibraryLayout.FlatLayout();
         if (classpathPolicy == ClasspathPolicy.PROJECT) {
-            dependencyFactory = new ProjectBasedDependencyFactory(eclipseProjectDir, layout);
+            dependencyFactory = new ProjectBasedDependencyFactory(eclipseProjectDir, libraryLayout);
         } else if (classpathPolicy == ClasspathPolicy.REPOSITORY) {
-            dependencyFactory = new RepositoryBasedDependencyFactory(eclipseProjectDir, layout);
+            dependencyFactory = new RepositoryBasedDependencyFactory(eclipseProjectDir, libraryLayout);
         }
     }
 

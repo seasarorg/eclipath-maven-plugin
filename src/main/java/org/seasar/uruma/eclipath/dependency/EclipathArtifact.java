@@ -15,6 +15,11 @@
  */
 package org.seasar.uruma.eclipath.dependency;
 
+import static org.seasar.uruma.eclipath.Constants.*;
+
+import java.io.File;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.seasar.uruma.eclipath.Scope;
@@ -60,6 +65,49 @@ public class EclipathArtifact {
         return artifact.getType();
     }
 
+    public boolean isResolved() {
+        return artifact.isResolved();
+    }
+
+    public File getFile() {
+        return artifact.getFile();
+    }
+
+    public String getRepositoryPath() {
+        StringBuilder path = new StringBuilder();
+        String groupId = artifact.getGroupId();
+        if (groupId != null) {
+            path.append(groupId.replace(".", SEP));
+            path.append(SEP);
+        }
+
+        String artifactId = artifact.getArtifactId();
+        path.append(artifactId);
+        path.append(SEP);
+
+        String version = artifact.getVersion();
+        if (version != null) {
+            path.append(version);
+            path.append(SEP);
+        }
+
+        path.append(artifactId);
+        if (version != null) {
+            path.append("-");
+            path.append(version);
+        }
+
+        String classifier = artifact.getClassifier();
+        if (classifier != null) {
+            path.append("-");
+            path.append(classifier);
+        }
+
+        path.append(".");
+        path.append(artifact.getType());
+        return path.toString();
+    }
+
     public String getFileName() {
         StringBuilder buf = new StringBuilder(64);
         buf.append(artifact.getArtifactId());
@@ -79,6 +127,19 @@ public class EclipathArtifact {
         buf.append(".");
         buf.append(artifact.getType());
         return buf.toString();
+    }
+
+    public Pattern getVersionIndependentFileNamePattern() {
+        StringBuilder regex = new StringBuilder();
+        regex.append(".*");
+        regex.append(artifact.getArtifactId().replace(".", "\\."));
+        regex.append("-.+\\.");
+        regex.append(artifact.getType());
+        return Pattern.compile(regex.toString());
+    }
+
+    public Artifact getArtifact() {
+        return artifact;
     }
 
     /*

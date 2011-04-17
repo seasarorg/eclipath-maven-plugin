@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
@@ -32,6 +31,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 
 /**
@@ -78,14 +78,15 @@ public class ArtifactHelper {
         return excluded;
     }
 
-    public Artifact createSourceArtifact(Artifact baseArtifact) {
+    public EclipathArtifact createSourceArtifact(EclipathArtifact baseArtifact) {
         return createArtifactWithClassifier(baseArtifact, "sources");
     }
 
-    public Artifact createJavadocArtifact(Artifact baseArtifact) {
+    public EclipathArtifact createJavadocArtifact(EclipathArtifact baseArtifact) {
         return createArtifactWithClassifier(baseArtifact, "javadoc");
     }
 
+    // TODO delete
     public String getFilename(Artifact artifact) {
         StringBuilder buf = new StringBuilder(64);
         buf.append(artifact.getArtifactId());
@@ -100,18 +101,20 @@ public class ArtifactHelper {
         return buf.toString();
     }
 
-    private Artifact createArtifactWithClassifier(Artifact baseArtifact, String classifier) {
-        String baseClassifier = baseArtifact.getClassifier();
+    private EclipathArtifact createArtifactWithClassifier(EclipathArtifact baseArtifact, String classifier) {
+        String baseClassifier = baseArtifact.classifier();
         if (baseClassifier != null) {
             classifier = baseClassifier + "-" + classifier;
         }
-        return factory.createArtifactWithClassifier(baseArtifact.getGroupId(), baseArtifact.getArtifactId(),
-                baseArtifact.getVersion(), baseArtifact.getType(), classifier);
+        Artifact artifact = factory.createArtifactWithClassifier(baseArtifact.groupId(), baseArtifact.artifactId(),
+                baseArtifact.version(), baseArtifact.type(), classifier);
+        return new EclipathArtifact(artifact);
     }
 
-    public void resolve(Artifact artifact, boolean throwOnError) {
+    public void resolve(EclipathArtifact artifact, boolean throwOnError) {
         // Check if jar is not available
-        String notAvailablePath = workspaceConfigurator.getClasspathVariableM2REPO() + "/" + createJarPath(artifact)
+        String notAvailablePath = workspaceConfigurator.getClasspathVariableM2REPO() + "/"
+                + artifact.getRepositoryPath()
                 + NOT_AVAILABLE_SUFFIX;
         File notAvailableFile = new File(notAvailablePath);
         if (!forceResolve) {
@@ -123,7 +126,7 @@ public class ArtifactHelper {
         }
 
         try {
-            resolver.resolve(artifact, remoteRepositories, localRepository);
+            resolver.resolve(artifact.getArtifact(), remoteRepositories, localRepository);
         } catch (ArtifactResolutionException ex) {
             try {
                 FileUtils.touch(notAvailableFile);
@@ -143,6 +146,7 @@ public class ArtifactHelper {
         }
     }
 
+    // TODO Delete
     public String createJarPath(Artifact artifact) {
         StringBuilder path = new StringBuilder();
         String groupId = artifact.getGroupId();
@@ -176,15 +180,6 @@ public class ArtifactHelper {
         path.append(".");
         path.append(artifact.getType());
         return path.toString();
-    }
-
-    public Pattern getVersionIndependentFileNamePattern(Artifact artifact) {
-        StringBuilder regex = new StringBuilder();
-        regex.append(".*");
-        regex.append(artifact.getArtifactId().replace(".", "\\."));
-        regex.append("-.+\\.");
-        regex.append(artifact.getType());
-        return Pattern.compile(regex.toString());
     }
 
     public boolean isCompileScope(Artifact artifact) {

@@ -17,7 +17,6 @@ package org.seasar.uruma.eclipath.dependency;
 
 import java.io.File;
 
-import org.apache.maven.artifact.Artifact;
 import org.seasar.uruma.eclipath.util.PathUtil;
 
 /**
@@ -33,7 +32,7 @@ public class FileDependency extends AbstractDependency {
 
     private final File javadocDir;
 
-    public FileDependency(Artifact artifact, File libDir) {
+    public FileDependency(EclipathArtifact artifact, File libDir) {
         super(artifact);
         String path = PathUtil.normalizePath(libDir.getAbsolutePath());
         this.libDir = new File(path);
@@ -68,13 +67,31 @@ public class FileDependency extends AbstractDependency {
         return null;
     }
 
+
     /*
-     * @see org.seasar.uruma.eclipath.dependency.Dependency#copyArtifact()
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#copyLibraryArtifact()
      */
     @Override
-    public void copyArtifact() {
+    public File copyLibraryArtifact() {
         // TODO 自動生成されたメソッド・スタブ
-
+        return null;
     }
 
+    /*
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#copySourceArtifact()
+     */
+    @Override
+    public File copySourceArtifact() {
+        // TODO 自動生成されたメソッド・スタブ
+        return null;
+    }
+
+    /*
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#copyJavadocArtifact()
+     */
+    @Override
+    public File copyJavadocArtifact() {
+        // TODO 自動生成されたメソッド・スタブ
+        return null;
+    }
 }

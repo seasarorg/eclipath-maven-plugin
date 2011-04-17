@@ -17,8 +17,8 @@ package org.seasar.uruma.eclipath.dependency.factory;
 
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
 import org.seasar.uruma.eclipath.dependency.Dependency;
+import org.seasar.uruma.eclipath.dependency.EclipathArtifact;
 
 /**
  * @author y-komori
@@ -32,6 +32,6 @@ public interface DependencyFactory {
 
     public void addExcludeScopes(List<String> scopes);
 
-    public Dependency create(Artifact artifact);
+    public Dependency create(EclipathArtifact artifact);
 
 }

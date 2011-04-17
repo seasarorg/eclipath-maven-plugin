@@ -17,7 +17,6 @@ package org.seasar.uruma.eclipath.dependency;
 
 import java.io.File;
 
-import org.apache.maven.artifact.Artifact;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.util.PathUtil;
@@ -32,7 +31,7 @@ public class M2Dependency extends AbstractDependency {
 
     private File m2repoFile;
 
-    public M2Dependency(Artifact artifact) {
+    public M2Dependency(EclipathArtifact artifact) {
         super(artifact);
     }
 
@@ -80,10 +79,29 @@ public class M2Dependency extends AbstractDependency {
     }
 
     /*
-     * @see org.seasar.uruma.eclipath.dependency.Dependency#copyArtifact()
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#copyLibraryArtifact()
      */
     @Override
-    public void copyArtifact() {
+    public File copyLibraryArtifact() {
         // Do nothing.
+        return null;
+    }
+
+    /*
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#copySourceArtifact()
+     */
+    @Override
+    public File copySourceArtifact() {
+        // Do nothing.
+        return null;
+    }
+
+    /*
+     * @see org.seasar.uruma.eclipath.dependency.Dependency#copyJavadocArtifact()
+     */
+    @Override
+    public File copyJavadocArtifact() {
+        // Do nothing.
+        return null;
     }
 }
