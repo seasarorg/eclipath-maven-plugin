@@ -16,13 +16,13 @@
 package org.seasar.uruma.eclipath.model;
 
 import static org.seasar.uruma.eclipath.Constants.*;
+import static org.seasar.uruma.eclipath.util.PathUtil.*;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.seasar.uruma.eclipath.Logger;
-import org.seasar.uruma.eclipath.util.PathUtil;
 
 /**
  * @author y-komori
@@ -35,6 +35,8 @@ public class FileDependency extends AbstractDependency {
 
     public static final String JAVADOC_PREFIX = "javadoc";
 
+    private final File projectDir;
+
     private final File libDir;
 
     private final File sourceDir;
@@ -43,7 +45,8 @@ public class FileDependency extends AbstractDependency {
 
     public FileDependency(EclipathArtifact artifact, File projectDir, String libDir) {
         super(artifact);
-        String path = PathUtil.normalizePath(projectDir.getAbsolutePath()) + "/" + libDir;
+        this.projectDir = projectDir;
+        String path = normalizePath(projectDir.getAbsolutePath()) + "/" + libDir;
         this.libDir = new File(path);
         this.sourceDir = new File(path + "/" + SOURCES_PREFIX);
         this.javadocDir = new File(path + "/" + JAVADOC_PREFIX);
@@ -54,7 +57,8 @@ public class FileDependency extends AbstractDependency {
      */
     @Override
     public String getLibraryPath() {
-        return libDir + "/" + libraryArtifact.getFileName();
+        String parent = normalizePath(getRelativePath(projectDir, libDir));
+        return parent + "/" + libraryArtifact.getFileName();
     }
 
     /*
@@ -62,7 +66,8 @@ public class FileDependency extends AbstractDependency {
      */
     @Override
     public String getSourcePath() {
-        return libDir + "/" + SOURCES_PREFIX + "/" + sourceArtifact.getFileName();
+        String parent = normalizePath(getRelativePath(projectDir, sourceDir));
+        return parent + "/" + sourceArtifact.getFileName();
     }
 
     /*
@@ -70,7 +75,8 @@ public class FileDependency extends AbstractDependency {
      */
     @Override
     public String getJavadocPath() {
-        return libDir + "/" + JAVADOC_PREFIX + "/" + javadocArtifact.getFileName();
+        String parent = normalizePath(getRelativePath(projectDir, javadocDir));
+        return parent + "/" + javadocArtifact.getFileName();
     }
 
     /*
@@ -98,6 +104,10 @@ public class FileDependency extends AbstractDependency {
     }
 
     private File copyDependency(EclipathArtifact artifact, File toDir) throws IOException {
+        if (artifact == null || !artifact.isResolved()) {
+            return null;
+        }
+
         File srcFile = artifact.getFile();
         File destFile = new File(toDir.getAbsolutePath() + SEP + srcFile.getName());
         if (!destFile.exists() || srcFile.lastModified() > destFile.lastModified()) {
@@ -106,4 +116,13 @@ public class FileDependency extends AbstractDependency {
         }
         return destFile;
     }
+
+    /*
+     * @see org.seasar.uruma.eclipath.model.Dependency#getClasspathKind()
+     */
+    @Override
+    public ClasspathKind getClasspathKind() {
+        return ClasspathKind.LIB;
+    }
+
 }

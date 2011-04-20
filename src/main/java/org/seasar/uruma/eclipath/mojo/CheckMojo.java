@@ -15,6 +15,7 @@
  */
 package org.seasar.uruma.eclipath.mojo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -50,11 +51,22 @@ public class CheckMojo extends AbstractEclipathMojo {
         Set<EclipathArtifact> dependingArtifacts = getEclipathArtifacts();
         List<Dependency> dependencies = resolveArtifacts(dependingArtifacts);
         for (Dependency dependency : dependencies) {
-            System.out.println(dependency);
-            System.out.println("   " + dependency.getLibraryPath());
-            System.out.println("   " + dependency.getSourcePath());
-            System.out.println("   " + dependency.getJavadocPath());
+            try {
+                dependency.copyLibraryArtifact();
+                dependency.copySourceArtifact();
+                dependency.copyJavadocArtifact();
+
+                String libraryPath = dependency.getLibraryPath();
+                String sourcePath = dependency.getSourcePath();
+                String javadocPath = dependency.getJavadocPath();
+                eclipseClasspath.addClasspathEntry(dependency.getClasspathKind(), libraryPath, sourcePath, javadocPath);
+            } catch (IOException ex) {
+                // TODO: handle exception
+            }
         }
+
+        // Write ".classpath" file
+        eclipseClasspath.write();
     }
 
     protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts) {

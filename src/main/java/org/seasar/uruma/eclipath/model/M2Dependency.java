@@ -104,4 +104,12 @@ public class M2Dependency extends AbstractDependency {
         // Do nothing.
         return null;
     }
+
+    /*
+     * @see org.seasar.uruma.eclipath.model.Dependency#getClasspathKind()
+     */
+    @Override
+    public ClasspathKind getClasspathKind() {
+        return ClasspathKind.VAR;
+    }
 }

@@ -17,7 +17,6 @@ package org.seasar.uruma.eclipath.mojo;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 
 /**
@@ -34,12 +33,8 @@ public class ConfigureWorkspaceMojo extends AbstractEclipathMojo {
      */
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException {
-        WorkspaceConfigurator configurator = new WorkspaceConfigurator(project);
-        configurator.loadConfiguration();
-        configurator.setLocalRepositoryDir(localRepository.getBasedir());
-
         try {
-            configurator.configure();
+            workspaceConfigurator.configure();
         } catch (PluginRuntimeException ex) {
             throw new MojoExecutionException(ex.getMessage(), ex.getCause());
         }

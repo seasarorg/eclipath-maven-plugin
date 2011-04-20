@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
@@ -18,6 +18,7 @@ package org.seasar.uruma.eclipath;
 import java.io.File;
 
 import org.apache.maven.project.MavenProject;
+import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.util.PathUtil;
 import org.seasar.uruma.eclipath.util.ProjectUtil;
 
@@ -52,7 +53,7 @@ public class WorkspaceConfigurator {
     }
 
     /**
-     * 
+     *
      */
     public void loadConfiguration() {
         eclipseJdtCorePrefs = new PropertiesFile(createEclipseJdtCorePrefsFile());
@@ -60,12 +61,20 @@ public class WorkspaceConfigurator {
     }
 
     /**
-     * 
+     *
      */
     public void configure() {
         String localRepositoryDir = PathUtil.normalizePath(this.localRepositoryDir);
         eclipseJdtCorePrefs.put(CLASSPATH_VARIABLE_M2_REPO, localRepositoryDir);
         eclipseJdtCorePrefs.store();
+    }
+
+    public void checkConfigure() {
+        String localRespositoryDir = eclipseJdtCorePrefs.get(CLASSPATH_VARIABLE_M2_REPO);
+        if (!PathUtil.normalizePath(this.localRepositoryDir).equals(localRespositoryDir)) {
+            throw new PluginRuntimeException("Workspace is not configured.\n"
+                    + "       Please execute configure-workspace goal first.");
+        }
     }
 
     /**

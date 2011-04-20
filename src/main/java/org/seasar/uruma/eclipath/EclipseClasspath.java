@@ -86,6 +86,10 @@ public class EclipseClasspath {
 
     protected Document document;
 
+    protected Element classpathElement;
+
+    protected boolean isChanged;
+
     /**
      * Constructs new instance.
      * 
@@ -98,8 +102,10 @@ public class EclipseClasspath {
 
     public Document load() {
         if (classpathFile.exists()) {
+            isChanged = false;
             return loadDotClassPath(classpathFile);
         } else {
+            isChanged = true;
             return createEmptyDotClassPath();
         }
     }
@@ -110,7 +116,8 @@ public class EclipseClasspath {
         try {
             builder = factory.newDocumentBuilder();
             Document document = builder.newDocument();
-            document.appendChild(document.createElement(ELEMENT_CLASSPATH));
+            classpathElement = document.createElement(ELEMENT_CLASSPATH);
+            document.appendChild(classpathElement);
             return document;
         } catch (ParserConfigurationException ex) {
             throw new PluginRuntimeException(ex);
@@ -124,6 +131,7 @@ public class EclipseClasspath {
         try {
             builder = factory.newDocumentBuilder();
             document = builder.parse(file);
+            classpathElement = document.getDocumentElement();
 
             NodeList nodeList = document.getElementsByTagName(ELEMENT_CLASSPATHENTRY);
             int length = nodeList.getLength();
@@ -138,19 +146,25 @@ public class EclipseClasspath {
     }
 
     public void addClasspathEntry(ClasspathKind kind, String path, String sourcePath, String javadocPath) {
-        if (kind != ClasspathKind.LIB || kind != ClasspathKind.VAR) {
+        if (kind != ClasspathKind.LIB && kind != ClasspathKind.VAR) {
             throw new IllegalArgumentException("kind must be 'lib' or 'var'");
         }
 
-        Element entry = document.createElement(ELEMENT_CLASSPATHENTRY);
+        Element entry = findClasspathEntry(path);
+        if (entry == null) {
+            entry = document.createElement(ELEMENT_CLASSPATHENTRY);
+            classpathElement.appendChild(entry);
+        }
         entry.setAttribute(ATTR_KIND, kind.toString());
         entry.setAttribute(ATTR_PATH, path);
+
         if (sourcePath != null) {
             entry.setAttribute(ATTR_SOURCEPATH, sourcePath);
         }
         if (javadocPath != null) {
             addAttributeElement(entry, ATTRNAME_JAVADOC_LOCATION, javadocPath);
         }
+        isChanged = true;
         return;
     }
 
@@ -181,6 +195,19 @@ public class EclipseClasspath {
         }
 
         attributesElement.appendChild(attributeElement);
+        isChanged = true;
+    }
+
+    public Element findClasspathEntry(String path) {
+        NodeList elements = document.getElementsByTagName(ELEMENT_CLASSPATHENTRY);
+        int size = elements.getLength();
+        for (int i = 0; i < size; i++) {
+            Element element = (Element) (elements.item(i));
+            if (path.equals(element.getAttribute(ATTR_PATH))) {
+                return element;
+            }
+        }
+        return null;
     }
 
     public List<Element> findClasspathEntry(Pattern pattern) {
@@ -199,7 +226,6 @@ public class EclipseClasspath {
     }
 
     public void removeClasspathEntries(List<Element> entries) {
-        Element classpathElement = document.getDocumentElement();
         for (Element entry : entries) {
             Node nextSibling = entry.getNextSibling();
             Node removed = classpathElement.removeChild(entry);
@@ -207,6 +233,7 @@ public class EclipseClasspath {
                 if (nextSibling != null && isWhitespaceText(nextSibling)) {
                     classpathElement.removeChild(nextSibling);
                 }
+                isChanged = true;
             }
         }
     }
@@ -221,6 +248,11 @@ public class EclipseClasspath {
     }
 
     public void write() {
+        if (!isChanged) {
+            Logger.info(".classpath is not changed.");
+            return;
+        }
+
         BufferedOutputStream os = null;
         try {
             os = new BufferedOutputStream(new FileOutputStream(classpathFile));
@@ -232,7 +264,6 @@ public class EclipseClasspath {
         } finally {
             IOUtils.closeQuietly(os);
         }
-
     }
 
     private void writeDocument(OutputStream out) {

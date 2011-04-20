@@ -49,4 +49,6 @@ public interface Dependency {
     public File copySourceArtifact() throws IOException;
 
     public File copyJavadocArtifact() throws IOException;
+
+    public ClasspathKind getClasspathKind();
 }

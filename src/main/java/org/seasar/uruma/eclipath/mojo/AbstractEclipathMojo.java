@@ -34,6 +34,7 @@ import org.seasar.uruma.eclipath.ArtifactHelper;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.PluginInformation;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
+import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.model.ClasspathPolicy;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.seasar.uruma.eclipath.model.factory.DependencyFactory;
@@ -174,15 +175,19 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
      */
     @Override
     public final void execute() throws MojoExecutionException, MojoFailureException {
-        Logger.initialize(getLog());
+        try {
+            Logger.initialize(getLog());
 
-        if (!checkParameters()) {
-            return;
+            if (!checkParameters()) {
+                return;
+            }
+
+            prepare();
+
+            doExecute();
+        } catch (PluginRuntimeException ex) {
+            throw new MojoExecutionException(ex.getMessage(), ex.getCause());
         }
-
-        prepare();
-
-        doExecute();
     }
 
     protected abstract void doExecute() throws MojoExecutionException, MojoFailureException;
@@ -190,6 +195,7 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     protected void prepare() {
         workspaceConfigurator = new WorkspaceConfigurator(project);
         workspaceConfigurator.loadConfiguration();
+        workspaceConfigurator.setLocalRepositoryDir(localRepository.getBasedir());
 
         artifactHelper = new ArtifactHelper();
         artifactHelper.setFactory(artifactFactory);
@@ -207,6 +213,10 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
             dependencyFactory = new ProjectBasedDependencyFactory(eclipseProjectDir, libraryLayout);
         } else if (classpathPolicy == ClasspathPolicy.REPOSITORY) {
             dependencyFactory = new RepositoryBasedDependencyFactory(eclipseProjectDir, libraryLayout);
+        }
+
+        if (!getClass().getName().equals(ConfigureWorkspaceMojo.class.getName())) {
+            workspaceConfigurator.checkConfigure();
         }
     }
 
