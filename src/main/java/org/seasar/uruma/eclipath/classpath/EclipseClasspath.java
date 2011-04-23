@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.uruma.eclipath;
+package org.seasar.uruma.eclipath.classpath;
 
 import static org.seasar.uruma.eclipath.Constants.*;
 
@@ -40,6 +40,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.model.ClasspathKind;
 import org.w3c.dom.Document;
