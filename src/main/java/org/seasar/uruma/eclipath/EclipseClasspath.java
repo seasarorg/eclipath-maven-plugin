@@ -150,11 +150,8 @@ public class EclipseClasspath {
             throw new IllegalArgumentException("kind must be 'lib' or 'var'");
         }
 
-        Element entry = findClasspathEntry(path);
-        if (entry == null) {
-            entry = document.createElement(ELEMENT_CLASSPATHENTRY);
-            classpathElement.appendChild(entry);
-        }
+        Element entry = document.createElement(ELEMENT_CLASSPATHENTRY);
+        classpathElement.appendChild(entry);
         entry.setAttribute(ATTR_KIND, kind.toString());
         entry.setAttribute(ATTR_PATH, path);
 
@@ -227,15 +224,23 @@ public class EclipseClasspath {
 
     public void removeClasspathEntries(List<Element> entries) {
         for (Element entry : entries) {
-            Node nextSibling = entry.getNextSibling();
-            Node removed = classpathElement.removeChild(entry);
-            if (removed != null) {
-                if (nextSibling != null && isWhitespaceText(nextSibling)) {
-                    classpathElement.removeChild(nextSibling);
-                }
-                isChanged = true;
-            }
+            removeClasspathEntry(entry);
         }
+    }
+
+    public void removeClasspathEntry(Element entry) {
+        Node nextSibling = entry.getNextSibling();
+        Node removed = classpathElement.removeChild(entry);
+        if (removed != null) {
+            if (nextSibling != null && isWhitespaceText(nextSibling)) {
+                classpathElement.removeChild(nextSibling);
+            }
+            isChanged = true;
+        }
+    }
+
+    public String getPath(Element classpathEntry) {
+        return classpathEntry.getAttribute(ATTR_PATH);
     }
 
     public boolean isWhitespaceText(Node node) {

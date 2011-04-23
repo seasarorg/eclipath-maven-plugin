@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -27,6 +28,7 @@ import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
+import org.w3c.dom.Element;
 
 /**
  * @goal check
@@ -52,21 +54,40 @@ public class CheckMojo extends AbstractEclipathMojo {
         List<Dependency> dependencies = resolveArtifacts(dependingArtifacts);
         for (Dependency dependency : dependencies) {
             try {
+                // Copy artifacts
                 dependency.copyLibraryArtifact();
                 dependency.copySourceArtifact();
                 dependency.copyJavadocArtifact();
 
+                // Add to classpath
                 String libraryPath = dependency.getLibraryPath();
                 String sourcePath = dependency.getSourcePath();
                 String javadocPath = dependency.getJavadocPath();
+
+                // Remove old version libraries (if exists)
+                updateClasspathEntry(eclipseClasspath, dependency);
+
                 eclipseClasspath.addClasspathEntry(dependency.getClasspathKind(), libraryPath, sourcePath, javadocPath);
+                Logger.info("Library path added.   : " + libraryPath);
             } catch (IOException ex) {
-                // TODO: handle exception
+                // TODO: handle exceptions
             }
         }
 
         // Write ".classpath" file
         eclipseClasspath.write();
+    }
+
+    protected void updateClasspathEntry(EclipseClasspath eclipseClasspath, Dependency dependency) {
+        Pattern pattern = dependency.getLibraryArtifact().getVersionIndependentFileNamePattern();
+        List<Element> oldVersionEntries = eclipseClasspath.findClasspathEntry(pattern);
+        for (Element entry : oldVersionEntries) {
+            String path = eclipseClasspath.getPath(entry);
+            eclipseClasspath.removeClasspathEntry(entry);
+            if (!path.equals(dependency.getLibraryPath())) {
+                Logger.info("Library path removed. : " + eclipseClasspath.getPath(entry));
+            }
+        }
     }
 
     protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts) {
