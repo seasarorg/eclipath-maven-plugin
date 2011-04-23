@@ -15,11 +15,12 @@
  */
 package org.seasar.uruma.eclipath.model;
 
+import static org.seasar.uruma.eclipath.util.PathUtil.*;
+
 import java.io.File;
 
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
-import org.seasar.uruma.eclipath.util.PathUtil;
 
 /**
  * @author y-komori
@@ -31,8 +32,9 @@ public class M2Dependency extends AbstractDependency {
 
     private File m2repoFile;
 
-    public M2Dependency(EclipathArtifact artifact) {
+    public M2Dependency(EclipathArtifact artifact, String m2repo) {
         super(artifact);
+        setM2repo(m2repo);
     }
 
     public void setM2repo(String m2repo) {
@@ -48,7 +50,7 @@ public class M2Dependency extends AbstractDependency {
     @Override
     public String getLibraryPath() {
         File libFile = libraryArtifact.getFile();
-        String libPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repoFile, libFile);
+        String libPath = WorkspaceConfigurator.M2_REPO + "/" + getRelativePath(m2repoFile, libFile);
         return libPath;
     }
 
@@ -59,7 +61,7 @@ public class M2Dependency extends AbstractDependency {
     public String getSourcePath() {
         if (sourceArtifact != null && sourceArtifact.isResolved()) {
             File srcFile = sourceArtifact.getFile();
-            String srcPath = WorkspaceConfigurator.M2_REPO + "/" + PathUtil.getRelativePath(m2repoFile, srcFile);
+            String srcPath = WorkspaceConfigurator.M2_REPO + "/" + getRelativePath(m2repoFile, srcFile);
             return srcPath;
         }
         return null;
@@ -72,7 +74,7 @@ public class M2Dependency extends AbstractDependency {
     public String getJavadocPath() {
         if (javadocArtifact != null && javadocArtifact.isResolved()) {
             File javadocFile = javadocArtifact.getFile();
-            String javadocPath = "jar:file:/" + PathUtil.normalizePath(javadocFile.getAbsolutePath()) + "!/";
+            String javadocPath = "jar:file:/" + normalizePath(javadocFile.getAbsolutePath()) + "!/";
             return javadocPath;
         }
         return null;

@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.seasar.uruma.eclipath.Scope;
 import org.seasar.uruma.eclipath.util.AssertionUtil;
 
 /**

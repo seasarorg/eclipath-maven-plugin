@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.seasar.uruma.eclipath.util.AssertionUtil;
 
@@ -31,16 +32,20 @@ import org.seasar.uruma.eclipath.util.AssertionUtil;
 public abstract class AbstractDependencyFactory implements DependencyFactory {
     protected File projectDir;
 
+    protected WorkspaceConfigurator workspaceConfigurator;
+
     protected LibraryLayout layout;
 
     protected List<String> excludeGroupIds = new ArrayList<String>();
 
     protected List<String> excludeScopes = new ArrayList<String>();
 
-    public AbstractDependencyFactory(File projectDir, LibraryLayout layout) {
+    public AbstractDependencyFactory(File projectDir, WorkspaceConfigurator workspaceConfigurator, LibraryLayout layout) {
         AssertionUtil.assertNotNull("projectDir", projectDir);
+        AssertionUtil.assertNotNull("workspaceConfigurator", workspaceConfigurator);
         AssertionUtil.assertNotNull("layout", layout);
         this.projectDir = projectDir;
+        this.workspaceConfigurator = workspaceConfigurator;
         this.layout = layout;
     }
 

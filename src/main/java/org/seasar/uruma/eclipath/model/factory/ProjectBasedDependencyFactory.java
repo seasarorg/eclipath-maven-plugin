@@ -17,11 +17,12 @@ package org.seasar.uruma.eclipath.model.factory;
 
 import java.io.File;
 
-import org.seasar.uruma.eclipath.Scope;
+import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.seasar.uruma.eclipath.model.FileDependency;
 import org.seasar.uruma.eclipath.model.M2Dependency;
+import org.seasar.uruma.eclipath.model.Scope;
 
 /**
  * @author y-komori
@@ -31,8 +32,9 @@ import org.seasar.uruma.eclipath.model.M2Dependency;
  */
 public class ProjectBasedDependencyFactory extends AbstractDependencyFactory {
 
-    public ProjectBasedDependencyFactory(File projectDir, LibraryLayout layout) {
-        super(projectDir, layout);
+    public ProjectBasedDependencyFactory(File projectDir, WorkspaceConfigurator workspaceConfigurator,
+            LibraryLayout layout) {
+        super(projectDir, workspaceConfigurator, layout);
     }
 
     /*
@@ -46,7 +48,7 @@ public class ProjectBasedDependencyFactory extends AbstractDependencyFactory {
             String libDir = layout.getLibDir(scope);
             dependency = new FileDependency(artifact, projectDir, libDir);
         } else {
-            dependency = new M2Dependency(artifact);
+            dependency = new M2Dependency(artifact, workspaceConfigurator.getClasspathVariableM2REPO());
         }
         return dependency;
     }

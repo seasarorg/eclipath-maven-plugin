@@ -15,7 +15,7 @@
  */
 package org.seasar.uruma.eclipath.model.factory;
 
-import org.seasar.uruma.eclipath.Scope;
+import org.seasar.uruma.eclipath.model.Scope;
 
 /**
  * @author y-komori

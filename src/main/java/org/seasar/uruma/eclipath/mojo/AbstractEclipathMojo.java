@@ -207,12 +207,14 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
 
-        // TODO
+        // TODO GetLayout from configuration
         libraryLayout = new LibraryLayout.FlatLayout();
         if (classpathPolicy == ClasspathPolicy.PROJECT) {
-            dependencyFactory = new ProjectBasedDependencyFactory(eclipseProjectDir, libraryLayout);
+            dependencyFactory = new ProjectBasedDependencyFactory(eclipseProjectDir, workspaceConfigurator,
+                    libraryLayout);
         } else if (classpathPolicy == ClasspathPolicy.REPOSITORY) {
-            dependencyFactory = new RepositoryBasedDependencyFactory(eclipseProjectDir, libraryLayout);
+            dependencyFactory = new RepositoryBasedDependencyFactory(eclipseProjectDir, workspaceConfigurator,
+                    libraryLayout);
         }
 
         if (!getClass().getName().equals(ConfigureWorkspaceMojo.class.getName())) {

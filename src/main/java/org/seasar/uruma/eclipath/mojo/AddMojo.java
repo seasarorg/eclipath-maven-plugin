@@ -32,7 +32,7 @@ import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.w3c.dom.Element;
 
 /**
- * @goal check
+ * @goal add
  * @requiresDependencyResolution test
  * @phase process-sources
  * 
@@ -40,7 +40,7 @@ import org.w3c.dom.Element;
  * @author $Author$
  * @version $Revision$ $Date$
  */
-public class CheckMojo extends AbstractEclipathMojo {
+public class AddMojo extends AbstractEclipathMojo {
     /*
      * @see org.seasar.uruma.eclipath.mojo.AbstractEclipathMojo#doExecute()
      */
