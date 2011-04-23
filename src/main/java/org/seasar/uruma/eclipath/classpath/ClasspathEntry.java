@@ -19,6 +19,7 @@ import static org.seasar.uruma.eclipath.classpath.EclipseClasspath.*;
 
 import org.seasar.uruma.eclipath.model.ClasspathKind;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * A class which represents .classpath file's "classpathentry" element.
@@ -54,7 +55,15 @@ public class ClasspathEntry {
         classpathKind = ClasspathKind.valueOf(element.getAttribute(ATTR_KIND).toUpperCase());
         path = element.getAttribute(ATTR_PATH);
         sourcePath = element.getAttribute(ATTR_SOURCEPATH);
-        javadocLocation = element.getAttribute(ATTRNAME_JAVADOC_LOCATION);
+        NodeList attributes = element.getElementsByTagName(ELEMENT_ATTRIBUTE);
+        int length = attributes.getLength();
+        for (int i = 0; i < length; i++) {
+            Element attribute = (Element) attributes.item(i);
+            if (ATTRNAME_JAVADOC_LOCATION.equals(attribute.getAttribute(ATTR_NAME))) {
+                javadocLocation = attribute.getAttribute(ATTR_VALUE);
+                break;
+            }
+        }
     }
 
     public ClasspathKind getClasspathKind() {

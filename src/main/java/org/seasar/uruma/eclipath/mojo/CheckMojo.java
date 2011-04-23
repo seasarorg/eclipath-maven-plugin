@@ -60,7 +60,6 @@ public class CheckMojo extends AbstractEclipathMojo {
                 dependency.copySourceArtifact();
                 dependency.copyJavadocArtifact();
 
-
                 // Remove old version libraries (if exists)
                 if (removeDuplicatedClasspathEntry(eclipseClasspath, dependency)) {
                     // Add to classpath

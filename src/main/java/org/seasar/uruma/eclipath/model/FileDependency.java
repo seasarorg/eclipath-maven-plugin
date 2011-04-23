@@ -75,8 +75,14 @@ public class FileDependency extends AbstractDependency {
      */
     @Override
     public String getJavadocPath() {
-        String parent = normalizePath(getRelativePath(projectDir, javadocDir));
-        return parent + "/" + javadocArtifact.getFileName();
+        String path = "jar:platform:/resource/";
+        path += projectDir.getName();
+        path += "/";
+        path += normalizePath(getRelativePath(projectDir, javadocDir));
+        path += "/";
+        path += javadocArtifact.getFileName();
+        path += "!/";
+        return path;
     }
 
     /*
