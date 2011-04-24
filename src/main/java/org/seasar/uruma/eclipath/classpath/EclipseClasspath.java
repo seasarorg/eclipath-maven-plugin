@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -146,6 +147,25 @@ public class EclipseClasspath {
         }
     }
 
+    public List<ClasspathEntry> getAllClasspathEntries() {
+        List<ClasspathEntry> result = new ArrayList<ClasspathEntry>();
+        NodeList childNodes = classpathElement.getChildNodes();
+        int size = childNodes.getLength();
+        for (int i = 0; i < size; i++) {
+            Node item = childNodes.item(i);
+            if (item instanceof Element) {
+                Element element = (Element) item;
+                String nodeName = element.getNodeName();
+                String kind = element.getAttribute(ATTR_KIND);
+                if (ELEMENT_CLASSPATHENTRY.equals(nodeName) && (KIND_LIB.equals(kind) || KIND_VAR.equals(kind))) {
+                    ClasspathEntry entry = new ClasspathEntry(element);
+                    result.add(entry);
+                }
+            }
+        }
+        return result;
+    }
+
     public void addClasspathEntry(ClasspathKind kind, String path, String sourcePath, String javadocPath) {
         if (kind != ClasspathKind.LIB && kind != ClasspathKind.VAR) {
             throw new IllegalArgumentException("kind must be 'lib' or 'var'");
@@ -223,13 +243,22 @@ public class EclipseClasspath {
         return result;
     }
 
-    public void removeClasspathEntries(List<Element> entries) {
-        for (Element entry : entries) {
-            removeClasspathEntry(entry);
+    public void removeClasspathEntries(Collection<ClasspathEntry> entries) {
+        for (ClasspathEntry entry : entries) {
+            Element target = findClasspathEntry(entry.getPath());
+            if (target != null) {
+                removeClasspathEntryElement(target);
+            }
         }
     }
 
-    public void removeClasspathEntry(Element entry) {
+    public void removeClasspathEntryElements(Collection<Element> entries) {
+        for (Element entry : entries) {
+            removeClasspathEntryElement(entry);
+        }
+    }
+
+    public void removeClasspathEntryElement(Element entry) {
         Node nextSibling = entry.getNextSibling();
         Node removed = classpathElement.removeChild(entry);
         if (removed != null) {

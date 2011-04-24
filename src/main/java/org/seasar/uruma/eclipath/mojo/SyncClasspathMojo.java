@@ -134,7 +134,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
             // Remove existing class path entry
             List<Element> existenceEntries = eclipseClasspath.findClasspathEntry(artifact
                     .getVersionIndependentFileNamePattern());
-            eclipseClasspath.removeClasspathEntries(existenceEntries);
+            eclipseClasspath.removeClasspathEntryElements(existenceEntries);
 
             // Add new class path entry
             eclipseClasspath.addClasspathEntry(ClasspathKind.VAR, libPath, srcPath, javadocPath);
@@ -179,7 +179,7 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
 
                 // Remove existing class path entry
                 List<Element> existenceEntries = eclipseClasspath.findClasspathEntry(dependency.getLibraryArtifact().getVersionIndependentFileNamePattern());
-                eclipseClasspath.removeClasspathEntries(existenceEntries);
+                eclipseClasspath.removeClasspathEntryElements(existenceEntries);
 
                 // Add new class path entry
                 eclipseClasspath.addClasspathEntry(ClasspathKind.LIB, path, srcPath, javadocPath);

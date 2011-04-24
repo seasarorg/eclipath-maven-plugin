@@ -17,7 +17,9 @@ package org.seasar.uruma.eclipath.mojo;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -61,39 +63,50 @@ public class AddMojo extends AbstractEclipathMojo {
                 dependency.copyJavadocArtifact();
 
                 // Remove old version libraries (if exists)
-                if (removeDuplicatedClasspathEntry(eclipseClasspath, dependency)) {
-                    // Add to classpath
-                    String libraryPath = dependency.getLibraryPath();
-                    String sourcePath = dependency.getSourcePath();
-                    String javadocPath = dependency.getJavadocPath();
+                removeDuplicatedClasspathEntry(eclipseClasspath, dependency);
 
+                // Add to classpath
+                String libraryPath = dependency.getLibraryPath();
+                String sourcePath = dependency.getSourcePath();
+                String javadocPath = dependency.getJavadocPath();
+                if (eclipseClasspath.findClasspathEntry(libraryPath) == null) {
                     eclipseClasspath.addClasspathEntry(dependency.getClasspathKind(), libraryPath, sourcePath,
                             javadocPath);
-                    Logger.info("Library path added.   : " + libraryPath);
+                    Logger.info("Library added.   : " + libraryPath);
                 }
             } catch (IOException ex) {
                 // TODO: handle exceptions
             }
         }
 
+        // Remove classpathentries which doesn't exist in pom.xml
+        Map<String, ClasspathEntry> entryMap = new HashMap<String, ClasspathEntry>();
+        for (ClasspathEntry entry : eclipseClasspath.getAllClasspathEntries()) {
+            entryMap.put(entry.getPath(), entry);
+        }
+        for (Dependency dependency : dependencies) {
+            String libraryPath = dependency.getLibraryPath();
+            if (entryMap.containsKey(libraryPath)) {
+                entryMap.remove(libraryPath);
+            }
+        }
+        eclipseClasspath.removeClasspathEntries(entryMap.values());
+
         // Write ".classpath" file
         eclipseClasspath.write();
     }
 
-    protected boolean removeDuplicatedClasspathEntry(EclipseClasspath eclipseClasspath, Dependency dependency) {
+    protected void removeDuplicatedClasspathEntry(EclipseClasspath eclipseClasspath, Dependency dependency) {
         Pattern pattern = dependency.getLibraryArtifact().getVersionIndependentFileNamePattern();
         List<Element> oldVersionEntries = eclipseClasspath.findClasspathEntry(pattern);
-        boolean removed = false;
         for (Element entry : oldVersionEntries) {
             ClasspathEntry existingEntry = new ClasspathEntry(entry);
             ClasspathEntry newEntry = createClasspathEntry(dependency);
             if (!newEntry.equals(existingEntry)) {
-                eclipseClasspath.removeClasspathEntry(entry);
-                removed = true;
-                Logger.info("Library path removed. : " + eclipseClasspath.getPath(entry));
+                eclipseClasspath.removeClasspathEntryElement(entry);
+                Logger.info("Library removed. : " + eclipseClasspath.getPath(entry));
             }
         }
-        return removed;
     }
 
     protected ClasspathEntry createClasspathEntry(Dependency dependency) {

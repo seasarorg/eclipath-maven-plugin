@@ -143,4 +143,14 @@ public class ClasspathEntry {
             return false;
         return true;
     }
+
+    /*
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ClasspathEntry [classpathKind=" + classpathKind + ", path=" + path + ", sourcePath=" + sourcePath
+                + ", javadocLocation=" + javadocLocation + "]";
+    }
+
 }
