@@ -45,11 +45,10 @@ import org.seasar.uruma.eclipath.util.PathUtil;
 import org.w3c.dom.Element;
 
 /**
- * @goal sync-classpath
  * @requiresDependencyResolution test
  * @phase process-sources
  */
-public class SyncClasspathMojo extends AbstractEclipathMojo {
+public class OldSyncClasspathMojo extends AbstractEclipathMojo {
 
     @Override
     public void doExecute() throws MojoExecutionException {
