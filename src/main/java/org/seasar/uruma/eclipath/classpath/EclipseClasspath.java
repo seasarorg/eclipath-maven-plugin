@@ -182,6 +182,7 @@ public class EclipseClasspath {
         if (javadocPath != null) {
             addAttributeElement(entry, ATTRNAME_JAVADOC_LOCATION, javadocPath);
         }
+        Logger.info("Library added.   : " + path);
         isChanged = true;
         return;
     }
@@ -245,10 +246,14 @@ public class EclipseClasspath {
 
     public void removeClasspathEntries(Collection<ClasspathEntry> entries) {
         for (ClasspathEntry entry : entries) {
-            Element target = findClasspathEntry(entry.getPath());
-            if (target != null) {
-                removeClasspathEntryElement(target);
-            }
+            removeClasspathEntry(entry);
+        }
+    }
+
+    public void removeClasspathEntry(ClasspathEntry entry) {
+        Element target = findClasspathEntry(entry.getPath());
+        if (target != null) {
+            removeClasspathEntryElement(target);
         }
     }
 
@@ -265,6 +270,7 @@ public class EclipseClasspath {
             if (nextSibling != null && isWhitespaceText(nextSibling)) {
                 classpathElement.removeChild(nextSibling);
             }
+            Logger.info("Library removed. : " + entry.getAttribute(ATTR_PATH));
             isChanged = true;
         }
     }

@@ -72,7 +72,6 @@ public class AddMojo extends AbstractEclipathMojo {
                 if (eclipseClasspath.findClasspathEntry(libraryPath) == null) {
                     eclipseClasspath.addClasspathEntry(dependency.getClasspathKind(), libraryPath, sourcePath,
                             javadocPath);
-                    Logger.info("Library added.   : " + libraryPath);
                 }
             } catch (IOException ex) {
                 // TODO: handle exceptions
@@ -90,6 +89,9 @@ public class AddMojo extends AbstractEclipathMojo {
                 entryMap.remove(libraryPath);
             }
         }
+        for (ClasspathEntry entry : entryMap.values()) {
+            eclipseClasspath.removeClasspathEntry(entry);
+        }
         eclipseClasspath.removeClasspathEntries(entryMap.values());
 
         // Write ".classpath" file
@@ -104,7 +106,6 @@ public class AddMojo extends AbstractEclipathMojo {
             ClasspathEntry newEntry = createClasspathEntry(dependency);
             if (!newEntry.equals(existingEntry)) {
                 eclipseClasspath.removeClasspathEntryElement(entry);
-                Logger.info("Library removed. : " + eclipseClasspath.getPath(entry));
             }
         }
     }
