@@ -131,4 +131,27 @@ public class FileDependency extends AbstractDependency {
         return ClasspathKind.LIB;
     }
 
+    public File getLibraryFile() {
+        if (libraryArtifact != null) {
+            return new File(libDir.getAbsolutePath() + SEP + libraryArtifact.getFileName());
+        } else {
+            return null;
+        }
+    }
+
+    public File getSourceFile() {
+        if (sourceArtifact != null) {
+            return new File(sourceDir.getAbsolutePath() + SEP + sourceArtifact.getFileName());
+        } else {
+            return null;
+        }
+    }
+
+    public File getJavadocFile() {
+        if (javadocArtifact != null) {
+            return new File(javadocDir.getAbsolutePath() + SEP + javadocArtifact.getFileName());
+        } else {
+            return null;
+        }
+    }
 }

@@ -16,7 +16,6 @@
 package org.seasar.uruma.eclipath.mojo;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +24,8 @@ import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.classpath.ClasspathEntry;
 import org.seasar.uruma.eclipath.classpath.EclipseClasspath;
-import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.w3c.dom.Element;
@@ -117,37 +114,5 @@ public class SyncMojo extends AbstractEclipathMojo {
         entry.setSourcePath(dependency.getSourcePath());
         entry.setJavadocLocation(dependency.getJavadocPath());
         return entry;
-    }
-
-    protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts) {
-        List<Dependency> dependencies = new ArrayList<Dependency>(artifacts.size());
-
-        for (EclipathArtifact artifact : artifacts) {
-            // Build dependency objects
-            Dependency dependency = dependencyFactory.create(artifact);
-            dependencies.add(dependency);
-
-            // Get artifact
-            if (!artifact.isResolved()) {
-                try {
-                    artifactHelper.resolve(artifact, true);
-                } catch (ArtifactResolutionRuntimeException ex) {
-                    Logger.error(ex.getLocalizedMessage(), ex.getCause());
-                    continue;
-                }
-            }
-
-            // Create source artifact
-            EclipathArtifact srcArtifact = artifactHelper.createSourceArtifact(artifact);
-            artifactHelper.resolve(srcArtifact, false);
-            dependency.setSourceArtifact(srcArtifact);
-
-            // Create Javadoc artifact
-            EclipathArtifact javadocArtifact = artifactHelper.createJavadocArtifact(artifact);
-            artifactHelper.resolve(javadocArtifact, false);
-            dependency.setJavadocArtifact(javadocArtifact);
-        }
-
-        return dependencies;
     }
 }

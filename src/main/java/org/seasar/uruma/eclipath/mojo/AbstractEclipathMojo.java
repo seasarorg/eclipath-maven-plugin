@@ -33,8 +33,10 @@ import org.seasar.uruma.eclipath.ArtifactHelper;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.PluginInformation;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
+import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.model.ClasspathPolicy;
+import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.seasar.uruma.eclipath.model.factory.DependencyFactory;
 import org.seasar.uruma.eclipath.model.factory.LibraryLayout;
@@ -243,6 +245,38 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
     public void setExcludeGroups(List<String> excludeGroups) {
         this.excludeGroupIds = excludeGroups;
+    }
+
+    protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts) {
+        List<Dependency> dependencies = new ArrayList<Dependency>(artifacts.size());
+    
+        for (EclipathArtifact artifact : artifacts) {
+            // Build dependency objects
+            Dependency dependency = dependencyFactory.create(artifact);
+            dependencies.add(dependency);
+    
+            // Get artifact
+            if (!artifact.isResolved()) {
+                try {
+                    artifactHelper.resolve(artifact, true);
+                } catch (ArtifactResolutionRuntimeException ex) {
+                    Logger.error(ex.getLocalizedMessage(), ex.getCause());
+                    continue;
+                }
+            }
+    
+            // Create source artifact
+            EclipathArtifact srcArtifact = artifactHelper.createSourceArtifact(artifact);
+            artifactHelper.resolve(srcArtifact, false);
+            dependency.setSourceArtifact(srcArtifact);
+    
+            // Create Javadoc artifact
+            EclipathArtifact javadocArtifact = artifactHelper.createJavadocArtifact(artifact);
+            artifactHelper.resolve(javadocArtifact, false);
+            dependency.setJavadocArtifact(javadocArtifact);
+        }
+    
+        return dependencies;
     }
 
 }
