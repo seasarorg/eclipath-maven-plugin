@@ -15,6 +15,9 @@
  */
 package org.seasar.uruma.eclipath.model.factory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Factory for {@link LibraryLayout}
  *
@@ -26,6 +29,13 @@ public class LibraryLayoutFactory {
     private static LibraryLayout[] layouts = new LibraryLayout[] { new LibraryLayout.FlatLayout(),
             new LibraryLayout.StandAloneLayout(), new LibraryLayout.WebLayout() };
 
+    private static Map<String, LibraryLayout> packagingMap;
+
+    static {
+        packagingMap = new HashMap<String, LibraryLayout>();
+        packagingMap.put("war", new LibraryLayout.WebLayout());
+    }
+
     public static LibraryLayout getLibraryLayout(String layoutName) {
         for (LibraryLayout layout : layouts) {
             if (layout.getName().equals(layoutName)) {
@@ -33,5 +43,14 @@ public class LibraryLayoutFactory {
             }
         }
         return null;
+    }
+
+    public static LibraryLayout getLibraryLayoutFromPackaging(String packaging) {
+        LibraryLayout layout = packagingMap.get(packaging);
+        if (layout == null) {
+            // Default layout
+            layout = new LibraryLayout.FlatLayout();
+        }
+        return layout;
     }
 }

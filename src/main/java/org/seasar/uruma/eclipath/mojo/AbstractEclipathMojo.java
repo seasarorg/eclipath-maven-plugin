@@ -183,8 +183,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
 
-        // TODO GetLayout from configuration
-        libraryLayout = new LibraryLayout.FlatLayout();
         if (classpathPolicy == ClasspathPolicy.PROJECT) {
             dependencyFactory = new ProjectBasedDependencyFactory(eclipseProjectDir, workspaceConfigurator,
                     libraryLayout);
@@ -211,8 +209,8 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
         libraryLayout = LibraryLayoutFactory.getLibraryLayout(layout);
         if (libraryLayout == null) {
-            // TODO auto create from package.
-            throw new PluginRuntimeException("Parameter layout is not specified.");
+            // Create layout from packaging.
+            libraryLayout = LibraryLayoutFactory.getLibraryLayoutFromPackaging(project.getPackaging());
         }
         Logger.info("[Parameter:layout] " + libraryLayout.getName());
 
