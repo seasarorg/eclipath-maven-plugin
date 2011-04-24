@@ -78,12 +78,12 @@ public class SyncClasspathMojo extends AbstractEclipathMojo {
         List<File> toDeleteFiles = new LinkedList<File>();
         if (projectArtifacts.size() > 0) {
             // Prepare directories
-            targetDirFile = prepareDirFile(eclipseProjectDir, libDir);
-            sourcesDirFile = prepareDirFile(eclipseProjectDir, libDir + "/" + sourcesDir);
-            javadocDirFile = prepareDirFile(eclipseProjectDir, libDir + "/" + javadocDir);
-            providedLibDirFile = prepareDirFile(eclipseProjectDir, providedLibDir);
-            providedSourcesDirFile = prepareDirFile(eclipseProjectDir, providedLibDir + "/" + sourcesDir);
-            providedJavadocDirFile = prepareDirFile(eclipseProjectDir, providedLibDir + "/" + javadocDir);
+            targetDirFile = prepareDirFile(eclipseProjectDir, "libDir");
+            sourcesDirFile = prepareDirFile(eclipseProjectDir, "libDir" + "/" + "sourcesDir");
+            javadocDirFile = prepareDirFile(eclipseProjectDir, "libDir" + "/" + "javadocDir");
+            providedLibDirFile = prepareDirFile(eclipseProjectDir, "providedLibDir");
+            providedSourcesDirFile = prepareDirFile(eclipseProjectDir, "providedLibDir" + "/" + "sourcesDir");
+            providedJavadocDirFile = prepareDirFile(eclipseProjectDir, "providedLibDir" + "/" + "javadocDir");
 
             // Get existing dependencies
             getExsistingLibraries(toDeleteFiles, targetDirFile);

@@ -25,6 +25,8 @@ import org.seasar.uruma.eclipath.model.Scope;
 public interface LibraryLayout {
     public String getLibDir(Scope scope);
 
+    public String getName();
+
     public abstract class AbstractLibraryLayout implements LibraryLayout {
         @Override
         public String toString() {
@@ -36,6 +38,11 @@ public interface LibraryLayout {
         @Override
         public String getLibDir(Scope scope) {
             return "lib";
+        }
+
+        @Override
+        public String getName() {
+            return "flat";
         }
     }
 
@@ -50,6 +57,11 @@ public interface LibraryLayout {
             }
             return dir;
         }
+
+        @Override
+        public String getName() {
+            return "stand-alone";
+        }
     }
 
     public class WebLayout extends AbstractLibraryLayout {
@@ -62,5 +74,9 @@ public interface LibraryLayout {
             return dir;
         }
 
+        @Override
+        public String getName() {
+            return "web";
+        }
     }
 }

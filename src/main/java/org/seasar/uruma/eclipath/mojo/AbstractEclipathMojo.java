@@ -21,7 +21,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -39,6 +38,7 @@ import org.seasar.uruma.eclipath.model.ClasspathPolicy;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.seasar.uruma.eclipath.model.factory.DependencyFactory;
 import org.seasar.uruma.eclipath.model.factory.LibraryLayout;
+import org.seasar.uruma.eclipath.model.factory.LibraryLayoutFactory;
 import org.seasar.uruma.eclipath.model.factory.ProjectBasedDependencyFactory;
 import org.seasar.uruma.eclipath.model.factory.RepositoryBasedDependencyFactory;
 import org.seasar.uruma.eclipath.util.ProjectUtil;
@@ -102,7 +102,7 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
      * Classpath setting policy.<br />
      * Value must be {@code repository} or {@code project}.
      * 
-     * @parameter default-value="repository"
+     * @parameter default-value="project"
      */
     protected String policy;
 
@@ -121,32 +121,12 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     protected List<String> excludeScopes;
 
     /**
-     * Library directory.
+     * Library layout.<br />
+     * Value must be either {@code flat} or {@code stand-alone} or {@code web}.
      * 
-     * @parameter default-value="lib"
+     * @parameter
      */
-    protected String libDir;
-
-    /**
-     * Provided library directory.
-     * 
-     * @parameter default-value="lib"
-     */
-    protected String providedLibDir;
-
-    /**
-     * Sources destination directory.
-     * 
-     * @parameter default-value="sources"
-     */
-    protected String sourcesDir;
-
-    /**
-     * Javadoc destination directory.
-     * 
-     * @parameter default-value="javadoc"
-     */
-    protected String javadocDir;
+    protected String layout;
 
     /**
      * If {@code true}, always try to resolve all sources and javadoc
@@ -178,12 +158,8 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         try {
             Logger.initialize(getLog());
 
-            if (!checkParameters()) {
-                return;
-            }
-
+            checkParameters();
             prepare();
-
             doExecute();
         } catch (PluginRuntimeException ex) {
             throw new MojoExecutionException(ex.getMessage(), ex.getCause());
@@ -222,31 +198,23 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         }
     }
 
-    protected boolean checkParameters() {
+    protected void checkParameters() {
         Logger.info("[Version] " + pluginInformation.getVersion());
         if (ClasspathPolicy.REPOSITORY.confName().equals(policy)) {
             classpathPolicy = ClasspathPolicy.REPOSITORY;
         } else if (ClasspathPolicy.PROJECT.confName().equals(policy)) {
             classpathPolicy = ClasspathPolicy.PROJECT;
         } else {
-            Logger.error("Parameter policy must be \"repository\" or \"project\".");
-            return false;
+            throw new PluginRuntimeException("Parameter policy must be \"repository\" or \"project\".");
         }
         Logger.info("[Parameter:policy] " + classpathPolicy.name());
 
-        if (StringUtils.isEmpty(libDir)) {
-            Logger.error("Parameter destdir is not specified.");
-            return false;
-        } else {
-            Logger.info("[Parameter:libDir] " + libDir);
+        libraryLayout = LibraryLayoutFactory.getLibraryLayout(layout);
+        if (libraryLayout == null) {
+            // TODO auto create from package.
+            throw new PluginRuntimeException("Parameter layout is not specified.");
         }
-
-        if (StringUtils.isEmpty(providedLibDir)) {
-            Logger.error("Parameter providedLibDir is not specified.");
-            return false;
-        } else {
-            Logger.info("[Parameter:providedLibDir] " + providedLibDir);
-        }
+        Logger.info("[Parameter:layout] " + libraryLayout.getName());
 
         if (excludeGroupIds == null) {
             excludeGroupIds = new ArrayList<String>();
@@ -259,7 +227,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         Logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
 
         Logger.info("[Parameter:forceResolve] " + forceResolve);
-        return true;
     }
 
     @SuppressWarnings("unchecked")
@@ -274,10 +241,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
             result.add(new EclipathArtifact(artifact));
         }
         return result;
-    }
-
-    public void setLibDir(String libDir) {
-        this.libDir = libDir;
     }
 
     public void setExcludeGroups(List<String> excludeGroups) {
