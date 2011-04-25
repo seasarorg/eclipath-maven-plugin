@@ -192,6 +192,8 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
             dependencyFactory = new RepositoryBasedDependencyFactory(eclipseProjectDir, workspaceConfigurator,
                     libraryLayout);
         }
+        dependencyFactory.addExcludeGroupIds(excludeGroupIds);
+        dependencyFactory.addExcludeScopes(excludeScopes);
 
         if (!getClass().getName().equals(ConfigureWorkspaceMojo.class.getName())) {
             workspaceConfigurator.checkConfigure();
@@ -243,18 +245,14 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         return result;
     }
 
-    public void setExcludeGroups(List<String> excludeGroups) {
-        this.excludeGroupIds = excludeGroups;
-    }
-
     protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts) {
         List<Dependency> dependencies = new ArrayList<Dependency>(artifacts.size());
-    
+
         for (EclipathArtifact artifact : artifacts) {
             // Build dependency objects
             Dependency dependency = dependencyFactory.create(artifact);
             dependencies.add(dependency);
-    
+
             // Get artifact
             if (!artifact.isResolved()) {
                 try {
@@ -264,18 +262,18 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
                     continue;
                 }
             }
-    
+
             // Create source artifact
             EclipathArtifact srcArtifact = artifactHelper.createSourceArtifact(artifact);
             artifactHelper.resolve(srcArtifact, false);
             dependency.setSourceArtifact(srcArtifact);
-    
+
             // Create Javadoc artifact
             EclipathArtifact javadocArtifact = artifactHelper.createJavadocArtifact(artifact);
             artifactHelper.resolve(javadocArtifact, false);
             dependency.setJavadocArtifact(javadocArtifact);
         }
-    
+
         return dependencies;
     }
 

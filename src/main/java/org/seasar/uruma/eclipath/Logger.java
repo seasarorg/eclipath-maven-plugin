@@ -57,6 +57,11 @@ public class Logger {
         myLog.warn(PREFIX + message);
     }
 
+    public static void warn(String message, Throwable throwable) {
+        checkInitialized();
+        myLog.warn(PREFIX + message, throwable);
+    }
+
     public static void error(String message) {
         checkInitialized();
         myLog.error(PREFIX + message);

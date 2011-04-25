@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.classpath.ClasspathEntry;
 import org.seasar.uruma.eclipath.classpath.EclipseClasspath;
 import org.seasar.uruma.eclipath.model.Dependency;
@@ -71,7 +72,7 @@ public class SyncMojo extends AbstractEclipathMojo {
                             javadocPath);
                 }
             } catch (IOException ex) {
-                // TODO: handle exceptions
+                Logger.warn("Failed to copy artifact. : ", ex);
             }
         }
 

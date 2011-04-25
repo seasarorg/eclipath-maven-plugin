@@ -49,6 +49,9 @@ public abstract class AbstractDependencyFactory implements DependencyFactory {
         this.layout = layout;
     }
 
+    /*
+     * @see org.seasar.uruma.eclipath.model.factory.DependencyFactory#addExcludeGroupIds(java.util.List)
+     */
     @Override
     public void addExcludeGroupIds(List<String> groupIds) {
         if (groupIds != null) {
@@ -56,6 +59,9 @@ public abstract class AbstractDependencyFactory implements DependencyFactory {
         }
     }
 
+    /*
+     * @see org.seasar.uruma.eclipath.model.factory.DependencyFactory#addExcludeScopes(java.util.List)
+     */
     @Override
     public void addExcludeScopes(List<String> scopes) {
         if (scopes != null) {
