@@ -52,8 +52,6 @@ public class ArtifactHelper {
 
     protected WorkspaceConfigurator workspaceConfigurator;
 
-    protected boolean forceResolve;
-
     public Set<Artifact> filterArtifacts(Set<Artifact> artifacts, List<String> excludeGroups, List<String> excludeScopes) {
         Set<Artifact> excluded = new TreeSet<Artifact>();
         List<Artifact> removeArtifacts = new LinkedList<Artifact>();
@@ -95,10 +93,13 @@ public class ArtifactHelper {
     }
 
     public void resolve(EclipathArtifact artifact, boolean throwOnError) {
+        resolve(artifact, throwOnError, false);
+    }
+
+    public void resolve(EclipathArtifact artifact, boolean throwOnError, boolean forceResolve) {
         // Check if jar is not available
         String notAvailablePath = workspaceConfigurator.getClasspathVariableM2REPO() + "/"
-                + artifact.getRepositoryPath()
-                + NOT_AVAILABLE_SUFFIX;
+                + artifact.getRepositoryPath() + NOT_AVAILABLE_SUFFIX;
         File notAvailableFile = new File(notAvailablePath);
         if (!forceResolve) {
             if (!throwOnError && notAvailableFile.exists()) {
@@ -151,13 +152,5 @@ public class ArtifactHelper {
 
     public void setWorkspaceConfigurator(WorkspaceConfigurator workspaceConfigurator) {
         this.workspaceConfigurator = workspaceConfigurator;
-    }
-
-    public boolean isForceResolve() {
-        return forceResolve;
-    }
-
-    public void setForceResolve(boolean forceResolve) {
-        this.forceResolve = forceResolve;
     }
 }

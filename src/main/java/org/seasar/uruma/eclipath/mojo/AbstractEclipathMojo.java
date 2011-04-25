@@ -130,14 +130,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
      */
     protected String layout;
 
-    /**
-     * If {@code true}, always try to resolve all sources and javadoc
-     * dependencies.
-     * 
-     * @parameter expression="${forceResolve}" default-value="false"
-     */
-    protected boolean forceResolve;
-
     protected ClasspathPolicy classpathPolicy;
 
     protected File eclipseProjectDir;
@@ -181,7 +173,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         artifactHelper.setRemoteRepositories(remoteArtifactRepositories);
         artifactHelper.setLocalRepository(localRepository);
         artifactHelper.setWorkspaceConfigurator(workspaceConfigurator);
-        artifactHelper.setForceResolve(forceResolve);
 
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
 
@@ -227,8 +218,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
             excludeScopes = new ArrayList<String>();
         }
         Logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
-
-        Logger.info("[Parameter:forceResolve] " + forceResolve);
     }
 
     @SuppressWarnings("unchecked")
@@ -246,6 +235,10 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     }
 
     protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts) {
+        return resolveArtifacts(artifacts, false);
+    }
+
+    protected List<Dependency> resolveArtifacts(Set<EclipathArtifact> artifacts, boolean forceResolve) {
         List<Dependency> dependencies = new ArrayList<Dependency>(artifacts.size());
 
         for (EclipathArtifact artifact : artifacts) {
@@ -256,7 +249,7 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
             // Get artifact
             if (!artifact.isResolved()) {
                 try {
-                    artifactHelper.resolve(artifact, true);
+                    artifactHelper.resolve(artifact, true, forceResolve);
                 } catch (ArtifactResolutionRuntimeException ex) {
                     Logger.error(ex.getLocalizedMessage(), ex.getCause());
                     continue;
@@ -265,12 +258,12 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
             // Create source artifact
             EclipathArtifact srcArtifact = artifactHelper.createSourceArtifact(artifact);
-            artifactHelper.resolve(srcArtifact, false);
+            artifactHelper.resolve(srcArtifact, false, forceResolve);
             dependency.setSourceArtifact(srcArtifact);
 
             // Create Javadoc artifact
             EclipathArtifact javadocArtifact = artifactHelper.createJavadocArtifact(artifact);
-            artifactHelper.resolve(javadocArtifact, false);
+            artifactHelper.resolve(javadocArtifact, false, forceResolve);
             dependency.setJavadocArtifact(javadocArtifact);
         }
 
