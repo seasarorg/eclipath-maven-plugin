@@ -71,9 +71,6 @@
       <plugin>
         <groupId>org.seasar.uruma</groupId>
         <artifactId>maven-eclipath-plugin</artifactId>
-        <configuration>
-          <policy>repository</policy>
-        </configuration>
       </plugin>
 
       <plugin>
