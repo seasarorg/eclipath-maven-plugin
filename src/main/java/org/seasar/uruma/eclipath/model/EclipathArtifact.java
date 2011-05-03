@@ -130,9 +130,9 @@ public class EclipathArtifact {
 
     public Pattern getVersionIndependentFileNamePattern() {
         StringBuilder regex = new StringBuilder();
-        regex.append(".*");
+        regex.append(".*/");
         regex.append(artifact.getArtifactId().replace(".", "\\."));
-        regex.append("-.+\\.");
+        regex.append("-[0-9]+\\..+\\.");
         regex.append(artifact.getType());
         return Pattern.compile(regex.toString());
     }
