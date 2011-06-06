@@ -6,7 +6,7 @@
   <groupId>org.seasar.uruma</groupId>
   <artifactId>maven-eclipath-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>0.0.7-SNAPSHOT</version>
+  <version>0.0.7</version>
   <name>maven-eclipath-plugin Maven Mojo</name>
   <url>http://uruma.sandbox.seasar.org/</url>
   <inceptionYear>2010</inceptionYear>
@@ -18,8 +18,6 @@
       <name>KOMORI Yusuke</name>
       <email>komo _at_ littleforest.jp</email>
       <url>http://d.hatena.ne.jp/y-komori/</url>
-      <organization>UL Systems, Inc.</organization>
-      <organizationUrl>http://www.ulsystems.co.jp/</organizationUrl>
       <timezone>+9</timezone>
     </developer>
   </developers>
@@ -71,24 +69,16 @@
       <plugin>
         <groupId>org.seasar.uruma</groupId>
         <artifactId>maven-eclipath-plugin</artifactId>
+        <version>0.0.6</version>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.5</source>
+          <target>1.5</target>
           <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <downloadSources>true</downloadSources>
-          <downloadJavadocs>true</downloadJavadocs>
         </configuration>
       </plugin>
 
