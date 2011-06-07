@@ -79,14 +79,24 @@
       <attribute name="javadoc_location" value="jar:platform:/resource/maven-eclipath-plugin/lib/javadoc/maven-plugin-registry-2.2.1-javadoc.jar!/"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="lib" path="lib/commons-lang-2.5.jar" sourcepath="lib/sources/commons-lang-2.5-sources.jar">
+  <classpathentry kind="lib" path="lib/maven-artifact-manager-2.2.1.jar" sourcepath="lib/sources/maven-artifact-manager-2.2.1-sources.jar">
     <attributes>
-      <attribute name="javadoc_location" value="jar:platform:/resource/maven-eclipath-plugin/lib/javadoc/commons-lang-2.5-javadoc.jar!/"/>
+      <attribute name="javadoc_location" value="jar:platform:/resource/maven-eclipath-plugin/lib/javadoc/maven-artifact-manager-2.2.1-javadoc.jar!/"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="lib" path="lib/commons-io-1.4.jar" sourcepath="lib/sources/commons-io-1.4-sources.jar">
+  <classpathentry kind="lib" path="lib/commons-lang-2.4.jar" sourcepath="lib/sources/commons-lang-2.4-sources.jar">
     <attributes>
-      <attribute name="javadoc_location" value="jar:platform:/resource/maven-eclipath-plugin/lib/javadoc/commons-io-1.4-javadoc.jar!/"/>
+      <attribute name="javadoc_location" value="jar:platform:/resource/maven-eclipath-plugin/lib/javadoc/commons-lang-2.4-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="lib" path="lib/commons-io-1.3.jar" sourcepath="lib/sources/commons-io-1.3-sources.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:platform:/resource/maven-eclipath-plugin/lib/javadoc/commons-io-1.3-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+<classpathentry kind="lib" path="lib/plexus-classworlds-2.4.jar" sourcepath="lib/sources/plexus-classworlds-2.4-sources.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:platform:/resource/maven-eclipath-plugin/lib/javadoc/plexus-classworlds-2.4-javadoc.jar!/"/>
     </attributes>
   </classpathentry>
 </classpath>
