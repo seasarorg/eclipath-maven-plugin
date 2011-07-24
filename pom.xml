@@ -53,6 +53,14 @@
     </snapshotRepository>
   </distributionManagement>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>maven.seasar.org</id>
+      <name>The Seasar Foundation Maven2 Repository</name>
+      <url>http://maven.seasar.org/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
+
   <!-- Build Settings -->
   <properties>
     <mavenVersion>2.2.1</mavenVersion>
@@ -69,7 +77,7 @@
       <plugin>
         <groupId>org.seasar.uruma</groupId>
         <artifactId>maven-eclipath-plugin</artifactId>
-        <version>0.0.7</version>
+        <version>0.0.8</version>
       </plugin>
 
       <plugin>

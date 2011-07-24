@@ -66,8 +66,12 @@ public class FileDependency extends AbstractDependency {
      */
     @Override
     public String getSourcePath() {
-        String parent = normalizePath(getRelativePath(projectDir, sourceDir));
-        return parent + "/" + sourceArtifact.getFileName();
+        if (sourceArtifact != null && sourceArtifact.isResolved()) {
+            String parent = normalizePath(getRelativePath(projectDir, sourceDir));
+            return parent + "/" + sourceArtifact.getFileName();
+        } else {
+            return null;
+        }
     }
 
     /*
@@ -75,14 +79,18 @@ public class FileDependency extends AbstractDependency {
      */
     @Override
     public String getJavadocPath() {
-        String path = "jar:platform:/resource/";
-        path += projectDir.getName();
-        path += "/";
-        path += normalizePath(getRelativePath(projectDir, javadocDir));
-        path += "/";
-        path += javadocArtifact.getFileName();
-        path += "!/";
-        return path;
+        if (javadocArtifact != null && javadocArtifact.isResolved()) {
+            String path = "jar:platform:/resource/";
+            path += projectDir.getName();
+            path += "/";
+            path += normalizePath(getRelativePath(projectDir, javadocDir));
+            path += "/";
+            path += javadocArtifact.getFileName();
+            path += "!/";
+            return path;
+        } else {
+            return null;
+        }
     }
 
     /*

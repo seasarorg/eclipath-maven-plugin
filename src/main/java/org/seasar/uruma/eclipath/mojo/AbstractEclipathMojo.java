@@ -130,6 +130,21 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
      */
     protected String layout;
 
+    /**
+     * Enables/disables the downloading of source attachments. Defaults to true.<br />
+     * 
+     * @parameter default-value="true"
+     */
+    protected boolean downloadSources;
+
+    /**
+     * Enables/disables the downloading of javadoc attachments. Defaults to
+     * true.<br />
+     * 
+     * @parameter default-value="true"
+     */
+    protected boolean downloadJavadocs;
+
     protected ClasspathPolicy classpathPolicy;
 
     protected File eclipseProjectDir;
@@ -218,6 +233,8 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
             excludeScopes = new ArrayList<String>();
         }
         Logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
+        Logger.info("[Parameter:downloadSources] " + Boolean.toString(downloadSources));
+        Logger.info("[Parameter:downloadJavaddocs] " + Boolean.toString(downloadJavadocs));
     }
 
     @SuppressWarnings("unchecked")
@@ -257,17 +274,20 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
             }
 
             // Create source artifact
-            EclipathArtifact srcArtifact = artifactHelper.createSourceArtifact(artifact);
-            artifactHelper.resolve(srcArtifact, false, forceResolve);
-            dependency.setSourceArtifact(srcArtifact);
+            if (downloadSources) {
+                EclipathArtifact srcArtifact = artifactHelper.createSourceArtifact(artifact);
+                artifactHelper.resolve(srcArtifact, false, forceResolve);
+                dependency.setSourceArtifact(srcArtifact);
+            }
 
             // Create Javadoc artifact
-            EclipathArtifact javadocArtifact = artifactHelper.createJavadocArtifact(artifact);
-            artifactHelper.resolve(javadocArtifact, false, forceResolve);
-            dependency.setJavadocArtifact(javadocArtifact);
+            if (downloadJavadocs) {
+                EclipathArtifact javadocArtifact = artifactHelper.createJavadocArtifact(artifact);
+                artifactHelper.resolve(javadocArtifact, false, forceResolve);
+                dependency.setJavadocArtifact(javadocArtifact);
+            }
         }
 
         return dependencies;
     }
-
 }

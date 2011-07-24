@@ -57,8 +57,12 @@ public class SyncMojo extends AbstractEclipathMojo {
             try {
                 // Copy artifacts
                 dependency.copyLibraryArtifact();
-                dependency.copySourceArtifact();
-                dependency.copyJavadocArtifact();
+                if (downloadSources) {
+                    dependency.copySourceArtifact();
+                }
+                if (downloadJavadocs) {
+                    dependency.copyJavadocArtifact();
+                }
 
                 // Remove old version libraries (if exists)
                 removeDuplicatedClasspathEntry(eclipseClasspath, dependency);

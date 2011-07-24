@@ -35,7 +35,9 @@ public class CleanMojo extends CheckCleanMojo {
      */
     @Override
     protected void deal(File file) {
+        File parentDir = file.getParentFile();
         deleteFile(file);
+        deleteDir(parentDir);
     }
 
     protected void deleteFile(File file) {
@@ -43,6 +45,22 @@ public class CleanMojo extends CheckCleanMojo {
             Logger.info("File deleted : " + file.getAbsolutePath());
         } else {
             Logger.warn("Failed to delete file : " + file.getAbsolutePath());
+        }
+    }
+
+    /**
+     * Delete directory if it is empty.
+     * 
+     * @param dir
+     *        target directory
+     */
+    protected void deleteDir(File dir) {
+        if (dir.listFiles().length == 0) {
+            if (dir.delete()) {
+                Logger.info("Directory deleted : " + dir.getAbsolutePath());
+            } else {
+                Logger.info("Failed to delete directory : " + dir.getAbsolutePath());
+            }
         }
     }
 }
