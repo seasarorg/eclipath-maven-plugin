@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.seasar.uruma.eclipath.Logger;
+import org.seasar.uruma.eclipath.ProjectRefresher;
 import org.seasar.uruma.eclipath.classpath.ClasspathEntry;
 import org.seasar.uruma.eclipath.classpath.EclipseClasspath;
 import org.seasar.uruma.eclipath.model.Dependency;
@@ -98,6 +99,12 @@ public class SyncMojo extends AbstractEclipathMojo {
 
         // Write ".classpath" file
         eclipseClasspath.write();
+
+        // Refresh project
+        if (autoRefresh) {
+            ProjectRefresher refresher = new ProjectRefresher();
+            refresher.refresh(project, refreshHost, refreshPort);
+        }
     }
 
     protected void removeDuplicatedClasspathEntry(EclipseClasspath eclipseClasspath, Dependency dependency) {

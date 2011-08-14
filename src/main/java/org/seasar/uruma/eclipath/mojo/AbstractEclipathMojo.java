@@ -138,6 +138,27 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     protected boolean downloadSources;
 
     /**
+     * If true, refresh automatically project after executing sync goal.
+     * 
+     * @parameter default-value="false"
+     */
+    protected boolean autoRefresh;
+
+    /**
+     * ResourceSynchronizer's hostname.
+     * 
+     * @parameter default-value="localhost"
+     */
+    protected String refreshHost;
+
+    /**
+     * ResourceSynchronizer's port number.
+     * 
+     * @parameter default-value="8386"
+     */
+    protected int refreshPort;
+
+    /**
      * Enables/disables the downloading of javadoc attachments. Defaults to
      * true.<br />
      * 
@@ -235,6 +256,9 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         Logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
         Logger.info("[Parameter:downloadSources] " + Boolean.toString(downloadSources));
         Logger.info("[Parameter:downloadJavaddocs] " + Boolean.toString(downloadJavadocs));
+        Logger.info("[Parameter:autoRefresh] " + Boolean.toString(autoRefresh));
+        Logger.info("[Parameter:refreshHost] " + refreshHost);
+        Logger.info("[Parameter:refreshPort] " + refreshPort);
     }
 
     @SuppressWarnings("unchecked")
