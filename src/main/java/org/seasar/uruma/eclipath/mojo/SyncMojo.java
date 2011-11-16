@@ -110,9 +110,9 @@ public class SyncMojo extends AbstractEclipathMojo {
     protected void removeDuplicatedClasspathEntry(EclipseClasspath eclipseClasspath, Dependency dependency) {
         Pattern pattern = dependency.getLibraryArtifact().getVersionIndependentFileNamePattern();
         List<Element> oldVersionEntries = eclipseClasspath.findClasspathEntry(pattern);
+        ClasspathEntry newEntry = createClasspathEntry(dependency);
         for (Element entry : oldVersionEntries) {
             ClasspathEntry existingEntry = new ClasspathEntry(entry);
-            ClasspathEntry newEntry = createClasspathEntry(dependency);
             if (!newEntry.equals(existingEntry)) {
                 eclipseClasspath.removeClasspathEntryElement(entry);
             }

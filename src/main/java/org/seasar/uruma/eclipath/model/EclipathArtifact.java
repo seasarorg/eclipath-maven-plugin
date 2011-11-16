@@ -52,6 +52,10 @@ public class EclipathArtifact {
         return artifact.getVersion();
     }
 
+    public String baseVersion() {
+        return artifact.getBaseVersion();
+    }
+
     public Scope scope() {
         return Scope.getScope(artifact.getScope());
     }
@@ -111,7 +115,7 @@ public class EclipathArtifact {
         StringBuilder buf = new StringBuilder(64);
         buf.append(artifact.getArtifactId());
 
-        String version = artifact.getVersion();
+        String version = artifact.getBaseVersion();
         if (!StringUtils.isEmpty(version)) {
             buf.append("-");
             buf.append(version);

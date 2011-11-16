@@ -17,6 +17,7 @@ package org.seasar.uruma.eclipath.classpath;
 
 import static org.seasar.uruma.eclipath.classpath.EclipseClasspath.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.seasar.uruma.eclipath.model.ClasspathKind;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -55,6 +56,9 @@ public class ClasspathEntry {
         classpathKind = ClasspathKind.valueOf(element.getAttribute(ATTR_KIND).toUpperCase());
         path = element.getAttribute(ATTR_PATH);
         sourcePath = element.getAttribute(ATTR_SOURCEPATH);
+        if (StringUtils.isEmpty(sourcePath)) {
+            sourcePath = null;
+        }
         NodeList attributes = element.getElementsByTagName(ELEMENT_ATTRIBUTE);
         int length = attributes.getLength();
         for (int i = 0; i < length; i++) {
