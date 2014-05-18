@@ -15,6 +15,7 @@
  */
 package org.seasar.uruma.eclipath.mojo;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +27,13 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.ProjectRefresher;
+import org.seasar.uruma.eclipath.PropertiesFile;
 import org.seasar.uruma.eclipath.classpath.ClasspathEntry;
 import org.seasar.uruma.eclipath.classpath.EclipseClasspath;
+import org.seasar.uruma.eclipath.model.CompilerConfiguration;
 import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
+import org.seasar.uruma.eclipath.util.ProjectUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -103,6 +107,9 @@ public class SyncMojo extends AbstractEclipathMojo {
         // Write ".classpath" file
         eclipseClasspath.write();
 
+        // Adjust .settings/org.eclipse.jdt.core.prefs
+        adjustJdtPrefs(compilerConfiguration);
+
         // Refresh project
         if (autoRefresh) {
             ProjectRefresher refresher = new ProjectRefresher();
@@ -129,5 +136,19 @@ public class SyncMojo extends AbstractEclipathMojo {
         entry.setSourcePath(dependency.getSourcePath());
         entry.setJavadocLocation(dependency.getJavadocPath());
         return entry;
+    }
+
+    protected void adjustJdtPrefs(CompilerConfiguration conf) {
+        File jdtPrefsFile = ProjectUtil.getJdtPrefsFile(project);
+        if (!jdtPrefsFile.exists()) {
+            return;
+        }
+        PropertiesFile jdtPrefs = new PropertiesFile(jdtPrefsFile);
+        jdtPrefs.load();
+
+        jdtPrefs.put("org.eclipse.jdt.core.compiler.compliance", conf.getTargetVersion());
+        jdtPrefs.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", conf.getTargetVersion());
+        jdtPrefs.put("org.eclipse.jdt.core.compiler.source", conf.getSourceVersion());
+        jdtPrefs.store();
     }
 }

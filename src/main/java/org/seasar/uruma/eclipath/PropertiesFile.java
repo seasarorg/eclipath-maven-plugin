@@ -79,6 +79,7 @@ public class PropertiesFile {
         try {
             os = createOutputStream(file);
             properties.store(os, null);
+            Logger.info("Saved. : " + file.getAbsolutePath());
         } catch (IOException ex) {
             throw new PluginRuntimeException("Failed to save file. : " + file.getAbsolutePath(), ex);
         } finally {

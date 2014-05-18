@@ -33,15 +33,16 @@ public class ProjectUtil {
 
     public static final String DOT_PROJECT_FILENAME = ".project";
 
+    public static final String JDT_PREFS_PATH = ".settings/org.eclipse.jdt.core.prefs";
+
     private ProjectUtil() {
 
     }
 
-    public static File getProjectDir(MavenProject project){
+    public static File getProjectDir(MavenProject project) {
         File dir = project.getFile().getParentFile();
         while (true) {
-            File projectFile = new File(PathUtil.normalizePath(dir.getAbsolutePath()) + "/"
-                    + DOT_PROJECT_FILENAME);
+            File projectFile = new File(PathUtil.normalizePath(dir.getAbsolutePath()) + "/" + DOT_PROJECT_FILENAME);
             if (projectFile.exists()) {
                 return dir;
             } else {
@@ -51,6 +52,12 @@ public class ProjectUtil {
                 }
             }
         }
+    }
+
+    public static File getJdtPrefsFile(MavenProject project) {
+        File projectDir = getProjectDir(project);
+        String path = projectDir.getAbsolutePath() + System.getProperty("file.separator") + JDT_PREFS_PATH;
+        return new File(path);
     }
 
     public static File getWorkspaceDir(MavenProject project) {
@@ -64,8 +71,7 @@ public class ProjectUtil {
     }
 
     protected static boolean isValidWorkspaceLocation(File dir) {
-        String path = PathUtil.normalizePath(dir.getAbsolutePath()) + "/"
-                + ECLIPSE_PLUGINS_METADATA_DIR;
+        String path = PathUtil.normalizePath(dir.getAbsolutePath()) + "/" + ECLIPSE_PLUGINS_METADATA_DIR;
         File pluginDir = new File(path);
         if (pluginDir.exists()) {
             return true;
