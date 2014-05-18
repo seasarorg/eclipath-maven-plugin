@@ -98,22 +98,27 @@ public class ArtifactHelper {
 
     public void resolve(EclipathArtifact artifact, boolean throwOnError, boolean forceResolve) {
         // Check if jar is not available
-        String notAvailablePath = workspaceConfigurator.getClasspathVariableM2REPO() + "/"
-                + artifact.getRepositoryPath() + NOT_AVAILABLE_SUFFIX;
-        File notAvailableFile = new File(notAvailablePath);
-        if (!forceResolve) {
-            if (!throwOnError && notAvailableFile.exists()) {
-                return;
+        File notAvailableFile = null;
+        if (workspaceConfigurator.isConfigured()) {
+            String notAvailablePath = workspaceConfigurator.getClasspathVariableM2REPO() + "/"
+                    + artifact.getRepositoryPath() + NOT_AVAILABLE_SUFFIX;
+            notAvailableFile = new File(notAvailablePath);
+            if (!forceResolve) {
+                if (!throwOnError && notAvailableFile.exists()) {
+                    return;
+                }
+            } else {
+                notAvailableFile.delete();
             }
-        } else {
-            notAvailableFile.delete();
         }
 
         try {
             resolver.resolve(artifact.getArtifact(), remoteRepositories, localRepository);
         } catch (ArtifactResolutionException ex) {
             try {
-                FileUtils.touch(notAvailableFile);
+                if (notAvailableFile != null) {
+                    FileUtils.touch(notAvailableFile);
+                }
             } catch (IOException ignore) {
             }
             if (throwOnError) {
@@ -121,7 +126,9 @@ public class ArtifactHelper {
             }
         } catch (ArtifactNotFoundException ex) {
             try {
-                FileUtils.touch(notAvailableFile);
+                if (notAvailableFile != null) {
+                    FileUtils.touch(notAvailableFile);
+                }
             } catch (IOException ignore) {
             }
             if (throwOnError) {

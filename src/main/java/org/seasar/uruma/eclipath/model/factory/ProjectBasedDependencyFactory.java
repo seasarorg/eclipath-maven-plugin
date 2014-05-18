@@ -20,9 +20,6 @@ import java.io.File;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
-import org.seasar.uruma.eclipath.model.FileDependency;
-import org.seasar.uruma.eclipath.model.M2Dependency;
-import org.seasar.uruma.eclipath.model.Scope;
 
 /**
  * @author y-komori
@@ -44,11 +41,9 @@ public class ProjectBasedDependencyFactory extends AbstractDependencyFactory {
     public Dependency create(EclipathArtifact artifact) {
         Dependency dependency;
         if (!isExcluded(artifact)) {
-            Scope scope = artifact.scope();
-            String libDir = layout.getLibDir(scope);
-            dependency = new FileDependency(artifact, projectDir, libDir);
+            dependency = createFileDependency(artifact);
         } else {
-            dependency = new M2Dependency(artifact, workspaceConfigurator.getClasspathVariableM2REPO());
+            dependency = createM2Dependency(artifact);
         }
         return dependency;
     }

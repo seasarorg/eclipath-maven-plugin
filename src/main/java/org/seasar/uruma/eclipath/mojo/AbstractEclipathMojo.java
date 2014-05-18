@@ -221,10 +221,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         }
         dependencyFactory.addExcludeGroupIds(excludeGroupIds);
         dependencyFactory.addExcludeScopes(excludeScopes);
-
-        if (!getClass().getName().equals(ConfigureWorkspaceMojo.class.getName())) {
-            workspaceConfigurator.checkConfigure();
-        }
     }
 
     protected void checkParameters() {

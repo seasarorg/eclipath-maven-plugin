@@ -19,15 +19,21 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.artifact.Artifact;
+import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
+import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
+import org.seasar.uruma.eclipath.model.FileDependency;
+import org.seasar.uruma.eclipath.model.M2Dependency;
+import org.seasar.uruma.eclipath.model.Scope;
 import org.seasar.uruma.eclipath.util.AssertionUtil;
 
 /**
  * @author y-komori
  * @author $Author$
  * @version $Revision$ $Date$
- *
+ * 
  */
 public abstract class AbstractDependencyFactory implements DependencyFactory {
     protected File projectDir;
@@ -81,5 +87,22 @@ public abstract class AbstractDependencyFactory implements DependencyFactory {
             }
         }
         return false;
+    }
+
+    protected Dependency createFileDependency(EclipathArtifact artifact) {
+        Scope scope = artifact.scope();
+        String libDir = layout.getLibDir(scope);
+        return new FileDependency(artifact, projectDir, libDir);
+    }
+
+    protected Dependency createM2Dependency(EclipathArtifact artifact) {
+        if (workspaceConfigurator.isConfigured()) {
+            return new M2Dependency(artifact, workspaceConfigurator.getClasspathVariableM2REPO());
+        } else {
+            Artifact a = artifact.getArtifact();
+            Logger.warn("Workspace may be not configured for m2, use file dependency for " + a.getGroupId() + ":"
+                    + a.getArtifactId());
+            return createFileDependency(artifact);
+        }
     }
 }

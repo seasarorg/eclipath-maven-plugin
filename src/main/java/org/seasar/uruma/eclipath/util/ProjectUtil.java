@@ -18,6 +18,7 @@ package org.seasar.uruma.eclipath.util;
 import java.io.File;
 
 import org.apache.maven.project.MavenProject;
+import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 
 /**
@@ -55,19 +56,22 @@ public class ProjectUtil {
     public static File getWorkspaceDir(MavenProject project) {
         // TODO Dealing with multi projects.
         File workspaceDir = project.getFile().getParentFile().getParentFile();
-        checkWorkspaceLocation(workspaceDir);
-        return workspaceDir;
+        if (isValidWorkspaceLocation(workspaceDir)) {
+            return workspaceDir;
+        } else {
+            return null;
+        }
     }
 
-    protected static void checkWorkspaceLocation(File dir) {
+    protected static boolean isValidWorkspaceLocation(File dir) {
         String path = PathUtil.normalizePath(dir.getAbsolutePath()) + "/"
                 + ECLIPSE_PLUGINS_METADATA_DIR;
         File pluginDir = new File(path);
         if (pluginDir.exists()) {
-            return;
+            return true;
         } else {
-            throw new PluginRuntimeException("Directory is not eclipse workspace. : "
-                    + dir.getAbsolutePath());
+            Logger.warn("Directory is not eclipse workspace. : " + dir.getAbsolutePath());
+            return false;
         }
     }
 

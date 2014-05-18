@@ -36,8 +36,7 @@ public class WorkspaceConfigurator {
 
     public static final String M2_REPO = "M2_REPO";
 
-    public static final String CLASSPATH_VARIABLE_M2_REPO = "org.eclipse.jdt.core.classpathVariable."
-            + M2_REPO;
+    public static final String CLASSPATH_VARIABLE_M2_REPO = "org.eclipse.jdt.core.classpathVariable." + M2_REPO;
 
     private final File workspaceDir;
 
@@ -56,8 +55,11 @@ public class WorkspaceConfigurator {
      *
      */
     public void loadConfiguration() {
-        eclipseJdtCorePrefs = new PropertiesFile(createEclipseJdtCorePrefsFile());
-        eclipseJdtCorePrefs.load();
+        File eclipseJdtCorePrefsFile = createEclipseJdtCorePrefsFile();
+        if (eclipseJdtCorePrefsFile != null) {
+            eclipseJdtCorePrefs = new PropertiesFile(eclipseJdtCorePrefsFile);
+            eclipseJdtCorePrefs.load();
+        }
     }
 
     /**
@@ -70,10 +72,18 @@ public class WorkspaceConfigurator {
     }
 
     public void checkConfigure() {
-        String localRespositoryDir = eclipseJdtCorePrefs.get(CLASSPATH_VARIABLE_M2_REPO);
-        if (!PathUtil.normalizePath(this.localRepositoryDir).equals(localRespositoryDir)) {
+        if (!isConfigured()) {
             throw new PluginRuntimeException("Workspace is not configured.\n"
                     + "       Please execute configure-workspace goal first.");
+        }
+    }
+
+    public boolean isConfigured() {
+        if (eclipseJdtCorePrefs != null) {
+            String localRespositoryDir = eclipseJdtCorePrefs.get(CLASSPATH_VARIABLE_M2_REPO);
+            return PathUtil.normalizePath(this.localRepositoryDir).equals(localRespositoryDir);
+        } else {
+            return false;
         }
     }
 
@@ -85,10 +95,13 @@ public class WorkspaceConfigurator {
     }
 
     protected File createEclipseJdtCorePrefsFile() {
-        String workspacePath = PathUtil.normalizePath(workspaceDir.getAbsolutePath()) + "/";
-        String path = workspacePath + ECLIPSE_CORE_RUNTIME_SETTINGS_DIR + "/"
-                + ECLIPSE_JDT_CORE_PREFS_FILE;
-        return new File(path);
+        if (workspaceDir != null) {
+            String workspacePath = PathUtil.normalizePath(workspaceDir.getAbsolutePath()) + "/";
+            String path = workspacePath + ECLIPSE_CORE_RUNTIME_SETTINGS_DIR + "/" + ECLIPSE_JDT_CORE_PREFS_FILE;
+            return new File(path);
+        } else {
+            return null;
+        }
     }
 
     /**
