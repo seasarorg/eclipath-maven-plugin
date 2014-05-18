@@ -44,6 +44,7 @@ import org.apache.commons.lang.StringUtils;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.model.ClasspathKind;
+import org.seasar.uruma.eclipath.model.CompilerConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -83,6 +84,11 @@ public class EclipseClasspath {
     public static final String KIND_LIB = ClasspathKind.LIB.toString();
 
     public static final String KIND_VAR = ClasspathKind.VAR.toString();
+
+    public static final String KIND_CON = ClasspathKind.CON.toString();
+
+    public static final String CLASSPATH_JRE_CONTAINER_PREFIX = "org.eclipse.jdt.launching.JRE_CONTAINER/"
+            + "org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/";
 
     protected File classpathFile;
 
@@ -185,6 +191,51 @@ public class EclipseClasspath {
         Logger.info("Library added.   : " + path);
         isChanged = true;
         return;
+    }
+
+    public void addJavaContainerClasspathEntry(CompilerConfiguration compilerConfiguration) {
+        if (compilerConfiguration.getTargetVersion() == null) {
+            return;
+        }
+
+        String jre = compilerConfiguration.getJreLibraryName();
+        String path = CLASSPATH_JRE_CONTAINER_PREFIX + jre;
+
+        // Check current entry
+        Element existingEntry = findJavaContainerClasspathEntry();
+        if (existingEntry != null) {
+            if (path.equals(existingEntry.getAttribute(ATTR_PATH))) {
+                // JRE Container is ok, nothing to do.
+                return;
+            } else {
+                existingEntry.setAttribute(ATTR_PATH, path);
+                Logger.info("JRE Container changed. : " + jre);
+                isChanged = true;
+                return;
+            }
+        } else {
+            // Current entry not found
+            Element entry = document.createElement(ELEMENT_CLASSPATHENTRY);
+            classpathElement.appendChild(entry);
+            entry.setAttribute(ATTR_KIND, KIND_CON);
+            entry.setAttribute(ATTR_PATH, path);
+
+            Logger.info("JRE Container added. : " + jre);
+            isChanged = true;
+            return;
+        }
+    }
+
+    public Element findJavaContainerClasspathEntry() {
+        NodeList elements = document.getElementsByTagName(ELEMENT_CLASSPATHENTRY);
+        int size = elements.getLength();
+        for (int i = 0; i < size; i++) {
+            Element element = (Element) (elements.item(i));
+            if (element.getAttribute(ATTR_PATH).startsWith(CLASSPATH_JRE_CONTAINER_PREFIX)) {
+                return element;
+            }
+        }
+        return null;
     }
 
     /**

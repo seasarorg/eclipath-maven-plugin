@@ -51,6 +51,9 @@ public class SyncMojo extends AbstractEclipathMojo {
         EclipseClasspath eclipseClasspath = new EclipseClasspath(eclipseProjectDir);
         eclipseClasspath.load();
 
+        // Add JRE container
+        eclipseClasspath.addJavaContainerClasspathEntry(compilerConfiguration);
+
         // Get dependencies
         Set<EclipathArtifact> dependingArtifacts = getEclipathArtifacts();
         List<Dependency> dependencies = resolveArtifacts(dependingArtifacts);

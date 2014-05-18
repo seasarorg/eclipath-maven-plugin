@@ -77,7 +77,7 @@
       <plugin>
         <groupId>org.seasar.uruma</groupId>
         <artifactId>maven-eclipath-plugin</artifactId>
-        <version>0.0.12</version>
+        <version>0.0.13-SNAPSHOT</version>
       </plugin>
 
       <plugin>

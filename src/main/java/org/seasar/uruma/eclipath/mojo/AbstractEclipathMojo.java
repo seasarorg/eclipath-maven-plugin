@@ -36,6 +36,7 @@ import org.seasar.uruma.eclipath.WorkspaceConfigurator;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.model.ClasspathPolicy;
+import org.seasar.uruma.eclipath.model.CompilerConfiguration;
 import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.seasar.uruma.eclipath.model.factory.DependencyFactory;
@@ -180,6 +181,8 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
     protected PluginInformation pluginInformation = new PluginInformation();
 
+    protected CompilerConfiguration compilerConfiguration;
+
     /*
      * @see org.apache.maven.plugin.Mojo#execute()
      */
@@ -188,6 +191,7 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         try {
             Logger.initialize(getLog());
 
+            compilerConfiguration = CompilerConfiguration.load(project);
             checkParameters();
             prepare();
             doExecute();
@@ -255,6 +259,7 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         Logger.info("[Parameter:autoRefresh] " + Boolean.toString(autoRefresh));
         Logger.info("[Parameter:refreshHost] " + refreshHost);
         Logger.info("[Parameter:refreshPort] " + refreshPort);
+        Logger.info(compilerConfiguration.toString());
     }
 
     @SuppressWarnings("unchecked")
