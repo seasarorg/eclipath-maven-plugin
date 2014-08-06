@@ -4,11 +4,11 @@
 
   <!-- Project Information -->
   <groupId>org.seasar.uruma</groupId>
-  <artifactId>eclipath2-maven-plugin</artifactId>
+  <artifactId>eclipath-maven-plugin</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
-  <name>eclipath2-maven-plugin Maven Plugin</name>
+  <name>Eclipath Maven Plugin</name>
 
   <url>http://uruma.sandbox.seasar.org/</url>
   <inceptionYear>2010</inceptionYear>
@@ -82,7 +82,7 @@
         <artifactId>maven-plugin-plugin</artifactId>
         <version>3.2</version>
         <configuration>
-          <goalPrefix>eclipath2-maven-plugin</goalPrefix>
+          <goalPrefix>eclipath-maven-plugin</goalPrefix>
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
         </configuration>
         <executions>
