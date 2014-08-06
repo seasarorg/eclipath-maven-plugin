@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2010 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,8 @@
  */
 package org.seasar.uruma.eclipath.model;
 
-
 /**
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
- *
  */
 public abstract class AbstractDependency implements Dependency {
     protected EclipathArtifact libraryArtifact;
@@ -34,7 +30,7 @@ public abstract class AbstractDependency implements Dependency {
     /**
      * Constructs a new {@link AbstractDependency} object with
      * {@link EclipathArtifact} object.
-     * 
+     *
      * @param artifact
      *        related {@link EclipathArtifact} object
      */
@@ -43,50 +39,31 @@ public abstract class AbstractDependency implements Dependency {
         this.libraryArtifact = artifact;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getLibraryArtifact()
-     */
     @Override
     public EclipathArtifact getLibraryArtifact() {
         return libraryArtifact;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#setLibraryArtifact(org.apache.maven.artifact.Artifact)
-     */
     @Override
     public void setLibraryArtifact(EclipathArtifact artifact) {
         this.libraryArtifact = artifact;
     }
 
-
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getSourceArtifact()
-     */
     @Override
     public EclipathArtifact getSourceArtifact() {
         return sourceArtifact;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#setSourceArtifact(org.apache.maven.artifact.Artifact)
-     */
     @Override
     public void setSourceArtifact(EclipathArtifact srcArtifact) {
         this.sourceArtifact = srcArtifact;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getJavadocArtifact()
-     */
     @Override
     public EclipathArtifact getJavadocArtifact() {
         return javadocArtifact;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#setJavadocArtifact(org.apache.maven.artifact.Artifact)
-     */
     @Override
     public void setJavadocArtifact(EclipathArtifact javadocArtifact) {
         this.javadocArtifact = javadocArtifact;

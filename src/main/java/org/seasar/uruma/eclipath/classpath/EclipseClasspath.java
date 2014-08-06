@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2010 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.model.ClasspathKind;
 import org.seasar.uruma.eclipath.model.CompilerConfiguration;
+import org.seasar.uruma.eclipath.util.AssertionUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,10 +54,8 @@ import org.w3c.dom.Text;
 
 /**
  * The class dealing with the Eclipse .classpath file.
- * 
+ *
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
  */
 public class EclipseClasspath {
     private static final String DOT_CLASSPATH_FILENAME = ".classpath";
@@ -100,10 +99,11 @@ public class EclipseClasspath {
 
     /**
      * Constructs new instance.
-     * 
+     *
      * @param projectBaseDir
      */
     public EclipseClasspath(File projectBaseDir) {
+        AssertionUtil.assertNotNull("projectBaseDir", projectBaseDir);
         String filename = projectBaseDir.getAbsolutePath() + SEP + DOT_CLASSPATH_FILENAME;
         classpathFile = new File(filename);
     }
@@ -242,7 +242,7 @@ public class EclipseClasspath {
      * Add 'attribute' element to specified parent element. if parent element
      * has no 'attributes' element, this method automatically creates that
      * element.
-     * 
+     *
      * @param parent
      *        parent element
      * @param name

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2011 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,60 +15,111 @@
  */
 package org.seasar.uruma.eclipath.classpath;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.commons.io.IOUtils;
 import org.seasar.uruma.eclipath.Constants;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * The class dealing with the Eclipse .project file.
- * 
+ *
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
  */
 public class EclipseProject {
     protected static final String PROJECT_FILENAME = ".project";
 
-    protected static final String PROJECT_NAME_PATH = "/projectDescription/name";
+    private final String dotProjectFilePath;
 
-    protected final String projectPath;
-
-    protected final String dotProjectFilePath;
-
-    protected Document document;
+    private String projectName;
 
     /**
      * Constructs new instance.
-     * 
+     *
      * @param projectPath
      *        path to eclipse project
      */
     public EclipseProject(String projectPath) {
-        this.projectPath = projectPath;
         this.dotProjectFilePath = projectPath + Constants.SEP + PROJECT_FILENAME;
-        load();
-    }
-
-    protected void load() {
-        Logger.info("Loading " + dotProjectFilePath);
-
-        SAXReader reader = new SAXReader();
-        try {
-            document = reader.read(dotProjectFilePath);
-        } catch (DocumentException ex) {
-            throw new PluginRuntimeException("Failed to loading .project file : " + dotProjectFilePath, ex);
-        }
     }
 
     public String getProjectName() {
-        Node projectNameNode = document.selectSingleNode(PROJECT_NAME_PATH);
-        if (projectNameNode == null) {
+        if (projectName == null) {
+            load(dotProjectFilePath);
+        }
+        return projectName;
+    }
+
+    private void load(String path) {
+        Logger.info("Loading " + dotProjectFilePath);
+
+        BufferedInputStream is = null;
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            is = new BufferedInputStream(new FileInputStream(path));
+            Document doc = builder.parse(is);
+
+            Node projectDescriptionNode = getProjectDescriptionNode(doc);
+            if (projectDescriptionNode != null) {
+                Node nameNode = getNameNode(projectDescriptionNode);
+                if (nameNode != null) {
+                    this.projectName = nameNode.getTextContent();
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new PluginRuntimeException(".project file is not found : " + dotProjectFilePath, e);
+        } catch (SAXException e) {
+            throw new PluginRuntimeException("Couldn't find project name in " + dotProjectFilePath, e);
+        } catch (IOException e) {
+            throw new PluginRuntimeException("Failed to loading .project file : " + dotProjectFilePath, e);
+        } catch (ParserConfigurationException e) {
+            throw new PluginRuntimeException("Failed to loading .project file : " + dotProjectFilePath, e);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+
+        if (this.projectName == null) {
             throw new PluginRuntimeException("Couldn't find project name in " + dotProjectFilePath);
         }
-        return projectNameNode.getText();
     }
+
+    private Node getProjectDescriptionNode(Document document) {
+        NodeList children = document.getChildNodes();
+        int len = children.getLength();
+        for (int i = 0; i < len; i++) {
+            Node node = children.item(i);
+            if ("projectDescription".equals(node.getNodeName())) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private Node getNameNode(Node projectDescriptionNode) {
+        NodeList children = projectDescriptionNode.getChildNodes();
+        int len = children.getLength();
+        for (int i = 0; i < len; i++) {
+            Node node = children.item(i);
+            if ("name".equals(node.getNodeName())) {
+                return node;
+            }
+        }
+        return null;
+    }
+
 }

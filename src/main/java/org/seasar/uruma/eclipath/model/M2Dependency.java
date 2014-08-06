@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2011 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,6 @@ import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 
 /**
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
- *
  */
 public class M2Dependency extends AbstractDependency {
 
@@ -44,9 +41,6 @@ public class M2Dependency extends AbstractDependency {
         }
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getLibraryPath()
-     */
     @Override
     public String getLibraryPath() {
         File libFile = libraryArtifact.getFile();
@@ -54,9 +48,6 @@ public class M2Dependency extends AbstractDependency {
         return libPath;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getSourcePath()
-     */
     @Override
     public String getSourcePath() {
         if (sourceArtifact != null && sourceArtifact.isResolved()) {
@@ -67,9 +58,6 @@ public class M2Dependency extends AbstractDependency {
         return null;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getJavadocPath()
-     */
     @Override
     public String getJavadocPath() {
         if (javadocArtifact != null && javadocArtifact.isResolved()) {
@@ -80,36 +68,24 @@ public class M2Dependency extends AbstractDependency {
         return null;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#copyLibraryArtifact()
-     */
     @Override
     public File copyLibraryArtifact() {
         // Do nothing.
         return null;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#copySourceArtifact()
-     */
     @Override
     public File copySourceArtifact() {
         // Do nothing.
         return null;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#copyJavadocArtifact()
-     */
     @Override
     public File copyJavadocArtifact() {
         // Do nothing.
         return null;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getClasspathKind()
-     */
     @Override
     public ClasspathKind getClasspathKind() {
         return ClasspathKind.VAR;

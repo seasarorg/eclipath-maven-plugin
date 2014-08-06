@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2011 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectDependenciesResolver;
+import org.apache.maven.repository.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.seasar.uruma.eclipath.ArtifactHelper;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.PluginInformation;
@@ -48,124 +52,84 @@ import org.seasar.uruma.eclipath.util.ProjectUtil;
 
 /**
  * Abstract Mojo for this plugin.
- * 
+ *
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
  */
 public abstract class AbstractEclipathMojo extends AbstractMojo {
     /**
-     * POM
-     * 
-     * @parameter expression="${project}"
-     * @readonly
-     * @required
+     * The POM
      */
+    @Component
     protected MavenProject project;
 
-    /**
-     * Local maven repository.
-     * 
-     * @parameter expression="${localRepository}"
-     * @required
-     * @readonly
-     */
-    protected ArtifactRepository localRepository;
+    @Component
+    protected RepositorySystem repoSystem;
+
+    @Component
+    protected ProjectDependenciesResolver projectDependenciesResolver;
+
+    @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
+    protected RepositorySystemSession repoSession;
+
+    @Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
+    protected List<RemoteRepository> remoteRepos;
 
     /**
-     * Remote repositories which will be searched for source attachments.
-     * 
-     * @parameter expression="${project.remoteArtifactRepositories}"
-     * @required
-     * @readonly
+     * Classpath setting policy. Value must be {@code repository} or
+     * {@code project}.
      */
-    protected List<ArtifactRepository> remoteArtifactRepositories;
-
-    /**
-     * Artifact factory, needed to download source jars for inclusion in
-     * classpath.
-     * 
-     * @component role="org.apache.maven.artifact.factory.ArtifactFactory"
-     * @required
-     * @readonly
-     */
-    protected ArtifactFactory artifactFactory;
-
-    /**
-     * Artifact resolver, needed to download source jars for inclusion in
-     * classpath.
-     * 
-     * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
-     * @required
-     * @readonly
-     */
-    protected ArtifactResolver artifactResolver;
-
-    /**
-     * Classpath setting policy.<br />
-     * Value must be {@code repository} or {@code project}.
-     * 
-     * @parameter default-value="project"
-     */
+    @Parameter(defaultValue = "project", readonly = true)
     protected String policy;
 
     /**
      * GroupId list to exclude.
-     * 
-     * @parameter
      */
+    @Parameter(readonly = true)
     protected List<String> excludeGroupIds;
 
     /**
      * Scope list to exclude.
-     * 
-     * @parameter
      */
+    @Parameter(readonly = true)
     protected List<String> excludeScopes;
 
     /**
      * Library layout.<br />
      * Value must be either {@code flat} or {@code stand-alone} or {@code web}.
-     * 
-     * @parameter
      */
+    @Parameter(readonly = true)
     protected String layout;
 
     /**
-     * Enables/disables the downloading of source attachments. Defaults to true.<br />
-     * 
-     * @parameter default-value="true"
+     * Enables/disables the downloading of source attachments. Defaults to true.
      */
+    @Parameter(defaultValue = "true", readonly = true)
     protected boolean downloadSources;
 
     /**
-     * If true, refresh automatically project after executing sync goal.
-     * 
-     * @parameter default-value="false"
+     * Enables/disables the downloading of javadoc attachments. Defaults to
+     * true.
      */
+    @Parameter(defaultValue = "true")
+    protected boolean downloadJavadocs;
+
+    /**
+     * If true, refresh automatically project after executing sync goal.
+     */
+    @Parameter(defaultValue = "false", readonly = true)
     protected boolean autoRefresh;
 
     /**
      * ResourceSynchronizer's hostname.
-     * 
-     * @parameter default-value="localhost"
      */
+    @Parameter(defaultValue = "localhost")
     protected String refreshHost;
 
     /**
      * ResourceSynchronizer's port number.
-     * 
-     * @parameter default-value="8386"
      */
+    @Parameter(defaultValue = "8386")
     protected int refreshPort;
-
-    /**
-     * Enables/disables the downloading of javadoc attachments. Defaults to
-     * true.<br />
-     * 
-     * @parameter default-value="true"
-     */
-    protected boolean downloadJavadocs;
 
     protected ClasspathPolicy classpathPolicy;
 
@@ -183,11 +147,8 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
     protected CompilerConfiguration compilerConfiguration;
 
-    /*
-     * @see org.apache.maven.plugin.Mojo#execute()
-     */
     @Override
-    public final void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             Logger.initialize(getLog());
 
@@ -195,27 +156,35 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
             checkParameters();
             prepare();
             doExecute();
-        } catch (PluginRuntimeException ex) {
-            throw new MojoExecutionException(ex.getMessage(), ex.getCause());
+        } catch (PluginRuntimeException e) {
+            throw new MojoExecutionException(e.getMessage(), e.getCause());
+        } catch (Throwable t) {
+            throw new MojoExecutionException(t.getMessage(), t.getCause());
         }
     }
 
     protected abstract void doExecute() throws MojoExecutionException, MojoFailureException;
 
     protected void prepare() {
+        LocalRepository localRepository = repoSession.getLocalRepository();
+
+        // prepare WorkspaceConfigurator
         workspaceConfigurator = new WorkspaceConfigurator(project);
         workspaceConfigurator.loadConfiguration();
         workspaceConfigurator.setLocalRepositoryDir(localRepository.getBasedir());
 
+        // prepare ArtifactHelper
         artifactHelper = new ArtifactHelper();
-        artifactHelper.setFactory(artifactFactory);
-        artifactHelper.setResolver(artifactResolver);
-        artifactHelper.setRemoteRepositories(remoteArtifactRepositories);
-        artifactHelper.setLocalRepository(localRepository);
+        artifactHelper.setRepositorySystem(repoSystem);
+        artifactHelper.setRemoteRepositories(project.getRemoteArtifactRepositories());
+        // TODO
+        // artifactHelper.setLocalRepository(TODO);
         artifactHelper.setWorkspaceConfigurator(workspaceConfigurator);
 
+        // get Eclipse project directory
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
 
+        // prepare DeoendencyFactory
         if (classpathPolicy == ClasspathPolicy.PROJECT) {
             dependencyFactory = new ProjectBasedDependencyFactory(eclipseProjectDir, workspaceConfigurator,
                     libraryLayout);
@@ -262,15 +231,13 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         Logger.info(compilerConfiguration.toString());
     }
 
-    @SuppressWarnings("unchecked")
     protected Set<Artifact> getArtifacts() {
         return project.getArtifacts();
     }
 
-    @SuppressWarnings("unchecked")
     protected Set<EclipathArtifact> getEclipathArtifacts() {
         Set<EclipathArtifact> result = new LinkedHashSet<EclipathArtifact>();
-        for (Artifact artifact : (Set<Artifact>) project.getArtifacts()) {
+        for (Artifact artifact : project.getArtifacts()) {
             result.add(new EclipathArtifact(artifact));
         }
         return result;

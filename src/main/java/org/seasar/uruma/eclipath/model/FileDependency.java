@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2011 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,6 @@ import org.seasar.uruma.eclipath.Logger;
 
 /**
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
- *
  */
 public class FileDependency extends AbstractDependency {
     public static final String SOURCES_PREFIX = "sources";
@@ -52,18 +49,12 @@ public class FileDependency extends AbstractDependency {
         this.javadocDir = new File(path + "/" + JAVADOC_PREFIX);
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getLibraryPath()
-     */
     @Override
     public String getLibraryPath() {
         String parent = normalizePath(getRelativePath(projectDir, libDir));
         return parent + "/" + libraryArtifact.getFileName();
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getSourcePath()
-     */
     @Override
     public String getSourcePath() {
         if (sourceArtifact != null && sourceArtifact.isResolved()) {
@@ -74,9 +65,6 @@ public class FileDependency extends AbstractDependency {
         }
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getJavadocPath()
-     */
     @Override
     public String getJavadocPath() {
         if (javadocArtifact != null && javadocArtifact.isResolved()) {
@@ -93,25 +81,16 @@ public class FileDependency extends AbstractDependency {
         }
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#copyLibraryArtifact()
-     */
     @Override
     public File copyLibraryArtifact() throws IOException {
         return copyDependency(libraryArtifact, libDir);
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#copySourceArtifact()
-     */
     @Override
     public File copySourceArtifact() throws IOException {
         return copyDependency(sourceArtifact, sourceDir);
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#copyJavadocArtifact()
-     */
     @Override
     public File copyJavadocArtifact() throws IOException {
         return copyDependency(javadocArtifact, javadocDir);
@@ -131,9 +110,6 @@ public class FileDependency extends AbstractDependency {
         return destFile;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.Dependency#getClasspathKind()
-     */
     @Override
     public ClasspathKind getClasspathKind() {
         return ClasspathKind.LIB;

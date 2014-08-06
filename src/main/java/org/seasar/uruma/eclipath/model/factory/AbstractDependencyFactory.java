@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2011 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,6 @@ import org.seasar.uruma.eclipath.util.AssertionUtil;
 
 /**
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
- * 
  */
 public abstract class AbstractDependencyFactory implements DependencyFactory {
     protected File projectDir;
@@ -55,9 +52,6 @@ public abstract class AbstractDependencyFactory implements DependencyFactory {
         this.layout = layout;
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.factory.DependencyFactory#addExcludeGroupIds(java.util.List)
-     */
     @Override
     public void addExcludeGroupIds(List<String> groupIds) {
         if (groupIds != null) {
@@ -65,9 +59,6 @@ public abstract class AbstractDependencyFactory implements DependencyFactory {
         }
     }
 
-    /*
-     * @see org.seasar.uruma.eclipath.model.factory.DependencyFactory#addExcludeScopes(java.util.List)
-     */
     @Override
     public void addExcludeScopes(List<String> scopes) {
         if (scopes != null) {

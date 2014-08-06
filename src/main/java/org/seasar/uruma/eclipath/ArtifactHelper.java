@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2010 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,31 +24,32 @@ import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
+import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
+import org.apache.maven.repository.RepositorySystem;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
+import org.seasar.uruma.eclipath.model.Scope;
 
 /**
+ * Utility class for resolving artifacts.
+ *
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
- * 
  */
 public class ArtifactHelper {
+    public static final String SOURCES_CLASSIFIER = "sources";
+
+    public static final String JAVADOC_CLASSIFIER = "javadoc";
 
     protected static final String NOT_AVAILABLE_SUFFIX = "-not-available";
 
-    protected ArtifactFactory factory;
-
-    protected ArtifactResolver resolver;
-
-    protected List<ArtifactRepository> remoteRepositories;
+    protected RepositorySystem repositorySystem;
 
     protected ArtifactRepository localRepository;
+
+    protected List<ArtifactRepository> remoteRepositories;
 
     protected WorkspaceConfigurator workspaceConfigurator;
 
@@ -75,11 +76,11 @@ public class ArtifactHelper {
     }
 
     public EclipathArtifact createSourceArtifact(EclipathArtifact baseArtifact) {
-        return createArtifactWithClassifier(baseArtifact, "sources");
+        return createArtifactWithClassifier(baseArtifact, SOURCES_CLASSIFIER);
     }
 
     public EclipathArtifact createJavadocArtifact(EclipathArtifact baseArtifact) {
-        return createArtifactWithClassifier(baseArtifact, "javadoc");
+        return createArtifactWithClassifier(baseArtifact, JAVADOC_CLASSIFIER);
     }
 
     private EclipathArtifact createArtifactWithClassifier(EclipathArtifact baseArtifact, String classifier) {
@@ -87,8 +88,11 @@ public class ArtifactHelper {
         if (baseClassifier != null) {
             classifier = baseClassifier + "-" + classifier;
         }
-        Artifact artifact = factory.createArtifactWithClassifier(baseArtifact.groupId(), baseArtifact.artifactId(),
-                baseArtifact.version(), baseArtifact.type(), classifier);
+
+        String scope = baseArtifact.scope() != null ? baseArtifact.scope().name() : null;
+        Artifact artifact = new DefaultArtifact(baseArtifact.groupId(), baseArtifact.artifactId(),
+                baseArtifact.version(), scope, baseArtifact.type(), classifier, baseArtifact.getArtifactHandler());
+
         return new EclipathArtifact(artifact);
     }
 
@@ -97,6 +101,7 @@ public class ArtifactHelper {
     }
 
     public void resolve(EclipathArtifact artifact, boolean throwOnError, boolean forceResolve) {
+        // TODO Maven3 では必要?
         // Check if jar is not available
         File notAvailableFile = null;
         if (workspaceConfigurator.isConfigured()) {
@@ -112,41 +117,47 @@ public class ArtifactHelper {
             }
         }
 
-        try {
-            resolver.resolve(artifact.getArtifact(), remoteRepositories, localRepository);
-        } catch (ArtifactResolutionException ex) {
+        // prepare artifact resolution request
+        ArtifactResolutionRequest request = new ArtifactResolutionRequest();
+        request.setArtifact(artifact.getArtifact());
+        request.setLocalRepository(localRepository);
+        request.setRemoteRepositories(remoteRepositories);
+        // TODO 有効性確認
+        request.setForceUpdate(forceResolve);
+
+        // do resolve
+        ArtifactResolutionResult result = repositorySystem.resolve(request);
+        if (result.isSuccess()) {
+            for (Artifact resolvedSrcArtifact : result.getArtifacts()) {
+                Logger.info("  resolved src : " + resolvedSrcArtifact.toString() + "("
+                        + resolvedSrcArtifact.getFile().getAbsolutePath() + ")");
+            }
+        } else {
             try {
-                if (notAvailableFile != null) {
+                if (result.hasMissingArtifacts() && notAvailableFile != null) {
                     FileUtils.touch(notAvailableFile);
                 }
             } catch (IOException ignore) {
             }
+
             if (throwOnError) {
-                throw new ArtifactResolutionRuntimeException(ex.getLocalizedMessage(), ex);
-            }
-        } catch (ArtifactNotFoundException ex) {
-            try {
-                if (notAvailableFile != null) {
-                    FileUtils.touch(notAvailableFile);
-                }
-            } catch (IOException ignore) {
-            }
-            if (throwOnError) {
-                throw new ArtifactResolutionRuntimeException(ex.getLocalizedMessage(), ex);
+                throw new ArtifactResolutionRuntimeException("artifact resolution failed.", result);
+            } else {
+                Logger.warn("artifact resolution failed. : " + artifact.toString());
             }
         }
     }
 
     public boolean isCompileScope(Artifact artifact) {
-        return "compile".equals(artifact.getScope());
+        return Scope.COMPILE.equalsString(artifact.getScope());
     }
 
-    public void setFactory(ArtifactFactory factory) {
-        this.factory = factory;
+    public RepositorySystem getRepositorySystem() {
+        return repositorySystem;
     }
 
-    public void setResolver(ArtifactResolver resolver) {
-        this.resolver = resolver;
+    public void setRepositorySystem(RepositorySystem repositorySystem) {
+        this.repositorySystem = repositorySystem;
     }
 
     public void setRemoteRepositories(List<ArtifactRepository> remoteRepositories) {

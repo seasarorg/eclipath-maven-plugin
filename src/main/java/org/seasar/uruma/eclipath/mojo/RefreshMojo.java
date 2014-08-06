@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2011 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,14 @@ package org.seasar.uruma.eclipath.mojo;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.seasar.uruma.eclipath.ProjectRefresher;
 
 /**
- * @goal refresh
- * 
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
  */
+@Mojo(name = "refresh")
 public class RefreshMojo extends AbstractEclipathMojo {
-    /*
-     * @see org.seasar.uruma.eclipath.mojo.AbstractEclipathMojo#doExecute()
-     */
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException {
         ProjectRefresher refresher = new ProjectRefresher();

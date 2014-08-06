@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2011 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.seasar.uruma.eclipath.util.AssertionUtil;
 
 /**
  * A wrapper of {@link Artifact}
- * 
+ *
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
- * 
  */
 public class EclipathArtifact {
     private final Artifact artifact;
@@ -145,17 +143,15 @@ public class EclipathArtifact {
         return artifact;
     }
 
-    /*
-     * @see java.lang.Object#hashCode()
-     */
+    public ArtifactHandler getArtifactHandler() {
+        return artifact.getArtifactHandler();
+    }
+
     @Override
     public int hashCode() {
         return artifact.hashCode();
     }
 
-    /*
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -173,9 +169,6 @@ public class EclipathArtifact {
         return true;
     }
 
-    /*
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return artifact.toString();

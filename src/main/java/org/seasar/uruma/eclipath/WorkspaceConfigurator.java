@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2010 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import org.seasar.uruma.eclipath.util.ProjectUtil;
 
 /**
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
  */
 public class WorkspaceConfigurator {
 
@@ -40,7 +38,7 @@ public class WorkspaceConfigurator {
 
     private final File workspaceDir;
 
-    private String localRepositoryDir;
+    private File localRepositoryDir;
 
     private PropertiesFile eclipseJdtCorePrefs;
 
@@ -66,7 +64,8 @@ public class WorkspaceConfigurator {
      *
      */
     public void configure() {
-        String localRepositoryDir = PathUtil.normalizePath(this.localRepositoryDir);
+        String localRepositoryDir = this.localRepositoryDir.getAbsolutePath();
+        localRepositoryDir = PathUtil.normalizePath(localRepositoryDir);
         eclipseJdtCorePrefs.put(CLASSPATH_VARIABLE_M2_REPO, localRepositoryDir);
         eclipseJdtCorePrefs.store();
     }
@@ -81,7 +80,7 @@ public class WorkspaceConfigurator {
     public boolean isConfigured() {
         if (eclipseJdtCorePrefs != null) {
             String localRespositoryDir = eclipseJdtCorePrefs.get(CLASSPATH_VARIABLE_M2_REPO);
-            return PathUtil.normalizePath(this.localRepositoryDir).equals(localRespositoryDir);
+            return PathUtil.normalizePath(this.localRepositoryDir.getAbsolutePath()).equals(localRespositoryDir);
         } else {
             return false;
         }
@@ -107,7 +106,7 @@ public class WorkspaceConfigurator {
     /**
      * Setter for {@code localRepositoryDir}.
      */
-    public void setLocalRepositoryDir(String localRepositoryDir) {
+    public void setLocalRepositoryDir(File localRepositoryDir) {
         this.localRepositoryDir = localRepositoryDir;
     }
 }

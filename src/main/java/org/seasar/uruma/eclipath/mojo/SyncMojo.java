@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2011 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.ProjectRefresher;
 import org.seasar.uruma.eclipath.PropertiesFile;
@@ -37,24 +40,19 @@ import org.seasar.uruma.eclipath.util.ProjectUtil;
 import org.w3c.dom.Element;
 
 /**
- * @goal sync
- * @requiresDependencyResolution test
- * @phase process-sources
- * 
+ *
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
  */
+@Mojo(name = "sync", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresDependencyResolution = ResolutionScope.TEST)
 public class SyncMojo extends AbstractEclipathMojo {
-    /*
-     * @see org.seasar.uruma.eclipath.mojo.AbstractEclipathMojo#doExecute()
-     */
+
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException {
         // Load ".classpath" file
         EclipseClasspath eclipseClasspath = new EclipseClasspath(eclipseProjectDir);
         eclipseClasspath.load();
 
+        // TODO パラメーターで有効/無効にする
         // Add JRE container
         eclipseClasspath.addJavaContainerClasspathEntry(compilerConfiguration);
 
@@ -151,4 +149,139 @@ public class SyncMojo extends AbstractEclipathMojo {
         jdtPrefs.put("org.eclipse.jdt.core.compiler.source", conf.getSourceVersion());
         jdtPrefs.store();
     }
+
+    // protected void doExecute1() throws MojoExecutionException,
+    // MojoFailureException {
+    // Logger.info("===== Sync mojo executed. =====");
+    // Logger.info(project.toString());
+    // Logger.info(repoSystem.getClass().getName());
+    // // resolveTest("org.apache.httpcomponents:httpclient:4.3.3");
+    //
+    // describeProject(project);
+    // resolveProject(project, repoSession);
+    // }
+    //
+    // protected void describeProject(MavenProject targetProject) {
+    // // Artifact(pom.xmlのartifact)
+    // Artifact artifact = targetProject.getArtifact();
+    // Logger.info("artifact :" + artifact);
+    //
+    // // ArtifactMap(???)
+    // Map<String, Artifact> artifactMap = targetProject.getArtifactMap();
+    // for (Entry<String, Artifact> e : artifactMap.entrySet()) {
+    // Logger.info(e.getKey() + " : " + e.getValue());
+    // }
+    //
+    // // Dependencies(直接の依存を取得)
+    // List<Dependency> dependencies = targetProject.getDependencies();
+    // for (Dependency dependency : dependencies) {
+    // Logger.info("dependency : " + dependency);
+    // }
+    // }
+    //
+    // protected void resolveProject(MavenProject targetProject,
+    // RepositorySystemSession session) {
+    // DefaultDependencyResolutionRequest request = new
+    // DefaultDependencyResolutionRequest(targetProject, session);
+    // DependencyResolutionResult result;
+    //
+    // try {
+    // Logger.info(projectDependenciesResolver.getClass().getName());
+    // result = projectDependenciesResolver.resolve(request);
+    //
+    // Set<Artifact> artifacts = new LinkedHashSet<Artifact>();
+    // if (result.getDependencyGraph() != null &&
+    // !result.getDependencyGraph().getChildren().isEmpty()) {
+    // RepositoryUtils.toArtifacts(artifacts,
+    // result.getDependencyGraph().getChildren(),
+    // Collections.singletonList(project.getArtifact().getId()), null);
+    // }
+    //
+    // // 依存解決されたすべてのArtifactが得られる
+    // for (Artifact artifact : artifacts) {
+    // Logger.info(String.format("resolved: %s (%s)", artifact,
+    // artifact.getClass().getName()));
+    // resolveSource(project, artifact);
+    // }
+    // } catch (DependencyResolutionException e) {
+    // Logger.error(e.getMessage(), e);
+    // }
+    // }
+    //
+    // protected void resolveSource(MavenProject project, Artifact artifact) {
+    // // new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(),
+    // // artifact.getClassifier(), null, artifact.getVersion());
+    // Artifact srcArtifact = new
+    // org.apache.maven.artifact.DefaultArtifact(artifact.getGroupId(),
+    // artifact.getArtifactId(), artifact.getVersion(), artifact.getScope(),
+    // "jar",
+    // SOURCES_CLASSIFIER, artifact.getArtifactHandler());
+    // Logger.info("resolving srcArtifact : " + srcArtifact.toString() +
+    // " orgtype : " + artifact.getType());
+    //
+    // ArtifactResolutionRequest request = new ArtifactResolutionRequest();
+    // request.setArtifact(srcArtifact);
+    // request.setRemoteRepositories(project.getRemoteArtifactRepositories());
+    // request.setForceUpdate(true);
+    //
+    // ArtifactResolutionResult result = repoSystem.resolve(request);
+    // if (result.isSuccess()) {
+    // for (Artifact resolvedSrcArtifact : result.getArtifacts()) {
+    // Logger.info("  resolved src : " + resolvedSrcArtifact.toString() + "("
+    // + resolvedSrcArtifact.getFile().getAbsolutePath() + ")");
+    // }
+    // } else if (result.hasMissingArtifacts()) {
+    // Logger.warn("  missing : " + srcArtifact.toString());
+    // } else {
+    // Logger.error("  hasCircularDependencyExceptions : " +
+    // result.hasCircularDependencyExceptions());
+    // Logger.error("  hasErrorArtifactExceptions      : " +
+    // result.hasErrorArtifactExceptions());
+    // Logger.error("  hasExceptions                   : " +
+    // result.hasExceptions());
+    // Logger.error("  hasMetadataResolutionExceptions : " +
+    // result.hasMetadataResolutionExceptions());
+    // Logger.error("  hasMissingArtifacts             : " +
+    // result.hasMissingArtifacts());
+    // Logger.error("  hasVersionRangeViolations       : " +
+    // result.hasVersionRangeViolations());
+    // }
+    // }
+    //
+    // protected void resolveTest(String artifactCoords) throws
+    // MojoFailureException, MojoExecutionException {
+    // // Artifact artifact;
+    // // try {
+    // // artifact = new DefaultArtifact(artifactCoords);
+    // // } catch (IllegalArgumentException e) {
+    // // throw new MojoFailureException(e.getMessage());
+    // // }
+    // Artifact artifact = repoSystem.createArtifact("jp.littleforest",
+    // "lf-utils", "2.0", "jar");
+    //
+    // ArtifactResolutionRequest request = new ArtifactResolutionRequest();
+    // // Artifact artifact =
+    // // repoSystem.createArtifact("org.apache.httpcomponents", "httpclient",
+    // // "4.3.3", "jar");
+    // request.setArtifact(artifact);
+    // request.setRemoteRepositories(project.getRemoteArtifactRepositories());
+    // // request.setResolveTransitively(true);
+    //
+    // // ArtifactRequest request = new ArtifactRequest();
+    // // request.setArtifact(artifact);
+    // // request.setRepositories(remoteRepos);
+    //
+    // getLog().info("Resolving artifact " + artifact + " from " +
+    // project.getRemoteProjectRepositories());
+    //
+    // // result = repoSystem.resolveArtifact(repoSession, request);
+    // ArtifactResolutionResult result = repoSystem.resolve(request);
+    // Set<Artifact> artifacts = result.getArtifacts();
+    // for (Artifact a : artifacts) {
+    // getLog().info(
+    // "Resolved artifact " + artifact + " to " + a.getFile().getAbsolutePath()
+    // + " from "
+    // + result.getRepositories());
+    // }
+    // }
 }

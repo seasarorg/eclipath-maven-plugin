@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2011 the Seasar Foundation and the Others.
+ * Copyright 2004-2014 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,25 +28,19 @@ import java.util.Map;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.classpath.EclipseClasspath;
 import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.FileDependency;
 
 /**
- * @goal check-clean
- * @requiresDependencyResolution test
- * @phase process-sources
- * 
  * @author y-komori
- * @author $Author$
- * @version $Revision$ $Date$
  */
+@Mojo(name = "check-clean", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresDependencyResolution = ResolutionScope.TEST)
 public class CheckCleanMojo extends AbstractEclipathMojo {
-
-    /*
-     * @see org.seasar.uruma.eclipath.mojo.AbstractEclipathMojo#doExecute()
-     */
     @Override
     protected void doExecute() throws MojoExecutionException, MojoFailureException {
         // Load ".classpath" file
