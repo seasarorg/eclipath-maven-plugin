@@ -102,6 +102,10 @@ public class PropertiesFile {
             if (value == null) {
                 return false;
             }
+        } else if (value == null) {
+            // current value is not null, but new value is null
+            properties.remove(key);
+            return false;
         } else if (currentValue.equals(value)) {
             return false;
         }
