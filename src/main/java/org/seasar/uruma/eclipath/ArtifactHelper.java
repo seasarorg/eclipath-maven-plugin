@@ -129,8 +129,7 @@ public class ArtifactHelper {
         ArtifactResolutionResult result = repositorySystem.resolve(request);
         if (result.isSuccess()) {
             for (Artifact resolvedSrcArtifact : result.getArtifacts()) {
-                Logger.info("  resolved src : " + resolvedSrcArtifact.toString() + "("
-                        + resolvedSrcArtifact.getFile().getAbsolutePath() + ")");
+                Logger.info("  resolved: " + resolvedSrcArtifact.toString());
             }
         } else {
             try {
