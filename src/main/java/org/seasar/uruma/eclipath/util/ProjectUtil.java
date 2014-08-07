@@ -33,6 +33,12 @@ public class ProjectUtil {
 
     public static final String JDT_PREFS_PATH = ".settings/org.eclipse.jdt.core.prefs";
 
+    /**
+     * Property key on pom.xml or settings.xml which indicate eclipse workspace
+     * directory
+     */
+    public static final String PROP_KEY_ECLIPSE_WORKSPACE = "eclipse.workspace";
+
     private ProjectUtil() {
 
     }
@@ -58,12 +64,32 @@ public class ProjectUtil {
         return new File(path);
     }
 
+    /**
+     * Returns eclipse workspace directory. First, this method determine the
+     * eclipse workspace directory from pom.xml's directory. Second, determines
+     * from "eclipse.workspace" property key which defined in the pom.xml or
+     * settinegs.xml. If, this method can't find the workspace directory,
+     * returns {@code null}.
+     *
+     * @param project
+     *        Maven project
+     * @return workspace directory, or {@code null}
+     */
     public static File getWorkspaceDir(MavenProject project) {
         // TODO Dealing with multi projects.
         File workspaceDir = project.getFile().getParentFile().getParentFile();
         if (isValidWorkspaceLocation(workspaceDir)) {
             return workspaceDir;
         } else {
+            String prop = project.getProperties().getProperty(PROP_KEY_ECLIPSE_WORKSPACE);
+            if (prop != null) {
+                workspaceDir = new File(prop);
+                if (isValidWorkspaceLocation(workspaceDir)) {
+                    return workspaceDir;
+                }
+            }
+
+            Logger.warn("Can't find eclipse workspace.");
             return null;
         }
     }
@@ -71,12 +97,7 @@ public class ProjectUtil {
     protected static boolean isValidWorkspaceLocation(File dir) {
         String path = PathUtil.normalizePath(dir.getAbsolutePath()) + "/" + ECLIPSE_PLUGINS_METADATA_DIR;
         File pluginDir = new File(path);
-        if (pluginDir.exists()) {
-            return true;
-        } else {
-            Logger.warn("Directory is not eclipse workspace. : " + dir.getAbsolutePath());
-            return false;
-        }
+        return pluginDir.exists();
     }
 
 }

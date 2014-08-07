@@ -36,6 +36,12 @@ public class WorkspaceConfigurator {
 
     public static final String CLASSPATH_VARIABLE_M2_REPO = "org.eclipse.jdt.core.classpathVariable." + M2_REPO;
 
+    /**
+     * Property key on pom.xml or settings.xml which indicate eclipse workspace
+     * directory
+     */
+    public static final String PROP_KEY_ECLIPSE_WORKSPACE = "eclipse.workspace";
+
     private final File workspaceDir;
 
     private File localRepositoryDir;
@@ -47,6 +53,9 @@ public class WorkspaceConfigurator {
      */
     public WorkspaceConfigurator(MavenProject project) {
         this.workspaceDir = ProjectUtil.getWorkspaceDir(project);
+        if (this.workspaceDir != null) {
+            Logger.info("eclipse workspace directory deteceted. : " + this.workspaceDir.getAbsolutePath());
+        }
     }
 
     /**

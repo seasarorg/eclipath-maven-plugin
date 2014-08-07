@@ -157,8 +157,10 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
             prepare();
             doExecute();
         } catch (PluginRuntimeException e) {
+            Logger.error(getErrorMessage(e), e.getCause());
             throw new MojoExecutionException(e.getMessage(), e.getCause());
         } catch (Throwable t) {
+            Logger.error(getErrorMessage(t), t.getCause());
             throw new MojoExecutionException(t.getMessage(), t.getCause());
         }
     }
@@ -282,4 +284,14 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
         return dependencies;
     }
+
+    private String getErrorMessage(Throwable t) {
+        String msg = t.getMessage();
+        if (msg != null) {
+            return msg;
+        } else {
+            return "";
+        }
+    }
+
 }
