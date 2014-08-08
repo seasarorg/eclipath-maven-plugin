@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -32,8 +33,8 @@ import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.ProjectRefresher;
 import org.seasar.uruma.eclipath.PropertiesFile;
 import org.seasar.uruma.eclipath.classpath.ClasspathEntry;
+import org.seasar.uruma.eclipath.classpath.CompilerConfiguration;
 import org.seasar.uruma.eclipath.classpath.EclipseClasspath;
-import org.seasar.uruma.eclipath.model.CompilerConfiguration;
 import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.seasar.uruma.eclipath.util.ProjectUtil;
@@ -105,8 +106,10 @@ public class SyncMojo extends AbstractEclipathMojo {
         // Write ".classpath" file
         eclipseClasspath.write();
 
-        // Adjust .settings/org.eclipse.jdt.core.prefs
+        // Adjust java version
+        // TODO オプションで無効にできるようにする
         adjustJdtPrefs(compilerConfiguration);
+        adjustJavaProjectFacet(compilerConfiguration.getTargetVersion());
 
         // Refresh project
         if (autoRefresh) {
@@ -150,4 +153,10 @@ public class SyncMojo extends AbstractEclipathMojo {
         jdtPrefs.store();
     }
 
+    protected void adjustJavaProjectFacet(String targetVersion) {
+        if (StringUtils.isNotEmpty(targetVersion)) {
+            wstProjectFacet.setJavaFacetVersion(targetVersion);
+        }
+        wstProjectFacet.write();
+    }
 }

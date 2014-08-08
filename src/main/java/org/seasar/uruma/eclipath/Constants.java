@@ -23,4 +23,6 @@ package org.seasar.uruma.eclipath;
 public interface Constants {
 
     public static final String SEP = System.getProperty("file.separator");
+
+    public static final String SETTINGS_DIR = ".settings";
 }

@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.seasar.uruma.eclipath.model;
+package org.seasar.uruma.eclipath.classpath;
 
 import java.util.List;
 
@@ -45,6 +45,13 @@ public class CompilerConfiguration {
     private CompilerConfiguration() {
     }
 
+    /**
+     * Load pom.xml and construct {@link CompilerConfiguration} instance.
+     *
+     * @param project
+     *        {@link MavenProject} which represents pom.xml
+     * @return {@link CompilerConfiguration} instance
+     */
     public static CompilerConfiguration load(MavenProject project) {
         CompilerConfiguration conf = new CompilerConfiguration();
         Plugin plugin = findCompilerPlugin(project);
@@ -71,16 +78,16 @@ public class CompilerConfiguration {
             return null;
         }
 
-        if (targetVersion.equals("1.7") || targetVersion.equals("1.6")) {
+        if (isJ2SE(targetVersion)) {
+            return J2SE + targetVersion;
+        } else {
             return JAVA_SE + targetVersion;
         }
+    }
 
-        if (targetVersion.equals("1.5") || targetVersion.equals("1.4") || targetVersion.equals("1.3")
-                || targetVersion.equals("1.2")) {
-            return J2SE + targetVersion;
-        }
+    private boolean isJ2SE(String version) {
+        return ("1.5".equals(version) || "1.4".equals(version) || "1.3".equals(version) || "1.2".equals(version));
 
-        return null;
     }
 
     private static String getValue(Xpp3Dom conf, String name) {
@@ -116,10 +123,10 @@ public class CompilerConfiguration {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("CompilerConfiguration [sourceVersion=");
-        builder.append(sourceVersion);
+        builder.append("compiler configuration [sourceVersion=");
+        builder.append(sourceVersion != null ? sourceVersion : "UNKNOWN");
         builder.append(", targetVersion=");
-        builder.append(targetVersion);
+        builder.append(targetVersion != null ? targetVersion : "UNKNOWN");
         builder.append("]");
         return builder.toString();
     }

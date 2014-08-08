@@ -44,7 +44,6 @@ import org.apache.commons.lang.StringUtils;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.model.ClasspathKind;
-import org.seasar.uruma.eclipath.model.CompilerConfiguration;
 import org.seasar.uruma.eclipath.util.AssertionUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

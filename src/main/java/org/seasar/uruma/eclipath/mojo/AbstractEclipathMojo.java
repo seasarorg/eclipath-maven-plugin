@@ -37,10 +37,11 @@ import org.seasar.uruma.eclipath.ArtifactHelper;
 import org.seasar.uruma.eclipath.Logger;
 import org.seasar.uruma.eclipath.PluginInformation;
 import org.seasar.uruma.eclipath.WorkspaceConfigurator;
+import org.seasar.uruma.eclipath.classpath.CompilerConfiguration;
+import org.seasar.uruma.eclipath.classpath.WstProjectFacet;
 import org.seasar.uruma.eclipath.exception.ArtifactResolutionRuntimeException;
 import org.seasar.uruma.eclipath.exception.PluginRuntimeException;
 import org.seasar.uruma.eclipath.model.ClasspathPolicy;
-import org.seasar.uruma.eclipath.model.CompilerConfiguration;
 import org.seasar.uruma.eclipath.model.Dependency;
 import org.seasar.uruma.eclipath.model.EclipathArtifact;
 import org.seasar.uruma.eclipath.model.factory.DependencyFactory;
@@ -147,12 +148,12 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
     protected CompilerConfiguration compilerConfiguration;
 
+    protected WstProjectFacet wstProjectFacet;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             Logger.initialize(getLog());
-
-            compilerConfiguration = CompilerConfiguration.load(project);
             checkParameters();
             prepare();
             doExecute();
@@ -185,6 +186,15 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
 
         // get Eclipse project directory
         eclipseProjectDir = ProjectUtil.getProjectDir(project);
+
+        // load compiler configuration
+        compilerConfiguration = CompilerConfiguration.load(project);
+        Logger.info(compilerConfiguration.toString());
+
+        // load java project facet (if exists)
+        wstProjectFacet = new WstProjectFacet(eclipseProjectDir);
+        wstProjectFacet.load();
+        Logger.info(wstProjectFacet.toString());
 
         // prepare DeoendencyFactory
         if (classpathPolicy == ClasspathPolicy.PROJECT) {
@@ -230,7 +240,6 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         Logger.info("[Parameter:autoRefresh] " + Boolean.toString(autoRefresh));
         Logger.info("[Parameter:refreshHost] " + refreshHost);
         Logger.info("[Parameter:refreshPort] " + refreshPort);
-        Logger.info(compilerConfiguration.toString());
     }
 
     protected Set<Artifact> getArtifacts() {
