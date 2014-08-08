@@ -30,6 +30,14 @@ public class Logger {
 
     private static final String PREFIX = "[eclipath] ";
 
+    private static final String PREFIX_D = "  " + PREFIX;
+
+    private static final String PREFIX_I = "   " + PREFIX;
+
+    private static final String PREFIX_W = PREFIX;
+
+    private static final String PREFIX_E = "  " + PREFIX;
+
     public static final String SEPARATOR = StringUtils.repeat("-", 56);
 
     private Logger() {
@@ -44,32 +52,32 @@ public class Logger {
 
     public static void debug(String message) {
         checkInitialized();
-        myLog.debug(PREFIX + message);
+        myLog.debug(PREFIX_D + message);
     }
 
     public static void info(String message) {
         checkInitialized();
-        myLog.info(PREFIX + message);
+        myLog.info(PREFIX_I + message);
     }
 
     public static void warn(String message) {
         checkInitialized();
-        myLog.warn(PREFIX + message);
+        myLog.warn(PREFIX_W + message);
     }
 
     public static void warn(String message, Throwable throwable) {
         checkInitialized();
-        myLog.warn(PREFIX + message, throwable);
+        myLog.warn(PREFIX_W + message, throwable);
     }
 
     public static void error(String message) {
         checkInitialized();
-        myLog.error(PREFIX + message);
+        myLog.error(PREFIX_E + message);
     }
 
     public static void error(String message, Throwable throwable) {
         checkInitialized();
-        myLog.error(PREFIX + message, throwable);
+        myLog.error(PREFIX_E + message, throwable);
     }
 
     private static void checkInitialized() {
