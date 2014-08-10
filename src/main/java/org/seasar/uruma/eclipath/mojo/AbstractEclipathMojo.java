@@ -225,29 +225,30 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
         } else {
             throw new PluginRuntimeException("Parameter policy must be \"repository\" or \"project\".");
         }
-        Logger.info("[Parameter:policy] " + classpathPolicy.name());
+        Logger.info("[Parameter: policy]            " + classpathPolicy.name());
 
         libraryLayout = LibraryLayoutFactory.getLibraryLayout(layout);
         if (libraryLayout == null) {
             // Create layout from packaging.
             libraryLayout = LibraryLayoutFactory.getLibraryLayoutFromPackaging(project.getPackaging());
         }
-        Logger.info("[Parameter:layout] " + libraryLayout.getName());
+        Logger.info("[Parameter: layout]            " + libraryLayout.getName());
 
         if (excludeGroupIds == null) {
             excludeGroupIds = new ArrayList<String>();
         }
-        Logger.info("[Parameter:excludeGroupIds] " + excludeGroupIds.toString());
+        Logger.info("[Parameter: excludeGroupIds]   " + excludeGroupIds.toString());
 
         if (excludeScopes == null) {
             excludeScopes = new ArrayList<String>();
         }
-        Logger.info("[Parameter:excludeScopes] " + excludeScopes.toString());
-        Logger.info("[Parameter:downloadSources] " + Boolean.toString(downloadSources));
-        Logger.info("[Parameter:downloadJavaddocs] " + Boolean.toString(downloadJavadocs));
-        Logger.info("[Parameter:autoRefresh] " + Boolean.toString(autoRefresh));
-        Logger.info("[Parameter:refreshHost] " + refreshHost);
-        Logger.info("[Parameter:refreshPort] " + refreshPort);
+        Logger.info("[Parameter: excludeScopes]     " + excludeScopes.toString());
+        Logger.info("[Parameter: adjustJavaVersion] " + Boolean.toString(adjustJavaVersion));
+        Logger.info("[Parameter: downloadSources]   " + Boolean.toString(downloadSources));
+        Logger.info("[Parameter: downloadJavaddocs] " + Boolean.toString(downloadJavadocs));
+        Logger.info("[Parameter: autoRefresh]       " + Boolean.toString(autoRefresh));
+        Logger.info("[Parameter: refreshHost]       " + refreshHost);
+        Logger.info("[Parameter: refreshPort]       " + refreshPort);
     }
 
     protected Set<Artifact> getArtifacts() {
