@@ -47,6 +47,7 @@
       <name>The Seasar Foundation Maven2 Repository</name>
       <url>dav:https://www.seasar.org/maven/maven2</url>
     </repository>
+
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>maven.seasar.org</id>
@@ -135,6 +136,13 @@
         </configuration>
       </plugin>
     </plugins>
+
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+      </extension>
+    </extensions>
   </build>
 
   <profiles>
