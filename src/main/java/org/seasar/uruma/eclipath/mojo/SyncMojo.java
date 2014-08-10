@@ -53,10 +53,6 @@ public class SyncMojo extends AbstractEclipathMojo {
         EclipseClasspath eclipseClasspath = new EclipseClasspath(eclipseProjectDir);
         eclipseClasspath.load();
 
-        // TODO パラメーターで有効/無効にする
-        // Add JRE container
-        eclipseClasspath.addJavaContainerClasspathEntry(compilerConfiguration);
-
         // Get dependencies
         Set<EclipathArtifact> dependingArtifacts = getEclipathArtifacts();
         List<Dependency> dependencies = resolveArtifacts(dependingArtifacts);
@@ -103,13 +99,17 @@ public class SyncMojo extends AbstractEclipathMojo {
         }
         eclipseClasspath.removeClasspathEntries(entryMap.values());
 
+        // Adjust java version
+        if (adjustJavaVersion) {
+            // Add JRE container
+            eclipseClasspath.addJavaContainerClasspathEntry(compilerConfiguration);
+
+            adjustJdtPrefs(compilerConfiguration);
+            adjustJavaProjectFacet(compilerConfiguration.getTargetVersion());
+        }
+
         // Write ".classpath" file
         eclipseClasspath.write();
-
-        // Adjust java version
-        // TODO オプションで無効にできるようにする
-        adjustJdtPrefs(compilerConfiguration);
-        adjustJavaProjectFacet(compilerConfiguration.getTargetVersion());
 
         // Refresh project
         if (autoRefresh) {

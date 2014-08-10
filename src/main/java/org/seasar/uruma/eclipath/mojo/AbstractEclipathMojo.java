@@ -102,6 +102,14 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     protected String layout;
 
     /**
+     * Enables/disables adjusting java version. Defaults to true. This option
+     * affects 'JRE System Library' in the Java build path section and 'Java
+     * version' in the Project facet section.
+     */
+    @Parameter(defaultValue = "true", readonly = true)
+    protected boolean adjustJavaVersion;
+
+    /**
      * Enables/disables the downloading of source attachments. Defaults to true.
      */
     @Parameter(defaultValue = "true", readonly = true)
@@ -121,7 +129,7 @@ public abstract class AbstractEclipathMojo extends AbstractMojo {
     protected boolean autoRefresh;
 
     /**
-     * ResourceSynchronizer's hostname.
+     * ResourceSynchronizer's host name.
      */
     @Parameter(defaultValue = "localhost")
     protected String refreshHost;
